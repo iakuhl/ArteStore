@@ -33,7 +33,7 @@ int menuPrincipal()
         {
             // Se falhou (EOF ou erro), sair do programa
             printf("Detectamos um ERRO IRRECUPERÁVEL! Encerrando programa...\n");
-            exit(0);
+            return -1;
         }
 
         if (opcao >= 1 && opcao <= 5)
@@ -73,6 +73,11 @@ int main()
 		{
 			printf("Encerrando programa...");
 			break;
+		}
+		if (opcao == -1)
+		{
+			// Retorno em caso de erro fatal. Deverá liberar memória antes do exit.
+			exit(0);
 		}
 		
     } while (true);
