@@ -12,6 +12,7 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 
 #define TAM_BUFFER_LEITURA 32
