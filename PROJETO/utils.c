@@ -46,17 +46,17 @@ bool lerInteiro(int *numero)
 		 * Se for maior, limpa o buffer e informa erro ao usuário e solicita nova entrada de dados.
 		 * Garante entrada válida.
 		 */
-        if (strchr(entrada, '\n') == NULL)
-        {
-            printf("Entrada muito longa. Informe um número inteiro: ");
-            int c;
-			c = getchar();
-            while (c != '\n' && c != EOF)
-			{
-				c = getchar();
-			}
-            continue;
-        }
+		if (strchr(entrada, '\n') == NULL)
+		{
+		    printf("Entrada muito longa. Informe um número inteiro: ");
+		    int c;
+		    c = getchar();
+		    while (c != '\n' && c != EOF)
+		    {
+		        c = getchar();
+		    }
+		    continue;
+		}
 
         // Prepara errno para detectar overflow
         errno = 0;
