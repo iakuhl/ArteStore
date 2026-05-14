@@ -26,7 +26,7 @@
  * IMPORTAÇÕES *
  ***************/
 #include "utils.h"
-#include "estruturas.h"
+#include "defines.h"
 #include "listas.h"
 #include "menus.h"
 
