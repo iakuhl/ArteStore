@@ -3,26 +3,49 @@
  * Arquivo: utils.c
  * Autor: Iano de Oliva Kuhlmann
  * Colaboradores: chat.deepseek.com
+ * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l
  * Disciplina: APR2
  * Professora: Dra. Eloize Rossi Marques Seno
  */
 
 
+/***********************************************************
+ * ARQUIVO DE FUNÇÕES UTILITÁRIAS E DE TRATAMENTO DE DADOS *
+ ***********************************************************/
+
+
+ /**************
+ * DECLARAÇÕES *
+ ***************/
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
-#define TAM_BUFFER_LEITURA 32
+/***************
+ * IMPORTAÇÕES *
+ ***************/
 
-// FUNÇÕES UTILITARIAS
+#include "estruturas.h"
+#include "utils.h"
 
+/**********************************
+ * FUNÇÕES DE TRATAMENTO DE DADOS *
+ **********************************/
 
-/*
- // Validação robusta para entrada de inteiros
-*/
-bool lerInteiro(int *numero)
+void limparBuffer()
+{
+    int c;
+    c = getchar();
+    while (c != '\n' && c != EOF)
+    {
+        c = getchar();
+    }
+}
+
+bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
 {
     char entrada[TAM_BUFFER_LEITURA];
     char *fim;
@@ -48,12 +71,7 @@ bool lerInteiro(int *numero)
         if (strchr(entrada, '\n') == NULL)
         {
             printf("Entrada muito longa. Informe um número inteiro: ");
-            int c;
-			c = getchar();
-            while (c != '\n' && c != EOF)
-			{
-				c = getchar();
-			}
+            limparBuffer();
             continue;
         }
 
@@ -93,9 +111,7 @@ bool lerInteiro(int *numero)
 }
 
 
-// Validação robusta para entrada de strings
-
-bool lerString(char texto[], int tamanho)
+bool lerString(char texto[], int tamanho) // Validação robusta para entrada de strings.
 {
     while (true)
     {
@@ -116,12 +132,7 @@ bool lerString(char texto[], int tamanho)
         if (strchr(texto, '\n') == NULL)
         {
             printf("Texto muito longo! Limite de %d caracteres. Tente novamente: ", tamanho - 1);
-            int c;
-			c = getchar();
-            while (c != '\n' && c != EOF)
-			{
-				c = getchar();
-			}
+            limparBuffer();
             continue;
         }
 
@@ -135,4 +146,19 @@ bool lerString(char texto[], int tamanho)
 
         return true;
     }
+}
+
+// Função para validar CPF, deverá ser aprimorada para tratar casos de CPFs com formatação (com pontos e hífen).
+bool validarCPF(const char cpf[])
+{
+    if (strlen(cpf) != 11)
+        return false;
+
+    for (int i = 0; i < 11; i++)
+    {
+        if (cpf[i] < '0' || cpf[i] > '9')
+            return false;
+    }
+
+    return true;
 }

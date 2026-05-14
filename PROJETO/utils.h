@@ -3,6 +3,7 @@
  * Arquivo: utils.h
  * Autor: Iano de Oliva Kuhlmann
  * Colaboradores: chat.deepseek.com
+ * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l
  * Disciplina: APR2
  * Professora: Dra. Eloize Rossi Marques Seno
  */
