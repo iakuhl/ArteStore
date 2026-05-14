@@ -3,85 +3,97 @@
  * Arquivo: main.c
  * Autor: Iano de Oliva Kuhlmann
  * Colaboradores: chat.deepseek.com
- * Resumo de colaboração da IA em: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l
+ * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l
  * Disciplina: APR2
  * Professora: Dra. Eloize Rossi Marques Seno
  */
 
+
+/********************
+ * CÓDIGO PRINCIPAL *
+ ********************/
+
+
+/***************
+ * BIBLIOTECAS *
+ ***************/
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+
+
+/***************
+ * IMPORTAÇÕES *
+ ***************/
 #include "utils.h"
 #include "estruturas.h"
+#include "menus.h"
 
-int menuPrincipal()
-{
-    int opcao;
-    while (true)
-    {
-        printf("### MENU PRINCIPAL ###\n");
-        printf("1 - Menu Artistas\n");
-        printf("2 - Menu Obras\n");
-        printf("3 - Menu Colaboracoes\n");
-        printf("4 - Menu Relatorios\n");
-        printf("5 - Encerrar Programa\n");
 
-        printf("Escolha uma opção: ");
-        if (!lerInteiro(&opcao))
-        {
-            // Se falhou (EOF ou erro), sair do programa
-            printf("Detectamos um ERRO IRRECUPERÁVEL! Encerrando programa...\n");
-            return -1;
-        }
-
-        if (opcao >= 1 && opcao <= 5)
-            return opcao;
-        else
-            printf("Opção inválida. Tente novamente.\n");
-    }
-}
 
 int main()
 {
+    
     int opcao;
+    bool executando = true;
     do
 	{
         opcao = menuPrincipal();
-		if (opcao == 1)
-		{
-			printf("Função em produção...");
-		}
+        switch (opcao)
+        {
+        case 1:
 
-		if (opcao == 2)
-		{
-			printf("Função em produção...");
-		}
+            if(!moduleArtistas())
+            {
+                printf("Erro ao executar o módulo de artistas.\n");
+                // Aqui você deve adicionar código para liberar memória alocada dinamicamente, se houver.
+            }
+            break;
 
-		if (opcao == 3)
-		{
-			printf("Função em produção...");
-		}
+        case 2:
+            if(!moduleObras())
+            {
+                printf("Erro ao executar o módulo de obras.\n");
+                // Aqui você deve adicionar código para liberar memória alocada dinamicamente, se houver.
+            }
+            break;
 
-		if (opcao == 4)
-		{
-			printf("Função em produção...");
-		}
+        case 3:
+            if(!moduleColaboracoes())
+            {
+                printf("Erro ao executar o módulo de colaborações.\n");
+                // Aqui você deve adicionar código para liberar memória alocada dinamicamente, se houver.
+            }
+            break;
 
-        if (opcao == 5)
-		{
-			printf("Encerrando programa...");
-			break;
-		}
-		if (opcao == -1)
-		{
-			// Retorno em caso de erro fatal. Deverá liberar memória antes do exit.
-			exit(0);
-		}
+        case 4:
+            if(!moduleRelatorios())
+            {
+                printf("Erro ao executar o módulo de relatórios.\n");
+                // Aqui você deve adicionar código para liberar memória alocada dinamicamente, se houver.
+            }
+            break;
+
+        case 5:
+            printf("Encerrando programa...");
+            // Aqui você deve adicionar código para liberar memória alocada dinamicamente, se houver.
+            executando = false;
+            break;
+
+        case -1:
+            // Erro detectado, encerrar programa imediatamente após limpar memória, se necessário.
+            // Aqui você deve adicionar código para liberar memória alocada dinamicamente, se houver.
+            executando = false;
+            return 1;
+
+        default:
+            break;
+        }
 		
-    } while (true);
+    } while (executando);
 
     return 0;
 }
