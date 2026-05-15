@@ -31,6 +31,7 @@
 #include "utils.h"
 #include "estruturas.h"
 #include "menus.h"
+#include "persistencia.h"
 
 void cargarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
 { 
@@ -41,6 +42,30 @@ void cargarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCola
     if(!carregarColaboracoes(listaColaboracoes))
         printf("Erro ao carregar colaborações. Iniciando com lista vazia.\n");
 }
+
+bool liberarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
+{
+	sucesso = true;
+	if(!liberarArtistas(listaArtistas))
+	{
+		printf("Erro de memória em Artistas!\n");
+		sucesso = false;
+	}
+	if(!liberarObras(listaObras))
+	{
+		printf("Erro de memória em Obras!\n");
+		sucesso = false;
+	}
+	if(!liberarColaboracoes(listaColaboracoes))
+	{
+		printf("Erro de memória em Colaborações!\n");
+		sucesso = false;
+	}
+	return sucesso;
+}
+
+
+
 
 int main()
 {
@@ -53,13 +78,11 @@ int main()
     listaColaboracoes = (ListaColaboracoes *) malloc(sizeof(ListaColaboracoes));
 
     cargarDados(listaArtistas, listaObras, listaColaboracoes);
-    
-    int opcao;
+	
     bool executando = true;
     do
 	{
-        opcao = menuPrincipal();
-        switch (opcao)
+        switch (menuPrincipal();)
         {
         case 1:
 
@@ -97,18 +120,25 @@ int main()
         case 5:
             printf("Encerrando programa...");
             // Aqui você deve adicionar código para liberar memória alocada dinamicamente, se houver.
+			if(!liberarDados(listaArtistas, listaObras, listaColaboracoes))
+			{
+				printf("Memória não foi liberada corretamente! Encerrando o programa...");
+			}
             executando = false;
             break;
 
         case -1:
             // Erro detectado, encerrar programa imediatamente após limpar memória, se necessário.
             // Aqui você deve adicionar código para liberar memória alocada dinamicamente, se houver.
-            printf("Falha na operação, os dados não foram salvos. ");
 
+			printf("Falha na operação, os dados não foram salvos. Encerrando o programa.");
+			
+			if(!liberarDados(listaArtistas, listaObras, listaColaboracoes))
+			{
+				printf("Memória não foi liberada corretamente! Encerrando o programa...");
+			}
+			executando = false;
             return 1;
-
-        default:
-            break;
         }
 		
     } while (executando);
