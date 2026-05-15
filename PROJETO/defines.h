@@ -24,6 +24,6 @@
 #define MSG_ENTRADA_INVALIDA "Entrada inválida! Tente novamente.\n" // Utilizada nos menus para informar o usuário sobre a entrada de dados inválida (fora do intervalo permitido ou tipo de dado incorreto).
 
 // Nomes dos arquivos de persistência
-#define NOME_ARQUIVO_ARTISTAS "artistas.txt"
-#define NOME_ARQUIVO_OBRAS "obras.txt"
-#define NOME_ARQUIVO_COLABORACOES "colaboracoes.txt"
+#define NOME_ARQUIVO_ARTISTAS "artistas.bin"
+#define NOME_ARQUIVO_OBRAS "obras.bin"
+#define NOME_ARQUIVO_COLABORACOES "colaboracoes.bin"
