@@ -8,40 +8,6 @@
 #include "defines.h"
 #include "persistencia.h"
 
-void carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
-{ 
-    if(!carregarArtistas(listaArtistas))
-        printf("Erro ao carregar artistas. Iniciando com lista vazia.\n");
-    if(!carregarObras(listaObras))
-        printf("Erro ao carregar obras. Iniciando com lista vazia.\n");
-    if(!carregarColaboracoes(listaColaboracoes))
-        printf("Erro ao carregar colaborações. Iniciando com lista vazia.\n");
-}
-
-bool liberarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
-{
-	sucesso = true;
-	if(!liberarArtistas(listaArtistas))
-	{
-		printf("Erro de memória em Artistas!\n");
-		sucesso = false;
-	}
-	if(!liberarObras(listaObras))
-	{
-		printf("Erro de memória em Obras!\n");
-		sucesso = false;
-	}
-	if(!liberarColaboracoes(listaColaboracoes))
-	{
-		printf("Erro de memória em Colaborações!\n");
-		sucesso = false;
-	}
-	return sucesso;
-}
-
-
-
-
 
 // Função auxiliar para alocar dinamicamente um telefone adicional
 static bool adicionarTelefoneParsing(Artista *a, const char *numero)
