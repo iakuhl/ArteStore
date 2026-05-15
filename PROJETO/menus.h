@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+int escolherOpcao(int min, int max);
+
 int menuPrincipal();
 
 int menuArtistas();

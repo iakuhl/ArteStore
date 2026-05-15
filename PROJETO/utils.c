@@ -28,7 +28,7 @@
 /***************
  * IMPORTAÇÕES *
  ***************/
-
+#include "defines.h"
 #include "estruturas.h"
 #include "utils.h"
 

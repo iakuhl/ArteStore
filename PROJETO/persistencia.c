@@ -1,3 +1,7 @@
+
+// Feito integralmente pelo DeepSeek deverá ser revisado
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

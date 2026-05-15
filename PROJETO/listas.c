@@ -1,3 +1,6 @@
+// Feito integralmente pelo DeepSeek, deverá ser revisado
+
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
