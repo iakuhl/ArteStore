@@ -38,9 +38,11 @@
 void limparBuffer() // Limpa o buffer de entrada para evitar problemas com entradas inválidas.
 {
     int c;
-    do {
-        c = getchar();
-    } while(c != '\n' && c != EOF);
+    c = getchar();
+    while(c != '\n' && c != EOF)
+	{
+		c = getchar();
+	}
 }
 
 bool verificarLimiteString(const char *texto) // Verifica se a string ultrapassa o limite permitido, considerando o caractere nulo.
@@ -149,26 +151,29 @@ bool lerString(char texto[], int tamanho) // Validação robusta para entrada de
     }
 }
 
-bool removeMascaraCPF(char *cpf) // 
+bool removeMascaraCPF(char *cpf)
 {
-	// Se CPF já vier sem máscara, sai da função.
-	if (validarCPF(cpf))
-		return true;
-	
-	// Remove os "." e o "-", caso o usuário entre com a formatação 000.000.000-00
-	cpf[srtcspn(cpf,".")] = "";
-	cpf[srtcspn(cpf,".")] = "";
-	cpf[srtcspn(cpf,"-")] = "";
-	
-	// Verifica se existe algum valor informado, após remover a máscara de formatação.
-	if (strlen(cpf) == 0)
-		return false;
-	
-	// Verifica se após a remoção da máscara o CPF é válido
-	if(validarCPF(cpf))
-		return true;
-	else
-		return false;
+    // Se já for válido (11 dígitos), não faz nada.
+    if (validarCPF(cpf))
+        return true;
+
+    // Remove pontos e hífen, mantendo apenas os dígitos
+    int i, j;
+	i=0;
+	j=0;
+	while(cpf[i] != '\0')
+	{
+		if (cpf[i] >= '0' && cpf[i] <= '9')
+        {
+            cpf[j] = cpf[i];
+            j++;
+        }
+		i++;
+	}
+	cpf[j] = '\0';
+
+    // Após remoção, verifica validade (já inclui teste de comprimento e dígitos)
+    return validarCPF(cpf);
 }
 
 bool validarCPF(const char cpf[]) // Função para validar CPF, deverá ser aprimorada para tratar casos de CPFs com formatação (com pontos e hífen).
