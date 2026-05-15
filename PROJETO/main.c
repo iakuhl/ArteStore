@@ -45,7 +45,7 @@ int main()
     listaObras = (ListaObras *) malloc(sizeof(ListaObras));
     listaColaboracoes = (ListaColaboracoes *) malloc(sizeof(ListaColaboracoes));
 
-    cargarDados(listaArtistas, listaObras, listaColaboracoes);
+    carregarDados(listaArtistas, listaObras, listaColaboracoes);
 	
     bool executando = true;
     do
