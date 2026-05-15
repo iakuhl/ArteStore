@@ -149,22 +149,38 @@ bool lerString(char texto[], int tamanho) // Validação robusta para entrada de
     }
 }
 
-bool lerCPF(char *cpf)
+bool removeMascaraCPF(char *cpf) // 
 {
+	// Se CPF já vier sem máscara, sai da função.
+	if (validarCPF(cpf))
+		return true;
 	
+	// Remove os "." e o "-", caso o usuário entre com a formatação 000.000.000-00
+	cpf[srtcspn(cpf,".")] = "";
+	cpf[srtcspn(cpf,".")] = "";
+	cpf[srtcspn(cpf,"-")] = "";
+	
+	// Verifica se existe algum valor informado, após remover a máscara de formatação.
+	if (strlen(cpf) == 0)
+		return false;
+	
+	// Verifica se após a remoção da máscara o CPF é válido
+	if(validarCPF(cpf))
+		return true;
+	else
+		return false;
 }
-
 
 bool validarCPF(const char cpf[]) // Função para validar CPF, deverá ser aprimorada para tratar casos de CPFs com formatação (com pontos e hífen).
 {
+	int i;
+	
     if (strlen(cpf) != 11)
         return false;
 
-    for (int i = 0; i < 11; i++)
-    {
+    for (i = 0; i < 11; i++)
         if (cpf[i] < '0' || cpf[i] > '9')
             return false;
-    }
 
     return true;
 }
