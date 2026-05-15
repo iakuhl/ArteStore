@@ -8,7 +8,7 @@
 #include "defines.h"
 #include "persistencia.h"
 
-void caregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
+void carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
 { 
     if(!carregarArtistas(listaArtistas))
         printf("Erro ao carregar artistas. Iniciando com lista vazia.\n");
