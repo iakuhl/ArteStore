@@ -53,7 +53,7 @@ typedef struct
 {
 	char cpf[TAM_CPF]; // Chave única para cada artista.
 	char nome[TAM_TEXTO_PEQUENO];
-	char nacionalidade[TAM_NACIONALIDADE];
+	char nacionalidade[TAM_TEXTO_PEQUENO];
 	char estilo[TAM_TEXTO_PEQUENO];
 	Data nascimento;
 
