@@ -1,9 +1,9 @@
 # Sistema de Curadoria de Obras de Artes
 
 **Projeto da disciplina APR2**  
-**Autora:** Iano de Oliva Kuhlmann  
-**Colaboradores:** chat.deepseek.com  
-**Professora:** Dra. Eloize Rossi Marques Seno  
+**Autoria:** Iano de Oliva Kuhlmann  
+**Colaboradores:** chat.deepseek.com
+**Professora:** Dra. Eloize Rossi Marques Seno
 
 ---
 
