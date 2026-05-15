@@ -21,7 +21,6 @@
 #include <stdio.h>
 
 
-
 /***************
  * IMPORTAÇÕES *
  ***************/
@@ -29,7 +28,6 @@
 #include "defines.h"
 #include "listas.h"
 #include "menus.h"
-
 
 
 int escolherOpcao(int min, int max)
@@ -40,7 +38,7 @@ int escolherOpcao(int min, int max)
         printf("Escolha uma opção (%d-%d): ", min, max);
         if (!lerInteiro(&opcao))
         {
-            // Se falhou (EOF ou erro), sair do programa
+            // Se falhou (EOF ou erro), retornar ao menu principal e limpar memória.
             printf(MSG_LOOP_INFINITO);
             return -1; // Retorna -1 para indicar erro
         }
