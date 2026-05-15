@@ -29,14 +29,13 @@
  * IMPORTAÇÕES *
  ***************/
 #include "defines.h"
-#include "estruturas.h"
 #include "utils.h"
 
 /**********************************
  * FUNÇÕES DE TRATAMENTO DE DADOS *
  **********************************/
 
-void limparBuffer()
+void limparBuffer() // Limpa o buffer de entrada para evitar problemas com entradas inválidas.
 {
     int c;
     c = getchar();
@@ -44,6 +43,22 @@ void limparBuffer()
     {
         c = getchar();
     }
+}
+
+bool verificarLimiteString(const char *texto) // Verifica se a string ultrapassa o limite permitido, considerando o caractere nulo.
+{
+    /* 
+    * Tratamento de buffer, verifica se o tamanho da string informada é maior que o limite (tamanho -1).
+    * Se for maior, limpa o buffer e informa erro ao usuário e solicita nova entrada de dados.
+    * Garante entrada válida.
+    */
+    if (strchr(texto, '\n') == NULL)
+    {
+        printf("Erro: Limite de caracteres atingido. Tente novamente.\n");
+        limparBuffer();
+        return false;
+    }
+    return true;
 }
 
 bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
@@ -64,17 +79,9 @@ bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
             return false;
         }
 
-		/* 
-		 * Tratamento de buffer, verifica se o tamanho da string informada é maior que o limite (tamanho -1).
-		 * Se for maior, limpa o buffer e informa erro ao usuário e solicita nova entrada de dados.
-		 * Garante entrada válida.
-		 */
-        if (strchr(entrada, '\n') == NULL)
-        {
-            printf("Entrada muito longa. Informe um número inteiro: ");
-            limparBuffer();
+        // Verifica se a entrada ultrapassa o limite do buffer
+        if(!verificarLimiteString(entrada))
             continue;
-        }
 
         // Prepara errno para detectar overflow
         errno = 0;
@@ -111,7 +118,6 @@ bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
     }
 }
 
-
 bool lerString(char texto[], int tamanho) // Validação robusta para entrada de strings.
 {
     while (true)
@@ -125,17 +131,9 @@ bool lerString(char texto[], int tamanho) // Validação robusta para entrada de
             return false;
         }
 		
-		/* 
-		 * Tratamento de buffer, verifica se o tamanho da string informada é maior que o limite (tamanho -1).
-		 * Se for maior, limpa o buffer e informa erro ao usuário e solicita nova entrada de dados.
-		 * Garante entrada válida.
-		 */
-        if (strchr(texto, '\n') == NULL)
-        {
-            printf("Texto muito longo! Limite de %d caracteres. Tente novamente: ", tamanho - 1);
-            limparBuffer();
+        // Verifica se a entrada ultrapassa o limite do buffer
+        if(!verificarLimiteString(texto))
             continue;
-        }
 
         texto[strcspn(texto, "\n")] = '\0';
 
@@ -149,8 +147,7 @@ bool lerString(char texto[], int tamanho) // Validação robusta para entrada de
     }
 }
 
-// Função para validar CPF, deverá ser aprimorada para tratar casos de CPFs com formatação (com pontos e hífen).
-bool validarCPF(const char cpf[])
+bool validarCPF(const char cpf[]) // Função para validar CPF, deverá ser aprimorada para tratar casos de CPFs com formatação (com pontos e hífen).
 {
     if (strlen(cpf) != 11)
         return false;

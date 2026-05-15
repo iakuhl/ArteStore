@@ -32,10 +32,27 @@
 #include "estruturas.h"
 #include "menus.h"
 
-
+void cargarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
+{ 
+    if(!carregarArtistas(listaArtistas))
+        printf("Erro ao carregar artistas. Iniciando com lista vazia.\n");
+    if(!carregarObras(listaObras))
+        printf("Erro ao carregar obras. Iniciando com lista vazia.\n");
+    if(!carregarColaboracoes(listaColaboracoes))
+        printf("Erro ao carregar colaborações. Iniciando com lista vazia.\n");
+}
 
 int main()
 {
+    ListaArtistas *listaArtistas;
+    ListaObras *listaObras;
+    ListaColaboracoes *listaColaboracoes;
+
+    listaArtistas = (ListaArtistas *) malloc(sizeof(ListaArtistas));
+    listaObras = (ListaObras *) malloc(sizeof(ListaObras));
+    listaColaboracoes = (ListaColaboracoes *) malloc(sizeof(ListaColaboracoes));
+
+    cargarDados(listaArtistas, listaObras, listaColaboracoes);
     
     int opcao;
     bool executando = true;
@@ -86,7 +103,8 @@ int main()
         case -1:
             // Erro detectado, encerrar programa imediatamente após limpar memória, se necessário.
             // Aqui você deve adicionar código para liberar memória alocada dinamicamente, se houver.
-            executando = false;
+            printf("Falha na operação, os dados não foram salvos. ");
+
             return 1;
 
         default:

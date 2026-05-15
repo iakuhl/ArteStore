@@ -14,7 +14,11 @@ void inicializarListaArtistas(ListaArtistas *lista, int capacidadeInicial)
 {
     lista->itens = malloc(sizeof(Artista) * capacidadeInicial);
     lista->total = 0;
-    lista->capacidade = (lista->itens != NULL) ? capacidadeInicial : 0;
+    
+    if (lista->itens != NULL)
+        lista->capacidade = capacidadeInicial;
+    else
+        lista->capacidade = 0;
 }
 
 bool adicionarArtista(ListaArtistas *lista, Artista *artista)

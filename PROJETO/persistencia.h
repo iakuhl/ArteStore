@@ -4,13 +4,13 @@
 #include "estruturas.h"
 #include "listas.h"
 
-bool carregarArtistas(const char *nomeArquivo, ListaArtistas *lista);
-bool salvarArtistas(const char *nomeArquivo, const ListaArtistas *lista);
+bool carregarArtistas(ListaArtistas *lista);
+bool salvarArtistas(const ListaArtistas *lista);
 
-bool carregarObras(const char *nomeArquivo, ListaObras *lista);
-bool salvarObras(const char *nomeArquivo, const ListaObras *lista);
+bool carregarObras(ListaObras *lista);
+bool salvarObras(const ListaObras *lista);
 
-bool carregarColaboracoes(const char *nomeArquivo, ListaColaboracoes *lista);
-bool salvarColaboracoes(const char *nomeArquivo, const ListaColaboracoes *lista);
+bool carregarColaboracoes(ListaColaboracoes *lista);
+bool salvarColaboracoes(const ListaColaboracoes *lista);
 
 #endif

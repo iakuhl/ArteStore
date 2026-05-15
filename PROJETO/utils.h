@@ -13,9 +13,14 @@
 
 #include <stdbool.h>
 
-bool lerInteiro(int *numero);
+void limparBuffer(); // Limpa o buffer de entrada para evitar problemas com entradas inválidas.
+bool verificarLimiteString(const char *texto); // Verifica se a string ultrapassa o limite permitido, considerando o caractere nulo.
 
-bool lerString(char texto[], int tamanho);
+bool lerInteiro(int *numero); // Validação robusta para entrada de inteiros, trata casos de overflow, entradas não numéricas e números fora da faixa de int.
+bool lerString(char texto[], int tamanho); // Validação robusta para entrada de strings, trata casos de entradas vazias, excesso de caracteres e erros de leitura.
+
+
+bool validarCPF(const char cpf[]); // Função para validar CPF.
 
 
 #endif

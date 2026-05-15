@@ -16,9 +16,10 @@
 #ifndef ESTRUTURAS_H
 #define ESTRUTURAS_H
 
+// Todas as definições de constantes, como tamanhos de campos, estão no arquivo defines.h para facilitar a manutenção e evitar "números mágicos" espalhados pelo código.
 #include "defines.h"
 
-// Todos os dados deverão passar por validação no arquivo utils.c e/ou na execução do código principal.
+// Todos os dados deverão passar por validação no arquivo utils.c e/ou na execução do código principal / modulo específico.
 
 // Todas as estruturas armazenam dados "crus", a máscara de formatação será aplicada somente na exibição dos relatórios.
 
