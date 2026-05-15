@@ -55,7 +55,7 @@ void moduloArtistas(ListaArtistas *lista)
     }
 }
 
-static void cadastrarArtista(ListaArtistas *lista)
+static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apenas.
 {
     Artista a;
 
@@ -64,11 +64,11 @@ static void cadastrarArtista(ListaArtistas *lista)
     // CPF
     printf("CPF (apenas números ou com máscara): ");
     if (lerString(a.cpf, TAM_CPF) == false)
-        return;
+        return false;
     if (removeMascaraCPF(a.cpf) == false)
     {
         printf("CPF inválido.\n");
-        return;
+        return false;
     }
 
     // Verifica duplicidade
@@ -81,12 +81,12 @@ static void cadastrarArtista(ListaArtistas *lista)
     // Nome
     printf("Nome: ");
     if (lerString(a.nome, TAM_TEXTO_PEQUENO) == false)
-        return;
+        return false;
 
     // Nacionalidade
     printf("Nacionalidade: ");
     if (lerString(a.nacionalidade, TAM_TEXTO_PEQUENO) == false)
-        return;
+        return false;
 
     // Estilo
     printf("Estilo: ");
