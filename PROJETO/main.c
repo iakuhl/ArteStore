@@ -45,6 +45,17 @@ void liberarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCol
 	//liberarListaColaboracoes(listaColaboracoes);
 }
 
+int menuPrincipal()
+{
+    printf("### MENU PRINCIPAL ###\n");
+    printf("1 - Menu Artistas\n");
+    printf("2 - Menu Obras\n");
+    printf("3 - Menu Colaboracoes\n");
+    printf("4 - Menu Relatorios\n");
+    printf("5 - Encerrar Programa\n");
+
+    return escolherOpcao(1, 5);
+}
 
 int main()
 {
