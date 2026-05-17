@@ -1,13 +1,20 @@
-/*
- * Projeto: Sistema de Curadoria de Obras de Artes
- * Arquivo: listas.c
- * Autor: Iano de Oliva Kuhlmann
- * Colaboradores: chat.deepseek.com
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l
- * Disciplina: APR2
- * Professora: Dra. Eloize Rossi Marques Seno
- */
+/****************************************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes                          *
+ * Arquivo: listas.c                                                        *
+ * Autor: Iano de Oliva Kuhlmann                                            *
+ * Colaboradores: chat.deepseek.com                                         *
+ * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
+ * Disciplina: APR2                                                         *
+ * Professora: Dra. Eloize Rossi Marques Seno                               *
+ ****************************************************************************/
 
+/*********************
+ * ARQUIVO DE LISTAS *
+ *********************/
+
+/*****************************
+ * BIBLIOTECAS E IMPORTAÇÕES *
+ *****************************/
 
 #include <stdlib.h>
 #include <string.h>
@@ -16,11 +23,11 @@
 #include "listas.h"
 #include "estruturas.h"
 
-// ========== ARTISTAS ==========
+/* ARTISTAS */
 
 void inicializarListaArtistas(ListaArtistas *lista, int capacidadeInicial)
 {
-    lista->itens = malloc(sizeof(Artista) * capacidadeInicial);
+    lista->itens = (Artista *) malloc(sizeof(Artista) * capacidadeInicial);
     lista->total = 0;
     
     if (lista->itens != NULL)
@@ -33,13 +40,13 @@ bool adicionarArtista(ListaArtistas *lista, Artista *artista)
 {
     if (lista->total >= lista->capacidade)
     {
-        int novaCap = lista->capacidade * 2;
-        Artista *temp = realloc(lista->itens, sizeof(Artista) * novaCap);
+        int novaCap = lista->capacidade + 2;
+        Artista *temp = (Artista *) realloc(lista->itens, sizeof(Artista) * novaCap);
         if (temp == NULL) return false;
         lista->itens = temp;
         lista->capacidade = novaCap;
     }
-    lista->itens[lista->total] = *artista; // cópia rasa (telefones já alocados dinamicamente)
+    lista->itens[lista->total] = *artista;
     lista->total++;
     return true;
 }
@@ -83,21 +90,25 @@ void liberarListaArtistas(ListaArtistas *lista)
     lista->capacidade = 0;
 }
 
-// ========== OBRAS ==========
+/* OBRAS */
 
 void inicializarListaObras(ListaObras *lista, int capacidadeInicial)
 {
-    lista->itens = malloc(sizeof(Obra) * capacidadeInicial);
+    lista->itens = (Obra *) malloc(sizeof(Obra) * capacidadeInicial);
     lista->total = 0;
-    lista->capacidade = (lista->itens != NULL) ? capacidadeInicial : 0;
+
+    if (lista->itens != NULL)
+        lista->capacidade = capacidadeInicial;
+    else
+        lista->capacidade = 0;
 }
 
 bool adicionarObra(ListaObras *lista, Obra *obra)
 {
     if (lista->total >= lista->capacidade)
     {
-        int novaCap = lista->capacidade * 2;
-        Obra *temp = realloc(lista->itens, sizeof(Obra) * novaCap);
+        int novaCap = lista->capacidade + 2;
+        Obra *temp = (Obra *) realloc(lista->itens, sizeof(Obra) * novaCap);
         if (temp == NULL) return false;
         lista->itens = temp;
         lista->capacidade = novaCap;
@@ -136,21 +147,25 @@ void liberarListaObras(ListaObras *lista)
     lista->capacidade = 0;
 }
 
-// ========== COLABORACOES ==========
+/* COLABORACOES */
 
 void inicializarListaColaboracoes(ListaColaboracoes *lista, int capacidadeInicial)
 {
-    lista->itens = malloc(sizeof(Colaboracao) * capacidadeInicial);
+    lista->itens = (Colaboracao *) malloc(sizeof(Colaboracao) * capacidadeInicial);
     lista->total = 0;
-    lista->capacidade = (lista->itens != NULL) ? capacidadeInicial : 0;
+
+    if (lista->itens != NULL)
+        lista->capacidade = capacidadeInicial;
+    else
+        lista->capacidade = 0;
 }
 
 bool adicionarColaboracao(ListaColaboracoes *lista, Colaboracao *colab)
 {
     if (lista->total >= lista->capacidade)
     {
-        int novaCap = lista->capacidade * 2;
-        Colaboracao *temp = realloc(lista->itens, sizeof(Colaboracao) * novaCap);
+        int novaCap = lista->capacidade + 2;
+        Colaboracao *temp = (Colaboracao *) realloc(lista->itens, sizeof(Colaboracao) * novaCap);
         if (temp == NULL) return false;
         lista->itens = temp;
         lista->capacidade = novaCap;

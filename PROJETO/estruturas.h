@@ -1,12 +1,12 @@
-/*
- * Projeto: Sistema de Curadoria de Obras de Artes
- * Arquivo: estruturas.h
- * Autor: Iano de Oliva Kuhlmann
- * Colaboradores: chat.deepseek.com
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l
- * Disciplina: APR2
- * Professora: Dra. Eloize Rossi Marques Seno
- */
+/****************************************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes                          *
+ * Arquivo: estruturas.h                                                    *
+ * Autor: Iano de Oliva Kuhlmann                                            *
+ * Colaboradores: chat.deepseek.com                                         *
+ * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
+ * Disciplina: APR2                                                         *
+ * Professora: Dra. Eloize Rossi Marques Seno                               *
+ ****************************************************************************/
 
 
 /*************************
@@ -19,16 +19,14 @@
 // Todas as definições de constantes, como tamanhos de campos, estão no arquivo defines.h para facilitar a manutenção e evitar "números mágicos" espalhados pelo código.
 #include "defines.h"
 
-// Todos os dados deverão passar por validação no arquivo utils.c e/ou na execução do código principal / modulo específico.
+// Todos os dados deverão passar por validação constantes no arquivo utils.c e/ou na execução do código principal / modulo específico.
 
 // Todas as estruturas armazenam dados "crus", a máscara de formatação será aplicada somente na exibição dos relatórios.
-
 
 /**************
  * ESTRUTURAS *
  **************/
 
-// Estrutura para datas.
 typedef struct
 {
 	int dia;
@@ -126,4 +124,4 @@ typedef struct {
 	int capacidade;
 } ListaColaboracoes;
 
-#endif
+#endif // ESTRUTURAS_H

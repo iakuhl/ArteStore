@@ -1,22 +1,20 @@
-/*
- * Projeto: Sistema de Curadoria de Obras de Artes
- * Arquivo: utils.c
- * Autor: Iano de Oliva Kuhlmann
- * Colaboradores: chat.deepseek.com
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l
- * Disciplina: APR2
- * Professora: Dra. Eloize Rossi Marques Seno
- */
-
+/****************************************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes                          *
+ * Arquivo: utils.c                                                         *
+ * Autor: Iano de Oliva Kuhlmann                                            *
+ * Colaboradores: chat.deepseek.com                                         *
+ * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
+ * Disciplina: APR2                                                         *
+ * Professora: Dra. Eloize Rossi Marques Seno                               *
+ ****************************************************************************/
 
 /***********************************************************
  * ARQUIVO DE FUNÇÕES UTILITÁRIAS E DE TRATAMENTO DE DADOS *
  ***********************************************************/
 
-
- /**************
- * DECLARAÇÕES *
- ***************/
+/*****************************
+ * BIBLIOTECAS E IMPORTAÇÕES *
+ *****************************/
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
@@ -24,18 +22,14 @@
 #include <errno.h>
 #include <string.h>
 
-
-/***************
- * IMPORTAÇÕES *
- ***************/
 #include "defines.h"
 #include "utils.h"
 
-/**********************************
- * FUNÇÕES DE TRATAMENTO DE DADOS *
- **********************************/
+/**********************************************
+ * FUNÇÕES DE TRATAMENTO E VALIDAÇÃO DE DADOS *
+ **********************************************/
 
-void limparBuffer() // Limpa o buffer de entrada para evitar problemas com entradas inválidas.
+static void limparBuffer() // Limpa o buffer de entrada para evitar problemas com entradas inválidas.
 {
     int c;
     c = getchar();
@@ -45,31 +39,27 @@ void limparBuffer() // Limpa o buffer de entrada para evitar problemas com entra
 	}
 }
 
-bool verificarLimiteString(const char *texto) // Verifica se a string ultrapassa o limite permitido, considerando o caractere nulo.
+static bool verificarLimiteString(const char *texto) // Verifica se a string ultrapassa o limite permitido, considerando o caractere nulo.
 {
-    /* 
-    * Tratamento de buffer, verifica se a entrada coube completamente na string.
-	* Se '\n' não estiver presente, a entrada excedeu o limite.
-    * Se houve excesso, limpa o buffer, informa erro ao usuário e retorna falso.
-    * Se couber na string retorna true.
-    */
+    /* Tratamento de buffer, verifica se a entrada coube completamente na string. Se '\n' não estiver presente, a entrada excedeu o limite. *
+     * Se houve excesso, limpa o buffer e retorna falso. Se couber na string retorna true.                                                  */
+
     if (strchr(texto, '\n') == NULL)
     {
-        printf("Erro: Limite de caracteres atingido. Tente novamente.\n");
         limparBuffer();
         return false;
     }
     return true;
 }
 
-bool dadosInformados(char *entrada, int tamanho)
+static bool dadosInformados(const char *entrada, int tamanho)
 {
 	if (fgets(entrada, tamanho, stdin) == NULL)
 	{
 		if (feof(stdin))
-			printf("\nEntrada encerrada pelo usuário.\n");
+			printf("MSG_EOF_DETECTADO");
 		else
-			printf("Erro de leitura.\n");
+			printf("MSG_ERRO_LEITURA");
 		return false;
 	}
 	return true;
@@ -83,14 +73,13 @@ bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
 
     while (true)
     {
-        printf("Digite um número inteiro: ");
-
 		// Verifica a entrada de dados
 		if(!dadosInformados(entrada,sizeof(entrada)))
 			return false;
 
         // Verifica se a entrada ultrapassa o limite do buffer
         if(!verificarLimiteString(entrada))
+            printf("MSG_LIMITE_CARACTERES_ATINGIDO");
             continue;
 
         errno = 0; // Prepara errno para detectar overflow
@@ -135,9 +124,13 @@ bool lerString(char texto[], int tamanho) // Validação robusta para entrada de
 		// Verifica a entrada de dados.
 		if(!dadosInformados(texto,tamanho))
 			return false;
+
         // Verifica se a entrada ultrapassa o limite do buffer
         if(!verificarLimiteString(texto))
+        {
+            printf("MSG_LIMITE_CARACTERES_ATINGIDO");
             continue;
+        }
 
         texto[strcspn(texto, "\n")] = '\0';
 		
@@ -189,6 +182,10 @@ bool validarCPF(const char cpf[]) // Função para validar CPF, deverá ser apri
 
     return true;
 }
+
+/************************
+ * FUNÇÕES DE UTILIDADE *
+ ************************/
 
 int escolherOpcao(int min, int max)
 {

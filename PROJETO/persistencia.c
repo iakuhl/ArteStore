@@ -1,12 +1,20 @@
-/*
- * Projeto: Sistema de Curadoria de Obras de Artes
- * Arquivo: persistencia.c
- * Autor: Iano de Oliva Kuhlmann
- * Colaboradores: chat.deepseek.com
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l
- * Disciplina: APR2
- * Professora: Dra. Eloize Rossi Marques Seno
- */
+/****************************************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes                          *
+ * Arquivo: persistencia.c                                                  *
+ * Autor: Iano de Oliva Kuhlmann                                            *
+ * Colaboradores: chat.deepseek.com                                         *
+ * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
+ * Disciplina: APR2                                                         *
+ * Professora: Dra. Eloize Rossi Marques Seno                               *
+ ****************************************************************************/
+
+/**************************************
+ * ARQUIVO DE FUNÇÕES DE PERSISTÊNCIA *
+ **************************************/
+
+/*****************************
+ * BIBLIOTECAS E IMPORTAÇÕES *
+ *****************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,227 +23,395 @@
 
 #include "defines.h"
 #include "persistencia.h"
+#include "estruturas.h"
 
-
-// Função auxiliar para alocar dinamicamente um telefone adicional
-static bool adicionarTelefoneParsing(Artista *a, const char *numero)
-{
-    Telefone *temp = realloc(a->telefones, sizeof(Telefone) * (a->totalTelefones + 1));
-    if (temp == NULL)
-        return false;
-
-    a->telefones = temp;
-
-    int indice = a->totalTelefones;
-    strncpy(a->telefones[indice].numeroTelefone, numero, TAM_TELEFONE - 1);
-    a->telefones[indice].numeroTelefone[TAM_TELEFONE - 1] = '\0';
-
-    a->totalTelefones++;
-    a->capacidadeTelefones = a->totalTelefones;
-
-    return true;
-}
-
-// Função auxiliar para alocar dinamicamente uma rede social adicional
-static bool adicionarRedeParsing(Artista *a, const char *plataforma, const char *usuario)
-{
-    redeSocial *temp = realloc(a->redesSociais, sizeof(redeSocial) * (a->totalRedesSociais + 1));
-
-    if (temp == NULL)
-        return false;
-    
-    a->redesSociais = temp;
-
-    int indice = a->totalRedesSociais;
-    strncpy(a->redesSociais[indice].redeSocial, plataforma, TAM_TEXTO_PEQUENO - 1);
-    a->redesSociais[indice].redeSocial[TAM_TEXTO_PEQUENO - 1] = '\0';
-    strncpy(a->redesSociais[indice].usuario, usuario, TAM_TEXTO_PEQUENO - 1);
-    a->redesSociais[indice].usuario[TAM_TEXTO_PEQUENO - 1] = '\0';
-
-
-    a->totalRedesSociais++;
-    a->capacidadeRedesSociais = a->totalRedesSociais;
-
-    return true;
-}
-
-static bool analisarLinhaArtista(char *linha, Artista *a)
-{
-    char *separador; // Cria um separador para dividir a linha em campos usando ";" como delimitador.
-
-    // Copia o CPF para a estrutura do artista.
-    separador = strtok(linha, ";");
-    if (separador == NULL)
-        return false;
-    strncpy(a->cpf, separador, TAM_CPF - 1);
-    a->cpf[TAM_CPF - 1] = '\0';
-
-    // Copia o nome para a estrutura do artista.
-    separador = strtok(NULL, ";");
-    if (separador == NULL)
-        return false;
-    strncpy(a->nome, separador, TAM_TEXTO_PEQUENO - 1);
-    a->nome[TAM_TEXTO_PEQUENO - 1] = '\0';
-
-    // Copia a nacionalidade para a estrutura do artista.
-    separador = strtok(NULL, ";");
-    if (separador == NULL)
-        return false;
-    strncpy(a->nacionalidade, separador, TAM_NACIONALIDADE - 1);
-    a->nacionalidade[TAM_NACIONALIDADE - 1] = '\0';
-
-    // Copia o estilo para a estrutura do artista.
-    separador = strtok(NULL, ";");
-    if (separador == NULL)
-        return false;
-    strncpy(a->estilo, separador, TAM_TEXTO_PEQUENO - 1);
-    a->estilo[TAM_TEXTO_PEQUENO - 1] = '\0';
-
-    // Copia a data de nascimento (dia,mes,ano) para a estrutura do artista.
-    // Dia
-    separador = strtok(NULL, ";");
-    if (separador == NULL)
-        return false;
-    a->nascimento.dia = atoi(separador);
-    // Mês
-    separador = strtok(NULL, ";");
-    if (separador == NULL)
-        return false;
-    a->nascimento.mes = atoi(separador);
-    // Ano
-    separador = strtok(NULL, ";");
-    if (separador == NULL)
-        return false;
-    a->nascimento.ano = atoi(separador);
-
-    // Copia os telefones para a estrutura do artista (campos brutos).
-    char *campoTelefones = strtok(NULL, ";");
-    if (campoTelefones == NULL)
-        return false;
-
-    // Redes sociais (campos brutos). O campo de redes sociais pode ser opcional, então verificamos se existe antes de tentar processar.
-    char *campoRedes = strtok(NULL, ";");
-
-    // Inicializa arrays dinâmicos
-    a->telefones = NULL;
-    a->totalTelefones = 0;
-    a->capacidadeTelefones = 0;
-    a->redesSociais = NULL;
-    a->totalRedesSociais = 0;
-    a->capacidadeRedesSociais = 0;
-
-    // Processa os telefones, separados por "|"
-    char *subseparador = strtok(campoTelefones, "|");
-    while (subseparador != NULL)
-    {
-        if (!adicionarTelefoneParsing(a, subseparador))
-        {
-            // libera o que foi alocado até agora
-            free(a->telefones);
-            free(a->redesSociais);
-            return false;
-        }
-        subseparador = strtok(NULL, "|");
-    }
-
-    // Redes sociais
-    if (campoRedes != NULL)
-    {
-        subseparador = strtok(campoRedes, "|");
-        while (subseparador != NULL)
-        {
-            // Separa plataforma:usuario
-            char *doisPontos = strchr(subseparador, ':');
-            if (doisPontos != NULL)
-            {
-                *doisPontos = '\0';
-                const char *plataforma = subseparador;
-                const char *usuario = doisPontos + 1;
-                if (!adicionarRedeParsing(a, plataforma, usuario))
-                {
-                    free(a->telefones);
-                    free(a->redesSociais);
-                    return false;
-                }
-            }
-            subseparador = strtok(NULL, "|");
-        }
-    }
-
-    return true;
-}
+/************
+ * ARTISTAS *
+ ************/
 
 bool carregarArtistas(ListaArtistas *lista)
 {
-    FILE *fp = fopen(NOME_ARQUIVO_ARTISTAS, "r");
-    if (!fp)
+    FILE *fp = fopen(NOME_ARQUIVO_ARTISTAS, "rb");
+    if (fp == NULL) // Arquivo não existe: inicia lista vazia
     {
         inicializarListaArtistas(lista, 4);
         return true;
     }
 
-    inicializarListaArtistas(lista, 4);
-    if (!lista->itens)
+    int total;
+    size_t lidos = fread(&total, sizeof(int), 1, fp);
+    if (lidos != 1) // Arquivo vazio ou corrompido: inicia lista vazia
+    {
+        fclose(fp);
+        inicializarListaArtistas(lista, 4);
+        return true;
+    }
+
+    // Inicializa lista com capacidade adequada
+    if (total > 0)
+        inicializarListaArtistas(lista, total);
+    else
+        inicializarListaArtistas(lista, 4);
+
+    if (lista->itens == NULL)
     {
         fclose(fp);
         return false;
     }
 
-    char linha[1024];
-    while (fgets(linha, sizeof(linha), fp))
+    int i;
+    for (i = 0; i < total; i++)
     {
-        linha[strcspn(linha, "\n")] = '\0';
-        if (strlen(linha) == 0) continue;
-
         Artista a;
-        if (!analisarLinhaArtista(linha, &a))
+
+        // Inicializa ponteiros dinâmicos como NULL
+        a.telefones = NULL;
+        a.totalTelefones = 0;
+        a.capacidadeTelefones = 0;
+        a.redesSociais = NULL;
+        a.totalRedesSociais = 0;
+        a.capacidadeRedesSociais = 0;
+
+        // Lê campos de texto de tamanho fixo
+        fread(a.cpf, sizeof(char), TAM_CPF, fp);
+        fread(a.nome, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fread(a.nacionalidade, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fread(a.estilo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+
+        // Força terminador nulo no último byte de cada string
+        a.cpf[TAM_CPF - 1] = '\0';
+        a.nome[TAM_TEXTO_PEQUENO - 1] = '\0';
+        a.nacionalidade[TAM_TEXTO_PEQUENO - 1] = '\0';
+        a.estilo[TAM_TEXTO_PEQUENO - 1] = '\0';
+
+        // Lê data de nascimento
+        fread(&a.nascimento.dia, sizeof(int), 1, fp);
+        fread(&a.nascimento.mes, sizeof(int), 1, fp);
+        fread(&a.nascimento.ano, sizeof(int), 1, fp);
+
+        // Lê telefones
+        int totalTelefones;
+        fread(&totalTelefones, sizeof(int), 1, fp);
+        if (totalTelefones > 0)
         {
-            // Em caso de erro no parsing, libera os arrays alocados (se houve alocação parcial)
-            free(a.telefones);
-            free(a.redesSociais);
-            continue; // ignora linha malformada
+            a.telefones = malloc(sizeof(Telefone) * totalTelefones);
+            if (a.telefones == NULL)
+            {
+                fclose(fp);
+                return false;
+            }
+            a.totalTelefones = totalTelefones;
+            a.capacidadeTelefones = totalTelefones;
+
+            int j;
+            for (j = 0; j < totalTelefones; j++)
+            {
+                fread(a.telefones[j].numeroTelefone, sizeof(char), TAM_TELEFONE, fp);
+                a.telefones[j].numeroTelefone[TAM_TELEFONE - 1] = '\0';
+            }
         }
 
-        if (!adicionarArtista(lista, &a))
+        // Lê redes sociais
+        int totalRedes;
+        fread(&totalRedes, sizeof(int), 1, fp);
+        if (totalRedes > 0)
         {
+            a.redesSociais = malloc(sizeof(redeSocial) * totalRedes);
+            if (a.redesSociais == NULL)
+            {
+                free(a.telefones);
+                fclose(fp);
+                return false;
+            }
+            a.totalRedesSociais = totalRedes;
+            a.capacidadeRedesSociais = totalRedes;
+            int j;
+            for (j = 0; j < totalRedes; j++)
+            {
+                fread(a.redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+                fread(a.redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+                a.redesSociais[j].redeSocial[TAM_TEXTO_PEQUENO - 1] = '\0';
+                a.redesSociais[j].usuario[TAM_TEXTO_PEQUENO - 1] = '\0';
+            }
+        }
+
+        // Adiciona artista à lista
+        if (adicionarArtista(lista, &a) == false)
+        {
+            // Libera memória alocada para este artista antes de sair
             free(a.telefones);
             free(a.redesSociais);
             fclose(fp);
             return false;
         }
     }
+
     fclose(fp);
     return true;
 }
 
 bool salvarArtistas(const ListaArtistas *lista)
 {
-    FILE *fp = fopen(NOME_ARQUIVO_ARTISTAS, "w");
-    if (!fp) return false;
+    FILE *fp = fopen(NOME_ARQUIVO_ARTISTAS, "wb");
+    if (fp == NULL)
+        return false;
 
-    for (int i = 0; i < lista->total; i++)
+    // Escreve o total de artistas
+    fwrite(&lista->total, sizeof(int), 1, fp);
+
+    int i;
+    for (i = 0; i < lista->total; i++)
     {
         const Artista *a = &lista->itens[i];
-        fprintf(fp, "%s;%s;%s;%s;%d;%d;%d;",
-                a->cpf, a->nome, a->nacionalidade, a->estilo,
-                a->nascimento.dia, a->nascimento.mes, a->nascimento.ano);
+
+        // Campos de texto com tamanho fixo
+        fwrite(a->cpf, sizeof(char), TAM_CPF, fp);
+        fwrite(a->nome, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fwrite(a->nacionalidade, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fwrite(a->estilo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+
+        // Data
+        fwrite(&a->nascimento.dia, sizeof(int), 1, fp);
+        fwrite(&a->nascimento.mes, sizeof(int), 1, fp);
+        fwrite(&a->nascimento.ano, sizeof(int), 1, fp);
 
         // Telefones
-        for (int j = 0; j < a->totalTelefones; j++)
+        fwrite(&a->totalTelefones, sizeof(int), 1, fp);
+        int j;
+        for (j = 0; j < a->totalTelefones; j++)
         {
-            fprintf(fp, "%s", a->telefones[j].numeroTelefone);
-            if (j < a->totalTelefones - 1) fprintf(fp, "|");
+            fwrite(a->telefones[j].numeroTelefone, sizeof(char), TAM_TELEFONE, fp);
         }
-        fprintf(fp, ";");
 
         // Redes sociais
-        for (int j = 0; j < a->totalRedesSociais; j++)
+        fwrite(&a->totalRedesSociais, sizeof(int), 1, fp);
+        for (j = 0; j < a->totalRedesSociais; j++)
         {
-            fprintf(fp, "%s:%s", a->redesSociais[j].redeSocial, a->redesSociais[j].usuario);
-            if (j < a->totalRedesSociais - 1) fprintf(fp, "|");
+            fwrite(a->redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+            fwrite(a->redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, fp);
         }
-        fprintf(fp, "\n");
     }
+
+    fclose(fp);
+    return true;
+}
+
+/*********
+ * OBRAS *
+ *********/
+
+bool carregarObras(ListaObras *lista)
+{
+    FILE *fp = fopen(NOME_ARQUIVO_OBRAS, "rb");
+    if (fp == NULL) // Arquivo não existe: inicia lista vazia
+    {
+        inicializarListaObras(lista, 4);
+        return true;
+    }
+
+    int total;
+    size_t lidos = fread(&total, sizeof(int), 1, fp);
+    if (lidos != 1) // Arquivo vazio ou corrompido: inicia lista vazia
+    {
+        fclose(fp);
+        inicializarListaObras(lista, 4);
+        return true;
+    }
+
+    // Inicializa a lista com capacidade igual ao total, se total > 0,
+    // senão usa 4 como padrão
+    if (total > 0)
+    {
+        inicializarListaObras(lista, total);
+    }
+    else
+    {
+        inicializarListaObras(lista, 4);
+    }
+
+    if (lista->itens == NULL)
+    {
+        fclose(fp);
+        return false;
+    }
+
+    int i;
+    for (i = 0; i < total; i++)
+    {
+        Obra o;
+
+        // Lê os inteiros
+        fread(&o.id, sizeof(int), 1, fp);
+        fread(&o.anoCriacao, sizeof(int), 1, fp);
+        fread(&o.valorCentavos, sizeof(int), 1, fp);
+
+        // Lê os campos de texto
+        fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, fp);
+
+        // Adiciona a obra à lista
+        if (adicionarObra(lista, &o) == false)
+        {
+            fclose(fp);
+            return false;
+        }
+    }
+
+    fclose(fp);
+    return true;
+}
+
+bool salvarObras(const ListaObras *lista)
+{
+    FILE *fp = fopen(NOME_ARQUIVO_OBRAS, "wb");
+    if (fp == NULL)
+    {
+        return false;
+    }
+
+    // Escreve o total de obras no início do arquivo
+    fwrite(&lista->total, sizeof(int), 1, fp);
+
+    // Escreve cada obra
+    int i;
+    for (i = 0; i < lista->total; i++)
+    {
+        const Obra *o = &lista->itens[i];
+
+        // Campos inteiros
+        fwrite(&o->id, sizeof(int), 1, fp);
+        fwrite(&o->anoCriacao, sizeof(int), 1, fp);
+        fwrite(&o->valorCentavos, sizeof(int), 1, fp);
+
+        // Campos de texto com tamanho fixo
+        fwrite(o->titulo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fwrite(o->tipo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fwrite(o->descricao, sizeof(char), TAM_TEXTO_GRANDE, fp);
+    }
+
+    fclose(fp);
+    return true;
+}
+
+/****************
+ * COLABORAÇÕES *
+ ****************/
+
+bool carregarColaboracoes(ListaColaboracoes *lista)
+{
+    FILE *fp = fopen(NOME_ARQUIVO_COLABORACOES, "rb");
+    if (fp == NULL)
+    {
+        // Arquivo não existe: inicia lista vazia
+        inicializarListaColaboracoes(lista, 4);
+        return true;
+    }
+
+    int total;
+    size_t lidos = fread(&total, sizeof(int), 1, fp);
+    if (lidos != 1)
+    {
+        // Arquivo vazio ou corrompido: inicia lista vazia
+        fclose(fp);
+        inicializarListaColaboracoes(lista, 4);
+        return true;
+    }
+
+    // Inicializa lista com capacidade adequada
+    if (total > 0)
+    {
+        inicializarListaColaboracoes(lista, total);
+    }
+    else
+    {
+        inicializarListaColaboracoes(lista, 4);
+    }
+
+    if (lista->itens == NULL)
+    {
+        fclose(fp);
+        return false;
+    }
+
+    int i;
+    for (i = 0; i < total; i++)
+    {
+        Colaboracao c;
+
+        // Lê a chave da colaboração (CPF e ID da obra)
+        fread(c.chaveColab.cpf, sizeof(char), TAM_CPF, fp);
+        fread(&c.chaveColab.id, sizeof(int), 1, fp);
+
+        // Força terminador nulo no CPF
+        c.chaveColab.cpf[TAM_CPF - 1] = '\0';
+
+        // Lê função do artista
+        fread(c.funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        c.funcaoArtista[TAM_TEXTO_PEQUENO - 1] = '\0';
+
+        // Lê percentual de contribuição
+        fread(&c.percentualContribuicao, sizeof(int), 1, fp);
+
+        // Lê data de entrada
+        fread(&c.entrada.dia, sizeof(int), 1, fp);
+        fread(&c.entrada.mes, sizeof(int), 1, fp);
+        fread(&c.entrada.ano, sizeof(int), 1, fp);
+
+        // Lê data de saída
+        fread(&c.saida.dia, sizeof(int), 1, fp);
+        fread(&c.saida.mes, sizeof(int), 1, fp);
+        fread(&c.saida.ano, sizeof(int), 1, fp);
+
+        // Adiciona colaboração à lista
+        if (adicionarColaboracao(lista, &c) == false)
+        {
+            fclose(fp);
+            return false;
+        }
+    }
+
+    fclose(fp);
+    return true;
+}
+
+bool salvarColaboracoes(const ListaColaboracoes *lista)
+{
+    FILE *fp = fopen(NOME_ARQUIVO_COLABORACOES, "wb");
+    if (fp == NULL)
+    {
+        return false;
+    }
+
+    // Escreve o total de colaborações
+    fwrite(&lista->total, sizeof(int), 1, fp);
+
+    int i;
+    for (i = 0; i < lista->total; i++)
+    {
+        const Colaboracao *c = &lista->itens[i];
+
+        // Chave da colaboração
+        fwrite(c->chaveColab.cpf, sizeof(char), TAM_CPF, fp);
+        fwrite(&c->chaveColab.id, sizeof(int), 1, fp);
+
+        // Função do artista
+        fwrite(c->funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+
+        // Percentual de contribuição
+        fwrite(&c->percentualContribuicao, sizeof(int), 1, fp);
+
+        // Data de entrada
+        fwrite(&c->entrada.dia, sizeof(int), 1, fp);
+        fwrite(&c->entrada.mes, sizeof(int), 1, fp);
+        fwrite(&c->entrada.ano, sizeof(int), 1, fp);
+
+        // Data de saída
+        fwrite(&c->saida.dia, sizeof(int), 1, fp);
+        fwrite(&c->saida.mes, sizeof(int), 1, fp);
+        fwrite(&c->saida.ano, sizeof(int), 1, fp);
+    }
+
     fclose(fp);
     return true;
 }
