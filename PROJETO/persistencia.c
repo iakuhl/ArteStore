@@ -3,7 +3,6 @@
  * Arquivo: persistencia.c                                                  *
  * Autor: Iano de Oliva Kuhlmann                                            *
  * Colaboradores: chat.deepseek.com                                         *
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
  * Disciplina: APR2                                                         *
  * Professora: Dra. Eloize Rossi Marques Seno                               *
  ****************************************************************************/
@@ -21,8 +20,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "defines.h"
 #include "persistencia.h"
+#include "defines.h"
 #include "estruturas.h"
 
 /************
@@ -32,28 +31,27 @@
 bool carregarArtistas(ListaArtistas *lista)
 {
     FILE *fp = fopen(NOME_ARQUIVO_ARTISTAS, "rb");
-    if (fp == NULL) // Arquivo não existe: inicia lista vazia
-    {
-        inicializarListaArtistas(lista, 4);
-        return true;
-    }
-
+    if (fp == NULL) // Arquivo não existe retorna false, mas a lista será inicializada vazia no módulo principal.
+        return false;
     int total;
     size_t lidos = fread(&total, sizeof(int), 1, fp);
-    if (lidos != 1) // Arquivo vazio ou corrompido: inicia lista vazia
+    if (lidos != 1) // Arquivo vazio ou corrompido retorna false, mas a lista será inicializada vazia no módulo principal.
     {
         fclose(fp);
-        inicializarListaArtistas(lista, 4);
-        return true;
+        return false; 
     }
 
     // Inicializa lista com capacidade adequada
     if (total > 0)
         inicializarListaArtistas(lista, total);
     else
-        inicializarListaArtistas(lista, 4);
+    {
+        fclose(fp);
+        inicializarListaArtistas(lista, 4); // Inicia lista vazia em caso de arquivo vazio, mas não é um erro.
+        return true; // Arquivo vazio, mas não é um erro, apenas retorna true com lista vazia.
+    }
 
-    if (lista->itens == NULL)
+    if (lista->itens == NULL) // Falha na alocação de memória
     {
         fclose(fp);
         return false;
@@ -72,11 +70,30 @@ bool carregarArtistas(ListaArtistas *lista)
         a.totalRedesSociais = 0;
         a.capacidadeRedesSociais = 0;
 
-        // Lê campos de texto de tamanho fixo
-        fread(a.cpf, sizeof(char), TAM_CPF, fp);
-        fread(a.nome, sizeof(char), TAM_TEXTO_PEQUENO, fp);
-        fread(a.nacionalidade, sizeof(char), TAM_TEXTO_PEQUENO, fp);
-        fread(a.estilo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        // Lê CPF
+        if (fread(a.cpf, sizeof(char), TAM_CPF, fp) != TAM_CPF)
+        {
+            fclose(fp);
+            return false;
+        }
+        // Lê nome
+        if (fread(a.nome, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
+        {
+            fclose(fp);
+            return false;
+        }
+        // Lê nacionalidade
+        if (fread(a.nacionalidade, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
+        {
+            fclose(fp);
+            return false;
+        }
+        // Lê estilo
+        if (fread(a.estilo, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
+        {
+            fclose(fp);
+            return false;
+        }
 
         // Força terminador nulo no último byte de cada string
         a.cpf[TAM_CPF - 1] = '\0';
@@ -85,16 +102,34 @@ bool carregarArtistas(ListaArtistas *lista)
         a.estilo[TAM_TEXTO_PEQUENO - 1] = '\0';
 
         // Lê data de nascimento
-        fread(&a.nascimento.dia, sizeof(int), 1, fp);
-        fread(&a.nascimento.mes, sizeof(int), 1, fp);
-        fread(&a.nascimento.ano, sizeof(int), 1, fp);
+        if(fread(&a.nascimento.dia, sizeof(int), 1, fp) != 1)
+        {
+            fclose(fp);
+            return false;
+        }
+
+        if(fread(&a.nascimento.mes, sizeof(int), 1, fp) != 1)
+        {
+            fclose(fp);
+            return false;
+        }
+
+        if(fread(&a.nascimento.ano, sizeof(int), 1, fp) != 1)
+        {
+            fclose(fp);
+            return false;
+        }
 
         // Lê telefones
         int totalTelefones;
-        fread(&totalTelefones, sizeof(int), 1, fp);
+        if(fread(&totalTelefones, sizeof(int), 1, fp) != 1)
+        {
+            fclose(fp);
+            return false;
+        }
         if (totalTelefones > 0)
         {
-            a.telefones = malloc(sizeof(Telefone) * totalTelefones);
+            a.telefones = (Telefone *) malloc(sizeof(Telefone) * totalTelefones);
             if (a.telefones == NULL)
             {
                 fclose(fp);
@@ -106,20 +141,30 @@ bool carregarArtistas(ListaArtistas *lista)
             int j;
             for (j = 0; j < totalTelefones; j++)
             {
-                fread(a.telefones[j].numeroTelefone, sizeof(char), TAM_TELEFONE, fp);
+                if(fread(a.telefones[j].numeroTelefone, sizeof(char), TAM_TELEFONE, fp) != TAM_TELEFONE)
+                {
+                    free(a.telefones);
+                    fclose(fp);
+                    return false;
+                }
                 a.telefones[j].numeroTelefone[TAM_TELEFONE - 1] = '\0';
             }
         }
 
         // Lê redes sociais
         int totalRedes;
-        fread(&totalRedes, sizeof(int), 1, fp);
+        if(fread(&totalRedes, sizeof(int), 1, fp) != 1)
+        {
+            free(a.redesSociais);
+            fclose(fp);
+            return false;
+        }
         if (totalRedes > 0)
         {
-            a.redesSociais = malloc(sizeof(redeSocial) * totalRedes);
+            a.redesSociais = (redeSocial *) malloc(sizeof(redeSocial) * totalRedes);
             if (a.redesSociais == NULL)
             {
-                free(a.telefones);
+                free(a.redesSociais);
                 fclose(fp);
                 return false;
             }
@@ -128,8 +173,18 @@ bool carregarArtistas(ListaArtistas *lista)
             int j;
             for (j = 0; j < totalRedes; j++)
             {
-                fread(a.redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, fp);
-                fread(a.redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+                if(fread(a.redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
+                {
+                    free(a.redesSociais);
+                    fclose(fp);
+                    return false;
+                }
+                if(fread(a.redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
+                {
+                    free(a.redesSociais);
+                    fclose(fp);
+                    return false;
+                }
                 a.redesSociais[j].redeSocial[TAM_TEXTO_PEQUENO - 1] = '\0';
                 a.redesSociais[j].usuario[TAM_TEXTO_PEQUENO - 1] = '\0';
             }

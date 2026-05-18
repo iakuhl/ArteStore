@@ -3,7 +3,6 @@
  * Arquivo: listas.c                                                        *
  * Autor: Iano de Oliva Kuhlmann                                            *
  * Colaboradores: chat.deepseek.com                                         *
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
  * Disciplina: APR2                                                         *
  * Professora: Dra. Eloize Rossi Marques Seno                               *
  ****************************************************************************/
@@ -40,7 +39,7 @@ bool adicionarArtista(ListaArtistas *lista, Artista *artista)
 {
     if (lista->total >= lista->capacidade)
     {
-        int novaCap = lista->capacidade + 2;
+        int novaCap = lista->capacidade + 4;
         Artista *temp = (Artista *) realloc(lista->itens, sizeof(Artista) * novaCap);
         if (temp == NULL) return false;
         lista->itens = temp;
@@ -63,13 +62,16 @@ int buscarArtistaPorCPF(const ListaArtistas *lista, const char *cpf)
 
 bool removerArtista(ListaArtistas *lista, int indice)
 {
-    if (indice < 0 || indice >= lista->total) return false;
+    if (indice < 0 || indice >= lista->total)
+        return false;
 
     // Libera os telefones do artista removido
     free(lista->itens[indice].telefones);
+    free(lista->itens[indice].redesSociais);
 
     // Move os elementos seguintes para trás
-    for (int i = indice; i < lista->total - 1; i++)
+    int i;
+    for (i = indice; i < lista->total - 1; i++)
     {
         lista->itens[i] = lista->itens[i + 1];
     }
@@ -79,7 +81,8 @@ bool removerArtista(ListaArtistas *lista, int indice)
 
 void liberarListaArtistas(ListaArtistas *lista)
 {
-    for (int i = 0; i < lista->total; i++)
+    int i;
+    for (i = 0; i < lista->total; i++)
     {
         free(lista->itens[i].telefones);
         free(lista->itens[i].redesSociais);
@@ -107,7 +110,7 @@ bool adicionarObra(ListaObras *lista, Obra *obra)
 {
     if (lista->total >= lista->capacidade)
     {
-        int novaCap = lista->capacidade + 2;
+        int novaCap = lista->capacidade + 4;
         Obra *temp = (Obra *) realloc(lista->itens, sizeof(Obra) * novaCap);
         if (temp == NULL) return false;
         lista->itens = temp;
@@ -120,7 +123,8 @@ bool adicionarObra(ListaObras *lista, Obra *obra)
 
 int buscarObraPorID(const ListaObras *lista, int id)
 {
-    for (int i = 0; i < lista->total; i++)
+    int i;
+    for (i = 0; i < lista->total; i++)
     {
         if (lista->itens[i].id == id)
             return i;
@@ -131,7 +135,8 @@ int buscarObraPorID(const ListaObras *lista, int id)
 bool removerObra(ListaObras *lista, int indice)
 {
     if (indice < 0 || indice >= lista->total) return false;
-    for (int i = indice; i < lista->total - 1; i++)
+    int i;
+    for (i = indice; i < lista->total - 1; i++)
     {
         lista->itens[i] = lista->itens[i + 1];
     }
@@ -164,7 +169,7 @@ bool adicionarColaboracao(ListaColaboracoes *lista, Colaboracao *colab)
 {
     if (lista->total >= lista->capacidade)
     {
-        int novaCap = lista->capacidade + 2;
+        int novaCap = lista->capacidade + 4;
         Colaboracao *temp = (Colaboracao *) realloc(lista->itens, sizeof(Colaboracao) * novaCap);
         if (temp == NULL) return false;
         lista->itens = temp;
@@ -177,7 +182,8 @@ bool adicionarColaboracao(ListaColaboracoes *lista, Colaboracao *colab)
 
 int buscarColaboracao(const ListaColaboracoes *lista, const char *cpf, int idObra)
 {
-    for (int i = 0; i < lista->total; i++)
+    int i;
+    for (i = 0; i < lista->total; i++)
     {
         if (strcmp(lista->itens[i].chaveColab.cpf, cpf) == 0 &&
             lista->itens[i].chaveColab.id == idObra)

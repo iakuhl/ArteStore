@@ -3,11 +3,9 @@
  * Arquivo: estruturas.h                                                    *
  * Autor: Iano de Oliva Kuhlmann                                            *
  * Colaboradores: chat.deepseek.com                                         *
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
  * Disciplina: APR2                                                         *
  * Professora: Dra. Eloize Rossi Marques Seno                               *
  ****************************************************************************/
-
 
 /*************************
  * ARQUIVO DE ESTRUTURAS *
@@ -20,7 +18,6 @@
 #include "defines.h"
 
 // Todos os dados deverão passar por validação constantes no arquivo utils.c e/ou na execução do código principal / modulo específico.
-
 // Todas as estruturas armazenam dados "crus", a máscara de formatação será aplicada somente na exibição dos relatórios.
 
 /**************

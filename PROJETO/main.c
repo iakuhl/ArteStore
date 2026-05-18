@@ -3,7 +3,6 @@
  * Arquivo: main.c                                                          *
  * Autor: Iano de Oliva Kuhlmann                                            *
  * Colaboradores: chat.deepseek.com                                         *
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
  * Disciplina: APR2                                                         *
  * Professora: Dra. Eloize Rossi Marques Seno                               *
  ****************************************************************************/
@@ -24,11 +23,19 @@
 #include "estruturas.h"
 #include "persistencia.h"
 #include "listas.h"
+#include "modulo_artistas.h"
+#include "modulo_obras.h"
+#include "modulo_colaboracoes.h"
+#include "modulo_relatorios.h"
 
 // Funções de carregamento e liberação de dados, utilizam as funções de persistência e listas para gerenciar os dados em memória.
 void carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
 { 
-    carregarArtistas(listaArtistas);
+    if(!carregarArtistas(listaArtistas))
+    {
+        printf("Erro ao carregar dados de artistas ou arquivo não encontrado / inexistente. Lista inicializada vazia.\n");
+        inicializarListaArtistas(listaArtistas, 4); // Inicia lista vazia em caso de erro
+    }
     //carregarObras(listaObras);
     //carregarColaboracoes(listaColaboracoes);
 }
@@ -69,13 +76,17 @@ int main()
         switch (menuPrincipal())
         {
         case 1:
-            moduloArtistas(&listaArtistas);
-			salvarArtistas(&listaArtistas);
+            if(!moduloArtistas(&listaArtistas))
+            {
+                printf("Erro Irrecuperável, encerrando sem salvar.\n");
+                executando = false;
+                break;
+            }
             break;
 
         case 2:
-			//moduloObras(&listaObras);
-			//salvarObras(&listaObras);
+			moduloObras(&listaObras);
+			salvarObras(&listaObras);
 			break;
 
         case 3:

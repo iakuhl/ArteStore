@@ -3,7 +3,6 @@
  * Arquivo: utils.c                                                         *
  * Autor: Iano de Oliva Kuhlmann                                            *
  * Colaboradores: chat.deepseek.com                                         *
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
  * Disciplina: APR2                                                         *
  * Professora: Dra. Eloize Rossi Marques Seno                               *
  ****************************************************************************/
@@ -15,6 +14,7 @@
 /*****************************
  * BIBLIOTECAS E IMPORTAÇÕES *
  *****************************/
+
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
@@ -22,8 +22,8 @@
 #include <errno.h>
 #include <string.h>
 
-#include "defines.h"
 #include "utils.h"
+#include "defines.h"
 
 /**********************************************
  * FUNÇÕES DE TRATAMENTO E VALIDAÇÃO DE DADOS *

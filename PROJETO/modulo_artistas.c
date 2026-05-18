@@ -3,14 +3,13 @@
  * Arquivo: modulo_artistas.c                                               *
  * Autor: Iano de Oliva Kuhlmann                                            *
  * Colaboradores: chat.deepseek.com                                         *
- * Link de colaboração: https://chat.deepseek.com/share/jil3nf8yyu9wwz0h8l  *
  * Disciplina: APR2                                                         *
  * Professora: Dra. Eloize Rossi Marques Seno                               *
  ****************************************************************************/
 
-/*****************************************
- * ARQUIVO DE FUNÇÕES DO MÓDULO ARTISTAS *
- *****************************************/
+/*******************
+ * MÓDULO ARTISTAS *
+ *******************/
 
 /*****************************
  * BIBLIOTECAS E IMPORTAÇÕES *
@@ -18,20 +17,13 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include "defines.h"
-#include "estruturas.h"
 
 #include "modulo_artistas.h"
+#include "defines.h"
+#include "estruturas.h"
 #include "utils.h"
 #include "listas.h"
 #include "persistencia.h"
-
-// Protótipos das funções internas
-static bool cadastrarArtista(ListaArtistas *lista);
-static void listarArtistas(const ListaArtistas *lista);
-static void buscarArtista(const ListaArtistas *lista);
-// static void editarArtista(ListaArtistas *lista);  // se desejar implementar depois
-// static void excluirArtista(ListaArtistas *lista);
 
 static int menuArtistas()
 {
@@ -43,39 +35,6 @@ static int menuArtistas()
 
     printf("Escolha uma opção: ");
     return escolherOpcao(1, 4);
-}
-
-void moduloArtistas(ListaArtistas *lista)
-{
-    bool executando = true;
-    while (executando)
-    {
-        switch (menuArtistas())
-        {
-            case 1:
-                if(!cadastrarArtista(lista))
-                    printf("Erro ao cadastrar artista. Tente novamente.\n"); 
-                else
-                    salvarArtistas(lista);
-                break;
-
-            case 2:
-                listarArtistas(lista);
-                break;
-
-            case 3:
-                buscarArtista(lista);
-                break;
-
-            case 4:  // Voltar ao menu principal
-                executando = false;
-                break;
-
-            case -1: // Erro irrecuperável
-                executando = false;
-                break;
-        }
-    }
 }
 
 static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apenas.
@@ -102,29 +61,29 @@ static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apena
 
     // Nome
     printf("Nome: ");
-    if (lerString(a.nome, TAM_TEXTO_PEQUENO) == false)
+    if (!lerString(a.nome, TAM_TEXTO_PEQUENO))
         return false;
 
     // Nacionalidade
     printf("Nacionalidade: ");
-    if (lerString(a.nacionalidade, TAM_TEXTO_PEQUENO) == false)
+    if (!lerString(a.nacionalidade, TAM_TEXTO_PEQUENO))
         return false;
 
     // Estilo
     printf("Estilo: ");
-    if (lerString(a.estilo, TAM_TEXTO_PEQUENO) == false)
+    if (!lerString(a.estilo, TAM_TEXTO_PEQUENO))
         return false;
 
     // Data de nascimento
     printf("Data de nascimento:\n");
     printf("  Dia: ");
-    if (lerInteiro(&a.nascimento.dia) == false)
+    if (!lerInteiro(&a.nascimento.dia))
         return false;
     printf("  Mês: ");
-    if (lerInteiro(&a.nascimento.mes) == false)
+    if (!lerInteiro(&a.nascimento.mes))
         return false;
     printf("  Ano: ");
-    if (lerInteiro(&a.nascimento.ano) == false)
+    if (!lerInteiro(&a.nascimento.ano))
         return false;
 
     // Telefones (ao menos um obrigatório; você pode definir como regra)
@@ -137,7 +96,7 @@ static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apena
     {
         char telefone[TAM_TELEFONE];
         printf("  Telefone %d: ", a.totalTelefones + 1);
-        if (lerString(telefone, TAM_TELEFONE) == false)
+        if (!lerString(telefone, TAM_TELEFONE))
         {
             // EOF ou erro: liberar e sair
             free(a.telefones);
@@ -172,7 +131,7 @@ static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apena
         char usuario[TAM_TEXTO_PEQUENO];
 
         printf("  Plataforma: ");
-        if (lerString(plataforma, TAM_TEXTO_PEQUENO) == false)
+        if (!lerString(plataforma, TAM_TEXTO_PEQUENO))
         {
             free(a.telefones);
             free(a.redesSociais);
@@ -182,7 +141,7 @@ static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apena
             break;
 
         printf("  Usuário: ");
-        if (lerString(usuario, TAM_TEXTO_PEQUENO) == false)
+        if (!lerString(usuario, TAM_TEXTO_PEQUENO))
         {
             free(a.telefones);
             free(a.redesSociais);
@@ -305,4 +264,40 @@ static void buscarArtista(const ListaArtistas *lista)
         }
     }
     printf("---------------------------\n");
+}
+
+bool moduloArtistas(ListaArtistas *lista)
+{
+    bool executando = true;
+    while (executando)
+    {
+        switch (menuArtistas())
+        {
+            case 1:
+                if(!cadastrarArtista(lista))
+                {
+                    printf("Erro ao cadastrar artista!!\n"); 
+                    return false;
+                }
+                else
+                    salvarArtistas(lista);
+                break;
+
+            case 2:
+                listarArtistas(lista);
+                break;
+
+            case 3:
+                buscarArtista(lista);
+                break;
+
+            case 4:  // Voltar ao menu principal
+                executando = false;
+                break;
+
+            case -1: // Erro irrecuperável
+                return false;
+        }
+    }
+    return true;
 }
