@@ -1,12 +1,16 @@
-/****************************************************************************
- * Projeto: Sistema de Curadoria de Obras de Artes                          *
- * Arquivo: utils.h                                                         *
- * Autor: Iano de Oliva Kuhlmann                                            *
- * Colaboradores: chat.deepseek.com                                         *
- * Disciplina: APR2                                                         *
- * Professora: Dra. Eloize Rossi Marques Seno                               *
- ****************************************************************************/
+/***************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes *
+ * Arquivo: utils.h                                *
+ * Autor: Iano de Oliva Kuhlmann                   *
+ * Colaboradores: chat.deepseek.com                *
+ * Disciplina: APR2                                *
+ * Professora: Dra. Eloize Rossi Marques Seno      *
+ ***************************************************/
  
+/*******************
+ * HEADER DE UTILS *
+ *******************/
+
 #ifndef UTILS_H
 #define UTILS_H
 

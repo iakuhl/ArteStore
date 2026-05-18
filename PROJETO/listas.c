@@ -1,11 +1,11 @@
-/****************************************************************************
- * Projeto: Sistema de Curadoria de Obras de Artes                          *
- * Arquivo: listas.c                                                        *
- * Autor: Iano de Oliva Kuhlmann                                            *
- * Colaboradores: chat.deepseek.com                                         *
- * Disciplina: APR2                                                         *
- * Professora: Dra. Eloize Rossi Marques Seno                               *
- ****************************************************************************/
+/***************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes *
+ * Arquivo: listas.c                               *
+ * Autor: Iano de Oliva Kuhlmann                   *
+ * Colaboradores: chat.deepseek.com                *
+ * Disciplina: APR2                                *
+ * Professora: Dra. Eloize Rossi Marques Seno      *
+ ***************************************************/
 
 /*********************
  * ARQUIVO DE LISTAS *
@@ -41,7 +41,8 @@ bool adicionarArtista(ListaArtistas *lista, Artista *artista)
     {
         int novaCap = lista->capacidade + 4;
         Artista *temp = (Artista *) realloc(lista->itens, sizeof(Artista) * novaCap);
-        if (temp == NULL) return false;
+        if (temp == NULL)
+            return false;
         lista->itens = temp;
         lista->capacidade = novaCap;
     }
@@ -52,7 +53,8 @@ bool adicionarArtista(ListaArtistas *lista, Artista *artista)
 
 int buscarArtistaPorCPF(const ListaArtistas *lista, const char *cpf)
 {
-    for (int i = 0; i < lista->total; i++)
+    int i;
+    for (i = 0; i < lista->total; i++)
     {
         if (strcmp(lista->itens[i].cpf, cpf) == 0)
             return i;
@@ -72,9 +74,8 @@ bool removerArtista(ListaArtistas *lista, int indice)
     // Move os elementos seguintes para trás
     int i;
     for (i = indice; i < lista->total - 1; i++)
-    {
         lista->itens[i] = lista->itens[i + 1];
-    }
+    
     lista->total--;
     return true;
 }
@@ -134,7 +135,8 @@ int buscarObraPorID(const ListaObras *lista, int id)
 
 bool removerObra(ListaObras *lista, int indice)
 {
-    if (indice < 0 || indice >= lista->total) return false;
+    if (indice < 0 || indice >= lista->total)
+        return false;
     int i;
     for (i = indice; i < lista->total - 1; i++)
     {
@@ -194,7 +196,9 @@ int buscarColaboracao(const ListaColaboracoes *lista, const char *cpf, int idObr
 
 bool removerColaboracao(ListaColaboracoes *lista, int indice)
 {
-    if (indice < 0 || indice >= lista->total) return false;
+    if (indice < 0 || indice >= lista->total)
+        return false;
+    
     for (int i = indice; i < lista->total - 1; i++)
     {
         lista->itens[i] = lista->itens[i + 1];

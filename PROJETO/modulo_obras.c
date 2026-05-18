@@ -1,11 +1,11 @@
-/****************************************************************************
- * Projeto: Sistema de Curadoria de Obras de Artes                          *
- * Arquivo: modulo_obras.c                                                  *
- * Autor: Iano de Oliva Kuhlmann                                            *
- * Colaboradores: chat.deepseek.com                                         *
- * Disciplina: APR2                                                         *
- * Professora: Dra. Eloize Rossi Marques Seno                               *
- ****************************************************************************/
+/***************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes *
+ * Arquivo: modulo_obras.c                         *
+ * Autor: Iano de Oliva Kuhlmann                   *
+ * Colaboradores: chat.deepseek.com                *
+ * Disciplina: APR2                                *
+ * Professora: Dra. Eloize Rossi Marques Seno      *
+ ***************************************************/
 
 /****************
  * MÓDULO OBRAS *
@@ -124,7 +124,7 @@ static void listarObra(const ListaObras *lista, int indice)
     printf("------------------------\n");
 }
 
-static void listarObras(const ListaObras *lista)
+static void listarTodasObras(const ListaObras *lista)
 {
     if (lista->total == 0)
     {
@@ -170,7 +170,7 @@ bool moduloObras(ListaObras *lista)
                 }
                 break;
             case 2:
-                listarObras(lista);
+                listarTodasObras(lista);
                 break;
             case 3:
                 if (!buscarObra(lista))

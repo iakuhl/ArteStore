@@ -1,11 +1,11 @@
-/****************************************************************************
- * Projeto: Sistema de Curadoria de Obras de Artes                          *
- * Arquivo: utils.c                                                         *
- * Autor: Iano de Oliva Kuhlmann                                            *
- * Colaboradores: chat.deepseek.com                                         *
- * Disciplina: APR2                                                         *
- * Professora: Dra. Eloize Rossi Marques Seno                               *
- ****************************************************************************/
+/***************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes *
+ * Arquivo: utils.c                                *
+ * Autor: Iano de Oliva Kuhlmann                   *
+ * Colaboradores: chat.deepseek.com                *
+ * Disciplina: APR2                                *
+ * Professora: Dra. Eloize Rossi Marques Seno      *
+ ***************************************************/
 
 /***********************************************************
  * ARQUIVO DE FUNÇÕES UTILITÁRIAS E DE TRATAMENTO DE DADOS *
@@ -87,7 +87,7 @@ bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
         // Verifica overflow do long
         if (errno == ERANGE && (valor == LONG_MAX || valor == LONG_MIN))
         {
-            printf(MSG_INTEIRO_GRANDE);
+            printf(MSG_INTEIRO_INVALIDO);
             continue;
         }
 
@@ -108,7 +108,7 @@ bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
         // Verifica se cabe em int para retornar
         if (valor < INT_MIN || valor > INT_MAX)
         {
-            printf(MSG_INTEIRO_GRANDE);
+            printf(MSG_INTEIRO_INVALIDO);
             continue;
         }
 

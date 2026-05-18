@@ -1,11 +1,11 @@
-/****************************************************************************
- * Projeto: Sistema de Curadoria de Obras de Artes                          *
- * Arquivo: main.c                                                          *
- * Autor: Iano de Oliva Kuhlmann                                            *
- * Colaboradores: chat.deepseek.com                                         *
- * Disciplina: APR2                                                         *
- * Professora: Dra. Eloize Rossi Marques Seno                               *
- ****************************************************************************/
+/***************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes *
+ * Arquivo: main.c                                 *
+ * Autor: Iano de Oliva Kuhlmann                   *
+ * Colaboradores: chat.deepseek.com                *
+ * Disciplina: APR2                                *
+ * Professora: Dra. Eloize Rossi Marques Seno      *
+ ***************************************************/
 
 /*********************
  * ARQUIVO PRINCIPAL *
@@ -21,6 +21,7 @@
 
 #include "utils.h"
 #include "estruturas.h"
+#include "defines.h"
 #include "persistencia.h"
 #include "listas.h"
 #include "modulo_artistas.h"
@@ -30,14 +31,62 @@
 
 // Funções de carregamento e liberação de dados, utilizam as funções de persistência e listas para gerenciar os dados em memória.
 void carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
-{ 
-    if(!carregarArtistas(listaArtistas))
+{
+    printf("Carregando %s:\n", NOME_ARQUIVO_ARTISTAS);
+    int carregadosArtistas = carregarArtistas(listaArtistas);
+    switch (carregadosArtistas)
     {
-        printf("Erro ao carregar dados de artistas ou arquivo não encontrado / inexistente. Lista inicializada vazia.\n");
-        inicializarListaArtistas(listaArtistas, 4); // Inicia lista vazia em caso de erro
-    }
-    //carregarObras(listaObras);
-    //carregarColaboracoes(listaColaboracoes);
+        case -3:
+            printf(MSG_ARQUIVO_CARREGADO); // Lista de artistas carregada com sucesso.
+            break;
+        case -2:
+            printf(MSG_ARQUIVO_NAO_ENCONTRADO); // Arquivo não encontrado, lista iniciada vazia
+            break;
+        case -1:
+            printf(MSG_ARQUIVO_VAZIO); // Arquivo vazio, lista iniciada vazia
+            break;
+        default:
+            printf("Falha ao carregar artistas, foram carregados %d artistas com sucesso.\n", carregadosArtistas);
+            printf("Lista iniciada com os artistas carregados.");
+            break;
+    } // Fim switch Artistas
+
+    printf("\n\nCarregando %s:\n", NOME_ARQUIVO_OBRAS);
+    int carregadosObras = carregarObras(listaObras);
+    switch (carregadosObras)
+    {
+        case -3:
+            printf(MSG_ARQUIVO_CARREGADO); // Lista de obras carregada com sucesso.
+            break;
+        case -2:
+            printf(MSG_ARQUIVO_NAO_ENCONTRADO); // Arquivo não encontrado, lista iniciada vazia
+            break;
+        case -1:
+            printf(MSG_ARQUIVO_VAZIO); // Arquivo vazio, lista iniciada vazia
+            break;
+        default:
+            printf("Falha ao carregar obras, foram carregadas %d obras com sucesso.\n", carregadosObras);
+            printf("Lista iniciada com as obras carregadas.");
+            break;
+    } // Fim switch Obras
+
+    printf("\n\nCarregando %s:\n", NOME_ARQUIVO_COLABORACOES);
+    int carregadosColaboracoes = carregarColaboracoes(listaColaboracoes);
+    switch (carregadosColaboracoes)
+    {
+        case -3:
+            printf(MSG_ARQUIVO_CARREGADO); // Lista de colaboracoes carregada com sucesso.
+            break;
+        case -2:
+            printf(MSG_ARQUIVO_NAO_ENCONTRADO); // Arquivo não encontrado, lista iniciada vazia
+            break;
+        case -1:
+            printf(MSG_ARQUIVO_VAZIO); // Arquivo vazio, lista iniciada vazia
+            break;
+        default:
+            printf("Falha ao carregar colaboracoes, foram carregadas %d colaboracoes com sucesso.\n", carregadosColaboracoes);
+            printf("Lista iniciada com as colaboracoes carregadas.");
+    } // Fim switch Colaboracoes
 }
 
 void liberarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
@@ -78,7 +127,7 @@ int main()
         case 1:
             if(!moduloArtistas(&listaArtistas))
             {
-                printf("Erro Irrecuperável, encerrando sem salvar.\n");
+                printf(MSG_LOOP_INFINITO);
                 executando = false;
                 break;
             }
@@ -107,7 +156,7 @@ int main()
             break;
 
         case -1:
-			printf("Erro Irrecuperável, encerrando sem salvar.\n");
+			printf(MSG_LOOP_INFINITO);
 			executando = false;
             break;
         } // fim switch

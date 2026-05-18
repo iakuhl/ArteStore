@@ -1,11 +1,11 @@
-/****************************************************************************
- * Projeto: Sistema de Curadoria de Obras de Artes                          *
- * Arquivo: modulo_artistas.c                                               *
- * Autor: Iano de Oliva Kuhlmann                                            *
- * Colaboradores: chat.deepseek.com                                         *
- * Disciplina: APR2                                                         *
- * Professora: Dra. Eloize Rossi Marques Seno                               *
- ****************************************************************************/
+/***************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes *
+ * Arquivo: modulo_artistas.c                      *
+ * Autor: Iano de Oliva Kuhlmann                   *
+ * Colaboradores: chat.deepseek.com                *
+ * Disciplina: APR2                                *
+ * Professora: Dra. Eloize Rossi Marques Seno      *
+ ***************************************************/
 
 /*******************
  * MÓDULO ARTISTAS *
@@ -44,20 +44,22 @@ static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apena
     printf("--- Cadastrar Artista ---\n");
 
     printf("CPF: ");
-    if (!lerString(a.cpf, TAM_CPF))
-        return false;
-    if (!removeMascaraCPF(a.cpf))
-    {
-        printf("CPF inválido.\n");
-        return false;
-    }
-
-    // Verifica duplicidade
-    if (buscarArtistaPorCPF(lista, a.cpf) != -1)
-    {
-        printf("CPF já cadastrado.\n");
-        return false;
-    }
+    bool cpfValido = false;
+    do{
+        if (!lerString(a.cpf, TAM_CPF))
+            return false;
+        if (!removeMascaraCPF(a.cpf))
+        {
+            printf("CPF inválido. Tente novamente: ");
+            continue;
+        }
+        if (buscarArtistaPorCPF(lista, a.cpf) != -1)
+        {
+            printf("CPF já cadastrado. Tente novamente: ");
+            continue;
+        }
+        cpfValido = true;
+    }while (!cpfValido);
 
     // Nome
     printf("Nome: ");
@@ -105,7 +107,7 @@ static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apena
         if (strlen(telefone) == 0)
             break;
 
-        Telefone *temp = realloc(a.telefones, sizeof(Telefone) * (a.totalTelefones + 1));
+        Telefone *temp = (Telefone *) realloc(a.telefones, sizeof(Telefone) * (a.totalTelefones + 1));
         if (temp == NULL)
         {
             free(a.telefones);
@@ -148,7 +150,7 @@ static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apena
             return false;
         }
 
-        redeSocial *temp = realloc(a.redesSociais, sizeof(redeSocial) * (a.totalRedesSociais + 1));
+        redeSocial *temp = (redeSocial *) realloc(a.redesSociais, sizeof(redeSocial) * (a.totalRedesSociais + 1));
         if (temp == NULL)
         {
             free(a.telefones);
@@ -178,7 +180,38 @@ static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apena
     return true;
 }
 
-static void listarArtistas(const ListaArtistas *lista)
+static void listarArtista(const ListaArtistas *lista, int indice)
+{
+    const Artista *a = &lista->itens[indice];
+    printf("\n--- Artista %d ---\n", indice + 1);
+    printf("CPF: %s\n", a->cpf);
+    printf("Nome: %s\n", a->nome);
+    printf("Nascimento: %02d/%02d/%d\n", a->nascimento.dia, a->nascimento.mes, a->nascimento.ano);
+    printf("Estilo: %s\n", a->estilo);
+    printf("Nacionalidade: %s\n", a->nacionalidade);
+
+    if (a->totalTelefones > 0)
+    {
+        printf("Telefones:\n");
+        int j;
+        for (j = 0; j < a->totalTelefones; j++)
+        {
+            printf("  %s\n", a->telefones[j].numeroTelefone);
+        }
+    }
+
+    if (a->totalRedesSociais > 0)
+    {
+        printf("Redes Sociais:\n");
+        int j;
+        for (j = 0; j < a->totalRedesSociais; j++)
+        {
+            printf("  %s: %s\n", a->redesSociais[j].redeSocial, a->redesSociais[j].usuario);
+        }
+    }
+}
+
+static void listarTodosArtistas(const ListaArtistas *lista)
 {
     if (lista->total == 0)
     {
@@ -188,34 +221,7 @@ static void listarArtistas(const ListaArtistas *lista)
     int i;
     for (i = 0; i < lista->total; i++)
     {
-        const Artista *a = &lista->itens[i];
-        printf("\n--- Artista %d ---\n", i + 1);
-        printf("CPF: %s\n", a->cpf);
-        printf("Nome: %s\n", a->nome);
-        printf("Nascimento: %02d/%02d/%d\n", a->nascimento.dia, a->nascimento.mes, a->nascimento.ano);
-        printf("Estilo: %s\n", a->estilo);
-        printf("Nacionalidade: %s\n", a->nacionalidade);
-
-        if (a->totalTelefones > 0)
-        {
-            printf("Telefones:\n");
-            int j;
-            for (j = 0; j < a->totalTelefones; j++)
-            {
-                printf("  %s\n", a->telefones[j].numeroTelefone);
-            }
-        }
-
-        if (a->totalRedesSociais > 0)
-        {
-            printf("Redes Sociais:\n");
-            int j;
-            for (j = 0; j < a->totalRedesSociais; j++)
-            {
-                printf("  %s: %s\n", a->redesSociais[j].redeSocial, a->redesSociais[j].usuario);
-            }
-        }
-        printf("------------------------\n");
+        listarArtista(lista, i);
     }
 }
 
@@ -237,33 +243,7 @@ static void buscarArtista(const ListaArtistas *lista)
         printf("Artista não encontrado.\n");
         return;
     }
-
-    const Artista *a = &lista->itens[indice];
-    printf("\n--- Artista encontrado ---\n");
-    printf("CPF: %s\n", a->cpf);
-    printf("Nome: %s\n", a->nome);
-    printf("Nascimento: %02d/%02d/%d\n", a->nascimento.dia, a->nascimento.mes, a->nascimento.ano);
-    printf("Estilo: %s\n", a->estilo);
-    printf("Nacionalidade: %s\n", a->nacionalidade);
-    if (a->totalTelefones > 0)
-    {
-        printf("Telefones:\n");
-        int j;
-        for (j = 0; j < a->totalTelefones; j++)
-        {
-            printf("  %s\n", a->telefones[j].numeroTelefone);
-        }
-    }
-    if (a->totalRedesSociais > 0)
-    {
-        printf("Redes Sociais:\n");
-        int j;
-        for (j = 0; j < a->totalRedesSociais; j++)
-        {
-            printf("  %s: %s\n", a->redesSociais[j].redeSocial, a->redesSociais[j].usuario);
-        }
-    }
-    printf("---------------------------\n");
+    listarArtista(lista, indice);
 }
 
 bool moduloArtistas(ListaArtistas *lista)
@@ -280,11 +260,15 @@ bool moduloArtistas(ListaArtistas *lista)
                     return false;
                 }
                 else
+                {
+                    printf("Artista cadastrado com sucesso!\n");
+                    printf("Salvando dados...\n");
                     salvarArtistas(lista);
+                }
                 break;
 
             case 2:
-                listarArtistas(lista);
+                listarTodosArtistas(lista);
                 break;
 
             case 3:

@@ -1,11 +1,11 @@
-/****************************************************************************
- * Projeto: Sistema de Curadoria de Obras de Artes                          *
- * Arquivo: persistencia.c                                                  *
- * Autor: Iano de Oliva Kuhlmann                                            *
- * Colaboradores: chat.deepseek.com                                         *
- * Disciplina: APR2                                                         *
- * Professora: Dra. Eloize Rossi Marques Seno                               *
- ****************************************************************************/
+/***************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes *
+ * Arquivo: persistencia.c                         *
+ * Autor: Iano de Oliva Kuhlmann                   *
+ * Colaboradores: chat.deepseek.com                *
+ * Disciplina: APR2                                *
+ * Professora: Dra. Eloize Rossi Marques Seno      *
+ ***************************************************/
 
 /**************************************
  * ARQUIVO DE FUNÇÕES DE PERSISTÊNCIA *
@@ -28,17 +28,17 @@
  * ARTISTAS *
  ************/
 
-bool carregarArtistas(ListaArtistas *lista)
+int carregarArtistas(ListaArtistas *lista)
 {
     FILE *fp = fopen(NOME_ARQUIVO_ARTISTAS, "rb");
-    if (fp == NULL) // Arquivo não existe retorna false, mas a lista será inicializada vazia no módulo principal.
-        return false;
+    if (fp == NULL) 
+        return -2; // Arquivo não encontrado, lista iniciada vazia
     int total;
     size_t lidos = fread(&total, sizeof(int), 1, fp);
-    if (lidos != 1) // Arquivo vazio ou corrompido retorna false, mas a lista será inicializada vazia no módulo principal.
+    if (lidos != 1) 
     {
         fclose(fp);
-        return false; 
+        return -2; // Arquivo vazio ou corrompido, não foi possível ler o total de artistas.
     }
 
     // Inicializa lista com capacidade adequada
@@ -47,14 +47,14 @@ bool carregarArtistas(ListaArtistas *lista)
     else
     {
         fclose(fp);
-        inicializarListaArtistas(lista, 4); // Inicia lista vazia em caso de arquivo vazio, mas não é um erro.
-        return true; // Arquivo vazio, mas não é um erro, apenas retorna true com lista vazia.
+        inicializarListaArtistas(lista, 4);
+        return -1; // Arquivo vazio, lista iniciada vazia
     }
 
-    if (lista->itens == NULL) // Falha na alocação de memória
+    if (lista->itens == NULL)
     {
         fclose(fp);
-        return false;
+        return -2; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Pode indicar corrupção do arquivo ou falta de memória.
     }
 
     int i;
@@ -74,25 +74,25 @@ bool carregarArtistas(ListaArtistas *lista)
         if (fread(a.cpf, sizeof(char), TAM_CPF, fp) != TAM_CPF)
         {
             fclose(fp);
-            return false;
+            return i;
         }
         // Lê nome
         if (fread(a.nome, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
         {
             fclose(fp);
-            return false;
+            return i;
         }
         // Lê nacionalidade
         if (fread(a.nacionalidade, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
         {
             fclose(fp);
-            return false;
+            return i;
         }
         // Lê estilo
         if (fread(a.estilo, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
         {
             fclose(fp);
-            return false;
+            return i;
         }
 
         // Força terminador nulo no último byte de cada string
@@ -105,19 +105,19 @@ bool carregarArtistas(ListaArtistas *lista)
         if(fread(&a.nascimento.dia, sizeof(int), 1, fp) != 1)
         {
             fclose(fp);
-            return false;
+            return i;
         }
 
         if(fread(&a.nascimento.mes, sizeof(int), 1, fp) != 1)
         {
             fclose(fp);
-            return false;
+            return i;
         }
 
         if(fread(&a.nascimento.ano, sizeof(int), 1, fp) != 1)
         {
             fclose(fp);
-            return false;
+            return i;
         }
 
         // Lê telefones
@@ -125,7 +125,7 @@ bool carregarArtistas(ListaArtistas *lista)
         if(fread(&totalTelefones, sizeof(int), 1, fp) != 1)
         {
             fclose(fp);
-            return false;
+            return i;
         }
         if (totalTelefones > 0)
         {
@@ -133,7 +133,7 @@ bool carregarArtistas(ListaArtistas *lista)
             if (a.telefones == NULL)
             {
                 fclose(fp);
-                return false;
+                return i;
             }
             a.totalTelefones = totalTelefones;
             a.capacidadeTelefones = totalTelefones;
@@ -145,7 +145,7 @@ bool carregarArtistas(ListaArtistas *lista)
                 {
                     free(a.telefones);
                     fclose(fp);
-                    return false;
+                    return i;
                 }
                 a.telefones[j].numeroTelefone[TAM_TELEFONE - 1] = '\0';
             }
@@ -157,7 +157,7 @@ bool carregarArtistas(ListaArtistas *lista)
         {
             free(a.redesSociais);
             fclose(fp);
-            return false;
+            return i;
         }
         if (totalRedes > 0)
         {
@@ -166,7 +166,7 @@ bool carregarArtistas(ListaArtistas *lista)
             {
                 free(a.redesSociais);
                 fclose(fp);
-                return false;
+                return i;
             }
             a.totalRedesSociais = totalRedes;
             a.capacidadeRedesSociais = totalRedes;
@@ -177,13 +177,13 @@ bool carregarArtistas(ListaArtistas *lista)
                 {
                     free(a.redesSociais);
                     fclose(fp);
-                    return false;
+                    return i;
                 }
                 if(fread(a.redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
                 {
                     free(a.redesSociais);
                     fclose(fp);
-                    return false;
+                    return i;
                 }
                 a.redesSociais[j].redeSocial[TAM_TEXTO_PEQUENO - 1] = '\0';
                 a.redesSociais[j].usuario[TAM_TEXTO_PEQUENO - 1] = '\0';
@@ -191,25 +191,25 @@ bool carregarArtistas(ListaArtistas *lista)
         }
 
         // Adiciona artista à lista
-        if (adicionarArtista(lista, &a) == false)
+        if (!adicionarArtista(lista, &a))
         {
             // Libera memória alocada para este artista antes de sair
             free(a.telefones);
             free(a.redesSociais);
             fclose(fp);
-            return false;
+            return i; // Retorna o número de artistas carregados com sucesso antes do erro
         }
     }
 
     fclose(fp);
-    return true;
+    return -3; // Sucesso total, todos os artistas carregados sem erros.
 }
 
 bool salvarArtistas(const ListaArtistas *lista)
 {
     FILE *fp = fopen(NOME_ARQUIVO_ARTISTAS, "wb");
     if (fp == NULL)
-        return false;
+        return i;
 
     // Escreve o total de artistas
     fwrite(&lista->total, sizeof(int), 1, fp);
@@ -248,7 +248,7 @@ bool salvarArtistas(const ListaArtistas *lista)
     }
 
     fclose(fp);
-    return true;
+    return 1;
 }
 
 /*********
@@ -261,7 +261,7 @@ bool carregarObras(ListaObras *lista)
     if (fp == NULL) // Arquivo não existe: inicia lista vazia
     {
         inicializarListaObras(lista, 4);
-        return true;
+        return -2;
     }
 
     int total;
@@ -270,7 +270,7 @@ bool carregarObras(ListaObras *lista)
     {
         fclose(fp);
         inicializarListaObras(lista, 4);
-        return true;
+        return -2;
     }
 
     // Inicializa a lista com capacidade igual ao total, se total > 0,
@@ -282,12 +282,13 @@ bool carregarObras(ListaObras *lista)
     else
     {
         inicializarListaObras(lista, 4);
+        return -1; // Arquivo vazio, lista iniciada vazia
     }
 
     if (lista->itens == NULL)
     {
         fclose(fp);
-        return false;
+        return i;
     }
 
     int i;
@@ -306,15 +307,15 @@ bool carregarObras(ListaObras *lista)
         fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, fp);
 
         // Adiciona a obra à lista
-        if (adicionarObra(lista, &o) == false)
+        if (!adicionarObra(lista, &o))
         {
             fclose(fp);
-            return false;
+            return i;
         }
     }
 
     fclose(fp);
-    return true;
+    return 1;
 }
 
 bool salvarObras(const ListaObras *lista)
@@ -322,7 +323,7 @@ bool salvarObras(const ListaObras *lista)
     FILE *fp = fopen(NOME_ARQUIVO_OBRAS, "wb");
     if (fp == NULL)
     {
-        return false;
+        return i;
     }
 
     // Escreve o total de obras no início do arquivo
@@ -346,7 +347,7 @@ bool salvarObras(const ListaObras *lista)
     }
 
     fclose(fp);
-    return true;
+    return 1;
 }
 
 /****************
@@ -360,7 +361,7 @@ bool carregarColaboracoes(ListaColaboracoes *lista)
     {
         // Arquivo não existe: inicia lista vazia
         inicializarListaColaboracoes(lista, 4);
-        return true;
+        return 1;
     }
 
     int total;
@@ -370,7 +371,7 @@ bool carregarColaboracoes(ListaColaboracoes *lista)
         // Arquivo vazio ou corrompido: inicia lista vazia
         fclose(fp);
         inicializarListaColaboracoes(lista, 4);
-        return true;
+        return 1;
     }
 
     // Inicializa lista com capacidade adequada
@@ -386,7 +387,7 @@ bool carregarColaboracoes(ListaColaboracoes *lista)
     if (lista->itens == NULL)
     {
         fclose(fp);
-        return false;
+        return i;
     }
 
     int i;
@@ -419,15 +420,15 @@ bool carregarColaboracoes(ListaColaboracoes *lista)
         fread(&c.saida.ano, sizeof(int), 1, fp);
 
         // Adiciona colaboração à lista
-        if (adicionarColaboracao(lista, &c) == false)
+        if (!adicionarColaboracao(lista, &c))
         {
             fclose(fp);
-            return false;
+            return i;
         }
     }
 
     fclose(fp);
-    return true;
+    return 1;
 }
 
 bool salvarColaboracoes(const ListaColaboracoes *lista)
@@ -435,7 +436,7 @@ bool salvarColaboracoes(const ListaColaboracoes *lista)
     FILE *fp = fopen(NOME_ARQUIVO_COLABORACOES, "wb");
     if (fp == NULL)
     {
-        return false;
+        return i;
     }
 
     // Escreve o total de colaborações
@@ -468,5 +469,5 @@ bool salvarColaboracoes(const ListaColaboracoes *lista)
     }
 
     fclose(fp);
-    return true;
+    return 1;
 }

@@ -1,11 +1,15 @@
-/****************************************************************************
- * Projeto: Sistema de Curadoria de Obras de Artes                          *
- * Arquivo: persistencia.h                                                  *
- * Autor: Iano de Oliva Kuhlmann                                            *
- * Colaboradores: chat.deepseek.com                                         *
- * Disciplina: APR2                                                         *
- * Professora: Dra. Eloize Rossi Marques Seno                               *
- ****************************************************************************/
+/***************************************************
+ * Projeto: Sistema de Curadoria de Obras de Artes *
+ * Arquivo: persistencia.h                         *
+ * Autor: Iano de Oliva Kuhlmann                   *
+ * Colaboradores: chat.deepseek.com                *
+ * Disciplina: APR2                                *
+ * Professora: Dra. Eloize Rossi Marques Seno      *
+ ***************************************************/
+
+/**************************
+ * HEADER DE PERSISTENCIA *
+ **************************/
 
 #ifndef PERSISTENCIA_H
 #define PERSISTENCIA_H
@@ -13,7 +17,7 @@
 #include "estruturas.h"
 #include "listas.h"
 
-bool carregarArtistas(ListaArtistas *lista);
+int carregarArtistas(ListaArtistas *lista);
 bool salvarArtistas(const ListaArtistas *lista);
 
 bool carregarObras(ListaObras *lista);
