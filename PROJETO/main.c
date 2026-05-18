@@ -30,6 +30,7 @@
 #include "modulo_relatorios.h"
 
 // Funções de carregamento e liberação de dados, utilizam as funções de persistência e listas para gerenciar os dados em memória.
+// Mensagens personalizadas para cada retorno possível (exemplo: Lista vazia, lista semi-preenchida, arquivo corrompido...)
 void carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
 {
     printf("Carregando %s:\n", NOME_ARQUIVO_ARTISTAS);
@@ -92,8 +93,15 @@ void carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCo
 void liberarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
 {
 	liberarListaArtistas(listaArtistas);
-	//liberarListaObras(listaObras);
-	//liberarListaColaboracoes(listaColaboracoes);
+	liberarListaObras(listaObras);
+	liberarListaColaboracoes(listaColaboracoes);
+}
+
+void salvarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
+{
+	salvarArtistas(&listaArtistas);
+	salvarObras(&listaObras);
+	salvarColaboracoes(&listaColaboracoes);
 }
 
 int menuPrincipal()
@@ -129,18 +137,23 @@ int main()
             {
                 printf(MSG_LOOP_INFINITO);
                 executando = false;
-                break;
             }
             break;
 
         case 2:
-			moduloObras(&listaObras);
-			salvarObras(&listaObras);
+			if(!moduloObras(&listaObras))
+			{
+				print(MSG_LOOP_INFINITO);
+				executando = false;
+			}
 			break;
 
         case 3:
-			//moduloColaboracoes(&listaColaboracoes, &listaArtistas, &listaObras);
-			//salvarColaboracoes(&listaColaboracoes);
+			if(!moduloColaboracoes(&listaColaboracoes, &listaArtistas, &listaObras))
+			{
+				print(MSG_LOOP_INFINITO);
+				executando = false;
+			}
 			break;
 
         case 4:
@@ -149,9 +162,7 @@ int main()
 
         case 5:
 			printf("Encerrando programa...");
-			salvarArtistas(&listaArtistas);
-			//salvarObras(&listaObras);
-			//salvarColaboracoes(&listaColaboracoes);
+			salvarDados(&listaArtistas, &listaObras, &listaColaboracoes);
             executando = false;
             break;
 
