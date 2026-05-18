@@ -55,16 +55,10 @@ Cada lista dinâmica (`ListaArtistas`, `ListaObras`, `ListaColaboracoes`) conté
 - Alocação dinâmica com capacidade inicial 4, expansão automática (dobro) quando necessário.
 - Operações de adição, busca (por CPF ou ID), remoção (com deslocamento e liberação de subitens) e liberação total da memória.
 
-### 4.4 Persistência em Arquivos
-- **Formato dos arquivos:**
-  - `artistas.txt`:  
-    `cpf;nome;nacionalidade;estilo;dia;mes;ano;tel1|tel2;plataforma:usuario|plataforma:usuario`
-  - `obras.txt`:  
-    `id;anoCriacao;valorCentavos;titulo;tipo;descricao`
-  - `colaboracoes.txt`:  
-    `cpf;idObra;funcao;percentual;diaEnt;mesEnt;anoEnt;diaSai;mesSai;anoSai`
-- Carregamento com parsing robusto e tratamento de arquivo inexistente (lista vazia).
-- Salvamento sobrescreve arquivo a cada retorno de módulo ou ao final do programa.
+### 4.4 Persistência em Arquivos Binários
+
+- Carregamento: robusto tratamento de leitura de arquivos.
+- Salvamento: sobrescreve arquivo a cada retorno de módulo ou ao final do programa.
 
 ---
 
