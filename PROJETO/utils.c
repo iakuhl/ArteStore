@@ -65,71 +65,66 @@ static bool dadosInformados(const char *entrada, int tamanho)
 	return true;
 }
 
-bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
+int lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
 {
     char entrada[TAM_BUFFER_LEITURA];
     char *fim;
     long valor;
 
-    while (true)
-    {
-		// Verifica a entrada de dados
-		if(!dadosInformados(entrada,sizeof(entrada)))
-			return false;
+	// Verifica a entrada de dados
+	if(!dadosInformados(entrada,sizeof(entrada)))
+		return -1;
 
-        // Verifica se a entrada ultrapassa o limite do buffer
-        if(!verificarLimiteString(entrada))
-            printf("MSG_LIMITE_CARACTERES_ATINGIDO");
-            continue;
+	// Verifica se a entrada ultrapassa o limite do buffer
+	if(!verificarLimiteString(entrada))
+		printf("MSG_LIMITE_CARACTERES_ATINGIDO");
+		return 0;
 
-        errno = 0; // Prepara errno para detectar overflow
-        valor = strtol(entrada, &fim, 10); // Converte a string para long em base decimal
-        // Verifica overflow do long
-        if (errno == ERANGE && (valor == LONG_MAX || valor == LONG_MIN))
-        {
-            printf(MSG_INTEIRO_INVALIDO);
-            continue;
-        }
+	errno = 0; // Prepara errno para detectar overflow
+	valor = strtol(entrada, &fim, 10); // Converte a string para long em base decimal
+	// Verifica overflow do long
+	if (errno == ERANGE && (valor == LONG_MAX || valor == LONG_MIN))
+	{
+		printf(MSG_INTEIRO_INVALIDO);
+		return 0;
+	}
 
-		// Confirma se ao menos um caractere numérico foi informado.
-        if (fim == entrada)
-        {
-            printf(MSG_ENTRADA_INVALIDA);
-            continue;
-        }
+	// Confirma se ao menos um caractere numérico foi informado.
+	if (fim == entrada)
+	{
+		printf(MSG_ENTRADA_INVALIDA);
+		return 0;
+	}
 
-		// Verifica se o fim da conversão em strtol é um 'enter' ou terminador de string.
-        if (*fim != '\n' && *fim != '\0')
-        {
-            printf(MSG_ENTRADA_INVALIDA);
-            continue;
-        }
+	// Verifica se o fim da conversão em strtol é um 'enter' ou terminador de string.
+	if (*fim != '\n' && *fim != '\0')
+	{
+		printf(MSG_ENTRADA_INVALIDA);
+		return 0;
+	}
 
-        // Verifica se cabe em int para retornar
-        if (valor < INT_MIN || valor > INT_MAX)
-        {
-            printf(MSG_INTEIRO_INVALIDO);
-            continue;
-        }
+	// Verifica se cabe em int para retornar
+	if (valor < INT_MIN || valor > INT_MAX)
+	{
+		printf(MSG_INTEIRO_INVALIDO);
+		return 0;
+	}
 
-        *numero = (int)valor;
-        return true;
-    }
+	*numero = (int)valor;
+	return 1;
 }
 
-bool lerString(char texto[], int tamanho) // Validação robusta para entrada de strings.
+int lerString(char texto[], int tamanho) // Validação robusta para entrada de strings.
 {
-    while (true)
-    {
 		// Verifica a entrada de dados.
 		if(!dadosInformados(texto,tamanho))
-			return false;
+			return -1; // Erro irrecuperável, sair sem salvar
 
         // Verifica se a entrada ultrapassa o limite do buffer
         if(!verificarLimiteString(texto))
         {
             printf("MSG_LIMITE_CARACTERES_ATINGIDO");
-            continue;
+            return 0; // Erro, tente novamente
         }
 
         texto[strcspn(texto, "\n")] = '\0';
@@ -137,11 +132,10 @@ bool lerString(char texto[], int tamanho) // Validação robusta para entrada de
         if (strlen(texto) == 0)
         {
             printf(MSG_ENTRADA_INVALIDA);
-            continue;
+            return 0; // Erro, tente novamente
         }
 
-        return true;
-    }
+        return 1; // Sucesso
 }
 
 bool removeMascaraCPF(char *cpf)
@@ -190,18 +184,21 @@ bool validarCPF(const char cpf[]) // Função para validar CPF, deverá ser apri
 int escolherOpcao(int min, int max)
 {
     int opcao;
-    while (true)
+	int validacao = 0;
+    while (validacao == 0)
     {
         printf("Escolha uma opção (%d-%d): ", min, max);
-        if (!lerInteiro(&opcao))
+		validacao = lerInteiro(&opcao);
+        if (validacao == -1)
         {
             // Se falhou (EOF ou erro), retornar ao menu principal e limpar memória.
             printf(MSG_LOOP_INFINITO);
             return -1; // Retorna -1 para indicar erro
         }
-
-        if (opcao >= min && opcao <= max)
-            return opcao;
+		
+		if (validacao == 1)
+	        if (opcao >= min && opcao <= max)
+	            return opcao;
         else
             printf(MSG_ENTRADA_INVALIDA);
     }
