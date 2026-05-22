@@ -28,35 +28,39 @@
  * ARTISTAS *
  ************/
 
-int carregarArtistas(ListaArtistas *lista)
+bool carregarArquivo(char nome[], FILE *arquivo)
 {
-    FILE *fp = fopen(NOME_ARQUIVO_ARTISTAS, "rb");
-    if (fp == NULL) 
-        return -2; // Arquivo não encontrado, lista iniciada vazia
+    arquivo = fopen(nome, "rb"); // Carrega arquivo para leitura.
+    if (arquivo == NULL) // Verifica se arquivo existe
+    {
+        printf(MSG_NAO_ENCONTRADO);
+        return false; // Arquivo não encontrado.
+    }
+    // Verifica se foi possível ler o arquivo e se algum dado foi lido.
     int total;
-    size_t lidos = fread(&total, sizeof(int), 1, fp);
-    if (lidos != 1) 
+    size_t lidos = fread(&total, sizeof(int), 1, arquivo);
+    if (lidos != 1 || total < 0) 
     {
-        fclose(fp);
-        return -2; // Arquivo vazio ou corrompido, não foi possível ler o total de artistas.
+        fclose(arquivo);
+        printf(MSG_ARQUIVO_VAZIO);
+        return false; // Arquivo vazio, não foi possível ler o total de artistas.
     }
+    
+    fclose(arquivo);
+    printf(MSG_ARQUIVO_CARREGADO);
+    return true;
+}
 
-    // Inicializa lista com capacidade adequada
-    if (total > 0)
-        inicializarListaArtistas(lista, total);
-    else
-    {
-        fclose(fp);
+bool carregarArtistas(ListaArtistas *lista)
+{
+    FILE *arquivo;
+    if(!carregaArquivo(NOME_ARQUIVO_ARTISTAS, &arquivo)) // Se Erro ao carregar arquivo, retorna falso, tratamento feito no main.
         inicializarListaArtistas(lista, 4);
-        return -1; // Arquivo vazio, lista iniciada vazia
-    }
-
+    
     if (lista->itens == NULL)
     {
-        fclose(fp);
-        return -2; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Pode indicar corrupção do arquivo ou falta de memória.
+        return false; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Pode indicar corrupção do arquivo ou falta de memória.
     }
-
     int i;
     for (i = 0; i < total; i++)
     {
