@@ -28,39 +28,40 @@
  * ARTISTAS *
  ************/
 
-bool carregarArquivo(char nome[], FILE *arquivo)
+bool carregarArquivo(char *nome, FILE *arquivo, int *total)
 {
     arquivo = fopen(nome, "rb"); // Carrega arquivo para leitura.
     if (arquivo == NULL) // Verifica se arquivo existe
     {
         printf(MSG_NAO_ENCONTRADO);
-        return false; // Arquivo não encontrado.
+        return false; // Retorna falso para criar lista vazia, após informar ao usuário.
     }
     // Verifica se foi possível ler o arquivo e se algum dado foi lido.
-    int total;
     size_t lidos = fread(&total, sizeof(int), 1, arquivo);
     if (lidos != 1 || total < 0) 
     {
         fclose(arquivo);
-        printf(MSG_ARQUIVO_VAZIO);
-        return false; // Arquivo vazio, não foi possível ler o total de artistas.
+        printf(MSG_ARQUIVO_VAZIO); // Vazio ou corrompido.
+        return false; // Retorna falso para criar lista vazia, após informar ao usuário.
     }
     
     fclose(arquivo);
     printf(MSG_ARQUIVO_CARREGADO);
-    return true;
+    return true; // Retorna verdadeiro, arquivo carregado com sucesso.
 }
 
 bool carregarArtistas(ListaArtistas *lista)
 {
+    // Tenta ler arquivo 
     FILE *arquivo;
-    if(!carregaArquivo(NOME_ARQUIVO_ARTISTAS, &arquivo)) // Se Erro ao carregar arquivo, retorna falso, tratamento feito no main.
+    int *total;
+    if(!carregaArquivo(NOME_ARQUIVO_ARTISTAS, &arquivo, &total)) // Se retorno falso, arquivo não carregado, inicia lista vazia.
         inicializarListaArtistas(lista, 4);
     
+    inicializarListaArtistas(lista, total);
     if (lista->itens == NULL)
-    {
         return false; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Pode indicar corrupção do arquivo ou falta de memória.
-    }
+    
     int i;
     for (i = 0; i < total; i++)
     {
@@ -261,40 +262,11 @@ bool salvarArtistas(const ListaArtistas *lista)
 
 bool carregarObras(ListaObras *lista)
 {
-    FILE *fp = fopen(NOME_ARQUIVO_OBRAS, "rb");
-    if (fp == NULL) // Arquivo não existe: inicia lista vazia
-    {
-        inicializarListaObras(lista, 4);
-        return -2;
-    }
 
-    int total;
-    size_t lidos = fread(&total, sizeof(int), 1, fp);
-    if (lidos != 1) // Arquivo vazio ou corrompido: inicia lista vazia
-    {
-        fclose(fp);
-        inicializarListaObras(lista, 4);
-        return -2;
-    }
-
-    // Inicializa a lista com capacidade igual ao total, se total > 0,
-    // senão usa 4 como padrão
-    if (total > 0)
-    {
-        inicializarListaObras(lista, total);
-    }
-    else
-    {
-        inicializarListaObras(lista, 4);
-        return -1; // Arquivo vazio, lista iniciada vazia
-    }
-
-    if (lista->itens == NULL)
-    {
-        fclose(fp);
-        return i;
-    }
-
+    FILE *arquivo;
+    if(!carregaArquivo(NOME_ARQUIVO_OBRAS, &arquivo)) // Se Erro ao carregar arquivo, retorna falso, tratamento feito no main.
+        inicializarListaArtistas(lista, 4);
+    
     int i;
     for (i = 0; i < total; i++)
     {
