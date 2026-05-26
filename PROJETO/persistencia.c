@@ -24,9 +24,9 @@
 #include "defines.h"
 #include "estruturas.h"
 
-/************
- * ARTISTAS *
- ************/
+ /***************************
+ * CARREGAMENTO DE ARTISTAS *
+ ****************************/
 
 bool carregarArquivo(char *nome, FILE *arquivo, int *total)
 {
@@ -36,6 +36,7 @@ bool carregarArquivo(char *nome, FILE *arquivo, int *total)
         printf(MSG_NAO_ENCONTRADO);
         return false; // Retorna falso para criar lista vazia, após informar ao usuário.
     }
+    
     // Verifica se foi possível ler o arquivo e se algum dado foi lido.
     size_t lidos = fread(&total, sizeof(int), 1, arquivo);
     if (lidos != 1 || total < 0) 
@@ -50,163 +51,172 @@ bool carregarArquivo(char *nome, FILE *arquivo, int *total)
     return true; // Retorna verdadeiro, arquivo carregado com sucesso.
 }
 
-bool carregarArtistas(ListaArtistas *lista)
+int carregarArtistas(ListaArtistas *lista)
 {
     // Tenta ler arquivo 
     FILE *arquivo;
+    char nome[] = NOME_ARQUIVO_ARTISTAS;
     int *total;
-    if(!carregaArquivo(NOME_ARQUIVO_ARTISTAS, &arquivo, &total)) // Se retorno falso, arquivo não carregado, inicia lista vazia.
+    if(!carregaArquivo(&nome, &arquivo, &total)) // Se retorno falso, arquivo não carregado, inicia lista vazia.
+	{
         inicializarListaArtistas(lista, 4);
+		return -2;
+	}
+    else
+        inicializarListaArtistas(lista, *total);
     
-    inicializarListaArtistas(lista, total);
     if (lista->itens == NULL)
-        return false; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Pode indicar corrupção do arquivo ou falta de memória.
-    
-    int i;
-    for (i = 0; i < total; i++)
     {
-        Artista a;
-
-        // Inicializa ponteiros dinâmicos como NULL
-        a.telefones = NULL;
-        a.totalTelefones = 0;
-        a.capacidadeTelefones = 0;
-        a.redesSociais = NULL;
-        a.totalRedesSociais = 0;
-        a.capacidadeRedesSociais = 0;
-
-        // Lê CPF
-        if (fread(a.cpf, sizeof(char), TAM_CPF, fp) != TAM_CPF)
+        return -1; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Retorna -1 para tratar erro na main.
+    }
+    
+    if(*total>0)
+    {
+        int i;
+        for (i = 0; i < total; i++)
         {
-            fclose(fp);
-            return i;
-        }
-        // Lê nome
-        if (fread(a.nome, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
-        {
-            fclose(fp);
-            return i;
-        }
-        // Lê nacionalidade
-        if (fread(a.nacionalidade, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
-        {
-            fclose(fp);
-            return i;
-        }
-        // Lê estilo
-        if (fread(a.estilo, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
-        {
-            fclose(fp);
-            return i;
-        }
-
-        // Força terminador nulo no último byte de cada string
-        a.cpf[TAM_CPF - 1] = '\0';
-        a.nome[TAM_TEXTO_PEQUENO - 1] = '\0';
-        a.nacionalidade[TAM_TEXTO_PEQUENO - 1] = '\0';
-        a.estilo[TAM_TEXTO_PEQUENO - 1] = '\0';
-
-        // Lê data de nascimento
-        if(fread(&a.nascimento.dia, sizeof(int), 1, fp) != 1)
-        {
-            fclose(fp);
-            return i;
-        }
-
-        if(fread(&a.nascimento.mes, sizeof(int), 1, fp) != 1)
-        {
-            fclose(fp);
-            return i;
-        }
-
-        if(fread(&a.nascimento.ano, sizeof(int), 1, fp) != 1)
-        {
-            fclose(fp);
-            return i;
-        }
-
-        // Lê telefones
-        int totalTelefones;
-        if(fread(&totalTelefones, sizeof(int), 1, fp) != 1)
-        {
-            fclose(fp);
-            return i;
-        }
-        if (totalTelefones > 0)
-        {
-            a.telefones = (Telefone *) malloc(sizeof(Telefone) * totalTelefones);
-            if (a.telefones == NULL)
+            Artista a;
+    
+            // Inicializa ponteiros dinâmicos como NULL
+            a.telefones = NULL;
+            a.totalTelefones = 0;
+            a.capacidadeTelefones = 0;
+            a.redesSociais = NULL;
+            a.totalRedesSociais = 0;
+            a.capacidadeRedesSociais = 0;
+    
+            // Lê CPF
+            if (fread(a.cpf, sizeof(char), TAM_CPF, arquivo) != TAM_CPF)
             {
-                fclose(fp);
+                fclose(arquivo);
                 return i;
             }
-            a.totalTelefones = totalTelefones;
-            a.capacidadeTelefones = totalTelefones;
-
-            int j;
-            for (j = 0; j < totalTelefones; j++)
+            // Lê nome
+            if (fread(a.nome, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
             {
-                if(fread(a.telefones[j].numeroTelefone, sizeof(char), TAM_TELEFONE, fp) != TAM_TELEFONE)
+                fclose(arquivo);
+                return i;
+            }
+            // Lê nacionalidade
+            if (fread(a.nacionalidade, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+            {
+                fclose(arquivo);
+                return i;
+            }
+            // Lê estilo
+            if (fread(a.estilo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+            {
+                fclose(arquivo);
+                return i;
+            }
+    
+            // Força terminador nulo no último byte de cada string
+            a.cpf[TAM_CPF - 1] = '\0';
+            a.nome[TAM_TEXTO_PEQUENO - 1] = '\0';
+            a.nacionalidade[TAM_TEXTO_PEQUENO - 1] = '\0';
+            a.estilo[TAM_TEXTO_PEQUENO - 1] = '\0';
+    
+            // Lê data de nascimento
+            if(fread(&a.nascimento.dia, sizeof(int), 1, arquivo) != 1)
+            {
+                fclose(arquivo);
+                return i;
+            }
+    
+            if(fread(&a.nascimento.mes, sizeof(int), 1, arquivo) != 1)
+            {
+                fclose(arquivo);
+                return i;
+            }
+    
+            if(fread(&a.nascimento.ano, sizeof(int), 1, arquivo) != 1)
+            {
+                fclose(arquivo);
+                return i;
+            }
+    
+            // Lê telefones
+            int totalTelefones;
+            if(fread(&totalTelefones, sizeof(int), 1, arquivo) != 1)
+            {
+                fclose(arquivo);
+                return i;
+            }
+            if (totalTelefones > 0)
+            {
+                a.telefones = (Telefone *) malloc(sizeof(Telefone) * totalTelefones);
+                if (a.telefones == NULL)
                 {
-                    free(a.telefones);
-                    fclose(fp);
+                    fclose(arquivo);
                     return i;
                 }
-                a.telefones[j].numeroTelefone[TAM_TELEFONE - 1] = '\0';
+                a.totalTelefones = totalTelefones;
+                a.capacidadeTelefones = totalTelefones;
+    
+                int j;
+                for (j = 0; j < totalTelefones; j++)
+                {
+                    if(fread(a.telefones[j].numeroTelefone, sizeof(char), TAM_TELEFONE, arquivo) != TAM_TELEFONE)
+                    {
+                        free(a.telefones);
+                        fclose(arquivo);
+                        return i;
+                    }
+                    a.telefones[j].numeroTelefone[TAM_TELEFONE - 1] = '\0';
+                }
             }
-        }
-
-        // Lê redes sociais
-        int totalRedes;
-        if(fread(&totalRedes, sizeof(int), 1, fp) != 1)
-        {
-            free(a.redesSociais);
-            fclose(fp);
-            return i;
-        }
-        if (totalRedes > 0)
-        {
-            a.redesSociais = (redeSocial *) malloc(sizeof(redeSocial) * totalRedes);
-            if (a.redesSociais == NULL)
+    
+            // Lê redes sociais
+            int totalRedes;
+            if(fread(&totalRedes, sizeof(int), 1, arquivo) != 1)
             {
                 free(a.redesSociais);
-                fclose(fp);
+                fclose(arquivo);
                 return i;
             }
-            a.totalRedesSociais = totalRedes;
-            a.capacidadeRedesSociais = totalRedes;
-            int j;
-            for (j = 0; j < totalRedes; j++)
+            if (totalRedes > 0)
             {
-                if(fread(a.redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
+                a.redesSociais = (redeSocial *) malloc(sizeof(redeSocial) * totalRedes);
+                if (a.redesSociais == NULL)
                 {
                     free(a.redesSociais);
-                    fclose(fp);
+                    fclose(arquivo);
                     return i;
                 }
-                if(fread(a.redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, fp) != TAM_TEXTO_PEQUENO)
+                a.totalRedesSociais = totalRedes;
+                a.capacidadeRedesSociais = totalRedes;
+                int j;
+                for (j = 0; j < totalRedes; j++)
                 {
-                    free(a.redesSociais);
-                    fclose(fp);
-                    return i;
+                    if(fread(a.redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+                    {
+                        free(a.redesSociais);
+                        fclose(arquivo);
+                        return i;
+                    }
+                    if(fread(a.redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+                    {
+                        free(a.redesSociais);
+                        fclose(arquivo);
+                        return i;
+                    }
+                    a.redesSociais[j].redeSocial[TAM_TEXTO_PEQUENO - 1] = '\0';
+                    a.redesSociais[j].usuario[TAM_TEXTO_PEQUENO - 1] = '\0';
                 }
-                a.redesSociais[j].redeSocial[TAM_TEXTO_PEQUENO - 1] = '\0';
-                a.redesSociais[j].usuario[TAM_TEXTO_PEQUENO - 1] = '\0';
+            }
+    
+            // Adiciona artista à lista
+            if (!adicionarArtista(lista, &a))
+            {
+                // Libera memória alocada para este artista antes de sair
+                free(a.telefones);
+                free(a.redesSociais);
+                fclose(arquivo);
+                return i; // Retorna o número de artistas carregados com sucesso antes do erro
             }
         }
-
-        // Adiciona artista à lista
-        if (!adicionarArtista(lista, &a))
-        {
-            // Libera memória alocada para este artista antes de sair
-            free(a.telefones);
-            free(a.redesSociais);
-            fclose(fp);
-            return i; // Retorna o número de artistas carregados com sucesso antes do erro
-        }
     }
-
-    fclose(fp);
+    fclose(arquivo);
     return -3; // Sucesso total, todos os artistas carregados sem erros.
 }
 
@@ -256,37 +266,53 @@ bool salvarArtistas(const ListaArtistas *lista)
     return 1;
 }
 
-/*********
- * OBRAS *
- *********/
+ /************************
+ * CARREGAMENTO DE OBRAS *
+ *************************/
 
 bool carregarObras(ListaObras *lista)
 {
-
+    char nome[] = NOME_ARQUIVO_OBRAS;
     FILE *arquivo;
-    if(!carregaArquivo(NOME_ARQUIVO_OBRAS, &arquivo)) // Se Erro ao carregar arquivo, retorna falso, tratamento feito no main.
-        inicializarListaArtistas(lista, 4);
+    int *total;
     
-    int i;
-    for (i = 0; i < total; i++)
+    if(!carregaArquivo(&nome, &arquivo, &total)) // Se retorno falso, arquivo não carregado, inicia lista vazia.
+	{
+        inicializarListaObras(lista, 4);
+		return -2;
+	}
+    else
+        inicializarListaObras(lista, *total);
+    
+    if (lista->itens == NULL)
     {
-        Obra o;
+        printf(MSG_ERRO_ALOCAR_MEMORIA);
+        return -1; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Retorna -1 para tratar erro na main.
+    }
 
-        // Lê os inteiros
-        fread(&o.id, sizeof(int), 1, fp);
-        fread(&o.anoCriacao, sizeof(int), 1, fp);
-        fread(&o.valorCentavos, sizeof(int), 1, fp);
-
-        // Lê os campos de texto
-        fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
-        fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
-        fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, fp);
-
-        // Adiciona a obra à lista
-        if (!adicionarObra(lista, &o))
+    if(*total>0)
+    {
+        int i;
+        for (i = 0; i < *total; i++)
         {
-            fclose(fp);
-            return i;
+            Obra o;
+    
+            // Lê os inteiros
+            fread(&o.id, sizeof(int), 1, fp);
+            fread(&o.anoCriacao, sizeof(int), 1, fp);
+            fread(&o.valorCentavos, sizeof(int), 1, fp);
+    
+            // Lê os campos de texto
+            fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+            fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+            fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, fp);
+    
+            // Adiciona a obra à lista
+            if (!adicionarObra(lista, &o))
+            {
+                fclose(fp);
+                return i;
+            }
         }
     }
 
@@ -332,42 +358,17 @@ bool salvarObras(const ListaObras *lista)
 
 bool carregarColaboracoes(ListaColaboracoes *lista)
 {
-    FILE *fp = fopen(NOME_ARQUIVO_COLABORACOES, "rb");
-    if (fp == NULL)
-    {
-        // Arquivo não existe: inicia lista vazia
+    char[] = NOME_ARQUIVO_COLABORACOES;
+    FILE *arquivo;
+    int *total;
+    
+    if(!carregaArquivo(nome, &arquivo, &total))
         inicializarListaColaboracoes(lista, 4);
-        return 1;
-    }
-
-    int total;
-    size_t lidos = fread(&total, sizeof(int), 1, fp);
-    if (lidos != 1)
-    {
-        // Arquivo vazio ou corrompido: inicia lista vazia
-        fclose(fp);
-        inicializarListaColaboracoes(lista, 4);
-        return 1;
-    }
-
-    // Inicializa lista com capacidade adequada
-    if (total > 0)
-    {
-        inicializarListaColaboracoes(lista, total);
-    }
     else
-    {
-        inicializarListaColaboracoes(lista, 4);
-    }
-
-    if (lista->itens == NULL)
-    {
-        fclose(fp);
-        return i;
-    }
-
+        inicializarListaColaboracoes(lista, *total);
+    
     int i;
-    for (i = 0; i < total; i++)
+    for (i = 0; i < *total; i++)
     {
         Colaboracao c;
 
