@@ -31,16 +31,18 @@
 
 // Funções de carregamento e liberação de dados, utilizam as funções de persistência e listas para gerenciar os dados em memória.
 // Mensagens personalizadas para cada retorno possível (exemplo: Lista vazia, lista semi-preenchida, arquivo corrompido...)
-void carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
+bool carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
 {
     printf("Carregando %s:\n", NOME_ARQUIVO_ARTISTAS);
     int carregadosArtistas = carregarArtistas(listaArtistas);
     switch (carregadosArtistas)
     {
+		case -2:
+			break;
         case -1:
             return false;
         default:
-            printf("Falha ao carregar artistas, foram carregados %d artistas com sucesso.\n", carregadosArtistas);
+            printf("Falha ao carregar lista de artistas, foram carregados somente %d artistas com sucesso.\n", carregadosArtistas);
             printf("Lista iniciada com os artistas carregados.");
             break;
     } // Fim switch Artistas
