@@ -33,6 +33,7 @@
 #define MSG_ARQUIVO_VAZIO "Arquivo vazio. Lista inicializada vazia.\n" // Utilizada em persistencia.c para informar que o arquivo de dados está vazio ou corrompido, e que a lista será inicializada vazia.
 #define MSG_ARQUIVO_NAO_ENCONTRADO "Arquivo não encontrado ou corrompido. Lista inicializada vazia.\n" // Utilizada em persistencia.c para informar que o arquivo de dados não foi encontrado, e que a lista será inicializada vazia.
 #define MSG_ARQUIVO_CARREGADO "Dados carregados com sucesso.\n" // Utilizada em persistencia.c para informar que os dados foram carregados com sucesso a partir do arquivo.
+#define MSG_ERRO_ALOCAR_MEMORIA "Ocorreu um erro ao alocar memória! O programa será encerrado sem salvar!" // Utilizada em persistência.c para informar ERRO ao usuário.
 
 // Nomes dos arquivos de persistência
 #define NOME_ARQUIVO_ARTISTAS "artistas.bin"
