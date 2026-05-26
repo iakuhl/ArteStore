@@ -37,15 +37,8 @@ void carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCo
     int carregadosArtistas = carregarArtistas(listaArtistas);
     switch (carregadosArtistas)
     {
-        case -3:
-            printf(MSG_ARQUIVO_CARREGADO); // Lista de artistas carregada com sucesso.
-            break;
-        case -2:
-            printf(MSG_ARQUIVO_NAO_ENCONTRADO); // Arquivo não encontrado, lista iniciada vazia
-            break;
         case -1:
-            printf(MSG_ARQUIVO_VAZIO); // Arquivo vazio, lista iniciada vazia
-            break;
+            return false;
         default:
             printf("Falha ao carregar artistas, foram carregados %d artistas com sucesso.\n", carregadosArtistas);
             printf("Lista iniciada com os artistas carregados.");
@@ -59,12 +52,15 @@ void carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCo
         case -3:
             printf(MSG_ARQUIVO_CARREGADO); // Lista de obras carregada com sucesso.
             break;
+		
         case -2:
             printf(MSG_ARQUIVO_NAO_ENCONTRADO); // Arquivo não encontrado, lista iniciada vazia
             break;
+		
         case -1:
-            printf(MSG_ARQUIVO_VAZIO); // Arquivo vazio, lista iniciada vazia
-            break;
+			printf(MSG_ERRO_ALOCAR_MEMORIA); // Erro ao alocar memória, encerra sem salvar
+            return false;
+		
         default:
             printf("Falha ao carregar obras, foram carregadas %d obras com sucesso.\n", carregadosObras);
             printf("Lista iniciada com as obras carregadas.");
@@ -125,55 +121,57 @@ int main()
     ListaColaboracoes listaColaboracoes;
 
     // Inicialização das listas com capacidade inicial (pode ser ajustada conforme necessidade)
-    carregarDados(&listaArtistas, &listaObras, &listaColaboracoes);
 	
     bool executando = true;
-    do
+	if(carregarDados(&listaArtistas, &listaObras, &listaColaboracoes))
 	{
-        switch (menuPrincipal())
-        {
-        case 1:
-            if(!moduloArtistas(&listaArtistas))
-            {
-                printf(MSG_LOOP_INFINITO);
-                executando = false;
-            }
-            break;
-
-        case 2:
-			if(!moduloObras(&listaObras))
-			{
-				print(MSG_LOOP_INFINITO);
+	    do
+		{
+	        switch (menuPrincipal())
+	        {
+	        case 1:
+	            if(!moduloArtistas(&listaArtistas))
+	            {
+	                printf(MSG_LOOP_INFINITO);
+	                executando = false;
+	            }
+	            break;
+	
+	        case 2:
+				if(!moduloObras(&listaObras))
+				{
+					print(MSG_LOOP_INFINITO);
+					executando = false;
+				}
+				break;
+	
+	        case 3:
+				if(!moduloColaboracoes(&listaColaboracoes, &listaArtistas, &listaObras))
+				{
+					print(MSG_LOOP_INFINITO);
+					executando = false;
+				}
+				break;
+	
+	        case 4:
+				//moduloRelatorios(&listaArtistas, &listaObras, &listaColaboracoes);
+				break;
+	
+	        case 5:
+				printf("Encerrando programa...");
+				salvarDados(&listaArtistas, &listaObras, &listaColaboracoes);
+	            executando = false;
+	            break;
+	
+	        case -1:
+				printf(MSG_LOOP_INFINITO);
 				executando = false;
-			}
-			break;
-
-        case 3:
-			if(!moduloColaboracoes(&listaColaboracoes, &listaArtistas, &listaObras))
-			{
-				print(MSG_LOOP_INFINITO);
-				executando = false;
-			}
-			break;
-
-        case 4:
-			//moduloRelatorios(&listaArtistas, &listaObras, &listaColaboracoes);
-			break;
-
-        case 5:
-			printf("Encerrando programa...");
-			salvarDados(&listaArtistas, &listaObras, &listaColaboracoes);
-            executando = false;
-            break;
-
-        case -1:
-			printf(MSG_LOOP_INFINITO);
-			executando = false;
-            break;
-        } // fim switch
-
-    } while (executando);
-
+	            break;
+	        } // fim switch
+	
+	    } while (executando);
+	}
+	
 	// Libera memória das listas antes de encerrar o programa.
 	liberarDados(&listaArtistas, &listaObras, &listaColaboracoes);
     return 0;
