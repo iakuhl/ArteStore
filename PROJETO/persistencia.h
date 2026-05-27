@@ -20,10 +20,10 @@
 int carregarArtistas(ListaArtistas *lista);
 bool salvarArtistas(const ListaArtistas *lista);
 
-bool carregarObras(ListaObras *lista);
+int carregarObras(ListaObras *lista);
 bool salvarObras(const ListaObras *lista);
 
-bool carregarColaboracoes(ListaColaboracoes *lista);
+int carregarColaboracoes(ListaColaboracoes *lista);
 bool salvarColaboracoes(const ListaColaboracoes *lista);
 
 #endif // PERSISTENCIA_H
