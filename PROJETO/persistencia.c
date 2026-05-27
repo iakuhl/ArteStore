@@ -299,17 +299,41 @@ bool carregarObras(ListaObras *lista)
         for (i = 0; i < total; i++)
         {
             Obra o;
-    
+    		
             // Lê os inteiros
-            fread(&o.id, sizeof(int), 1, arquivo);
-            fread(&o.anoCriacao, sizeof(int), 1, arquivo);
-            fread(&o.valorCentavos, sizeof(int), 1, arquivo);
+			if(fread(&o.id, sizeof(int), 1, arquivo) != 1)
+			{
+			    fclose(arquivo);
+			    return false;
+			}
+            if(fread(&o.anoCriacao, sizeof(int), 1, arquivo) != 1)
+			{
+			    fclose(arquivo);
+			    return false;
+			}
+            if(fread(&o.valorCentavos, sizeof(int), 1, arquivo) != 1)
+			{
+			    fclose(arquivo);
+			    return false;
+			}
     
             // Lê os campos de texto
-            fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
-            fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
-            fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, arquivo);
-    
+            if(fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+			{
+			    fclose(arquivo);
+			    return false;
+			}
+            if(fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+			{
+			    fclose(arquivo);
+			    return false;
+			}
+            if(fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, arquivo) != TAM_TEXTO_PEQUENO)
+			{
+			    fclose(arquivo);
+			    return false;
+			}
+    		
             // Adiciona a obra à lista
             if (!adicionarObra(lista, &o))
             {
