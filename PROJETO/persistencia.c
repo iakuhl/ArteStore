@@ -30,7 +30,7 @@
 
 FILE *carregarArquivo(char *nome, int *total)
 {
-    arquivo = fopen(nome, "rb"); // Carrega arquivo para leitura.
+	FILE *arquivo = fopen(nome, "rb"); // Carrega arquivo para leitura.
     if (arquivo == NULL) // Verifica se arquivo existe
     {
         printf(MSG_NAO_ENCONTRADO);
@@ -38,8 +38,8 @@ FILE *carregarArquivo(char *nome, int *total)
     }
     
     // Verifica se foi possível ler o arquivo e se algum dado foi lido.
-    size_t lidos = fread(&total, sizeof(int), 1, arquivo);
-    if (lidos != 1 || total <= 0) 
+    size_t lidos = fread(total, sizeof(int), 1, arquivo);
+    if (lidos != 1 || *total <= 0) 
     {
         fclose(arquivo);
         printf(MSG_ARQUIVO_VAZIO); // Vazio ou corrompido.
@@ -55,16 +55,16 @@ int carregarArtistas(ListaArtistas *lista)
     // Tenta ler arquivo 
     FILE *arquivo;
     char nome[] = NOME_ARQUIVO_ARTISTAS;
-    int *total;
+    int total;
 
-	arquivo = carregarArquivo;
+	arquivo = carregarArquivo(nome, &total);
 	if (arquivo == NULL)
 	{
 		inicializarListaArtistas(lista, 4);
-		return -2
+		return -2;
 	}
     else
-        inicializarListaArtistas(lista, *total);
+        inicializarListaArtistas(lista, total);
     
     if (lista->itens == NULL)
     {
@@ -73,7 +73,7 @@ int carregarArtistas(ListaArtistas *lista)
 
 	// Ele entra no loop escrever o arquivo na lista somente após tratar todos os possíveis erros: Arquivo inexistente, vazio, corrompido ou com nenhum item.
 	int i;
-	for (i = 0; i < *total; i++)
+	for (i = 0; i < total; i++)
 	{
 		Artista a;
 
@@ -170,7 +170,7 @@ int carregarArtistas(ListaArtistas *lista)
 		int totalRedes;
 		if(fread(&totalRedes, sizeof(int), 1, arquivo) != 1)
 		{
-			free(a.redesSociais);
+			free(a.telefones);
 			fclose(arquivo);
 			return i;
 		}
@@ -180,6 +180,7 @@ int carregarArtistas(ListaArtistas *lista)
 			if (a.redesSociais == NULL)
 			{
 				free(a.redesSociais);
+				free(a.telefones);
 				fclose(arquivo);
 				return i;
 			}
@@ -191,12 +192,14 @@ int carregarArtistas(ListaArtistas *lista)
 				if(fread(a.redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
 				{
 					free(a.redesSociais);
+					free(a.telefones);
 					fclose(arquivo);
 					return i;
 				}
 				if(fread(a.redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
 				{
 					free(a.redesSociais);
+					free(a.telefones);
 					fclose(arquivo);
 					return i;
 				}
@@ -223,7 +226,7 @@ bool salvarArtistas(const ListaArtistas *lista)
 {
     FILE *arquivo = fopen(NOME_ARQUIVO_ARTISTAS, "wb");
     if (arquivo == NULL)
-        return i;
+        return false;
 
     // Escreve o total de artistas
     fwrite(&lista->total, sizeof(int), 1, arquivo);
@@ -262,7 +265,7 @@ bool salvarArtistas(const ListaArtistas *lista)
     }
 
     fclose(arquivo);
-    return 1;
+    return true;
 }
 
  /************************
@@ -273,15 +276,16 @@ bool carregarObras(ListaObras *lista)
 {
     char nome[] = NOME_ARQUIVO_OBRAS;
     FILE *arquivo;
-    int *total;
-    
-    if(!carregaArquivo(&nome, &arquivo, &total)) // Se retorno falso, arquivo não carregado, inicia lista vazia.
+    int total;
+
+	arquivo = carregarArquivo(nome, &total);
+    if(arquivo == NULL) // Se retorno falso, arquivo não carregado, inicia lista vazia.
 	{
         inicializarListaObras(lista, 4);
 		return -2;
 	}
     else
-        inicializarListaObras(lista, *total);
+        inicializarListaObras(lista, total);
     
     if (lista->itens == NULL)
     {
@@ -289,46 +293,46 @@ bool carregarObras(ListaObras *lista)
         return -1; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Retorna -1 para tratar erro na main.
     }
 
-    if(*total>0)
+    if(total>0)
     {
         int i;
-        for (i = 0; i < *total; i++)
+        for (i = 0; i < total; i++)
         {
             Obra o;
     
             // Lê os inteiros
-            fread(&o.id, sizeof(int), 1, fp);
-            fread(&o.anoCriacao, sizeof(int), 1, fp);
-            fread(&o.valorCentavos, sizeof(int), 1, fp);
+            fread(&o.id, sizeof(int), 1, arquivo);
+            fread(&o.anoCriacao, sizeof(int), 1, arquivo);
+            fread(&o.valorCentavos, sizeof(int), 1, arquivo);
     
             // Lê os campos de texto
-            fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
-            fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
-            fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, fp);
+            fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
+            fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
+            fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, arquivo);
     
             // Adiciona a obra à lista
             if (!adicionarObra(lista, &o))
             {
-                fclose(fp);
+                fclose(arquivo);
                 return i;
             }
         }
     }
 
-    fclose(fp);
+    fclose(arquivo);
     return 1;
 }
 
 bool salvarObras(const ListaObras *lista)
 {
-    FILE *fp = fopen(NOME_ARQUIVO_OBRAS, "wb");
-    if (fp == NULL)
+    FILE *arquivo = fopen(NOME_ARQUIVO_OBRAS, "wb");
+    if (arquivo == NULL)
     {
-        return i;
+        return false;
     }
 
     // Escreve o total de obras no início do arquivo
-    fwrite(&lista->total, sizeof(int), 1, fp);
+    fwrite(&lista->total, sizeof(int), 1, arquivo);
 
     // Escreve cada obra
     int i;
@@ -337,18 +341,18 @@ bool salvarObras(const ListaObras *lista)
         const Obra *o = &lista->itens[i];
 
         // Campos inteiros
-        fwrite(&o->id, sizeof(int), 1, fp);
-        fwrite(&o->anoCriacao, sizeof(int), 1, fp);
-        fwrite(&o->valorCentavos, sizeof(int), 1, fp);
+        fwrite(&o->id, sizeof(int), 1, arquivo);
+        fwrite(&o->anoCriacao, sizeof(int), 1, arquivo);
+        fwrite(&o->valorCentavos, sizeof(int), 1, arquivo);
 
         // Campos de texto com tamanho fixo
-        fwrite(o->titulo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
-        fwrite(o->tipo, sizeof(char), TAM_TEXTO_PEQUENO, fp);
-        fwrite(o->descricao, sizeof(char), TAM_TEXTO_GRANDE, fp);
+        fwrite(o->titulo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
+        fwrite(o->tipo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
+        fwrite(o->descricao, sizeof(char), TAM_TEXTO_GRANDE, arquivo);
     }
 
-    fclose(fp);
-    return 1;
+    fclose(arquivo);
+    return true;
 }
 
 /****************
@@ -357,66 +361,70 @@ bool salvarObras(const ListaObras *lista)
 
 bool carregarColaboracoes(ListaColaboracoes *lista)
 {
-    char[] = NOME_ARQUIVO_COLABORACOES;
+    char nome[] = NOME_ARQUIVO_COLABORACOES;
     FILE *arquivo;
-    int *total;
-    
-    if(!carregaArquivo(nome, &arquivo, &total))
+    int total;
+
+	arquivo = carregarArquivo(nome, &total);
+    if(arquivo == NULL)
+	{
         inicializarListaColaboracoes(lista, 4);
+		return -2;
+	}
     else
-        inicializarListaColaboracoes(lista, *total);
+        inicializarListaColaboracoes(lista, total);
     
     int i;
-    for (i = 0; i < *total; i++)
+    for (i = 0; i < total; i++)
     {
         Colaboracao c;
 
         // Lê a chave da colaboração (CPF e ID da obra)
-        fread(c.chaveColab.cpf, sizeof(char), TAM_CPF, fp);
-        fread(&c.chaveColab.id, sizeof(int), 1, fp);
+        fread(c.chaveColab.cpf, sizeof(char), TAM_CPF, arquivo);
+        fread(&c.chaveColab.id, sizeof(int), 1, arquivo);
 
         // Força terminador nulo no CPF
         c.chaveColab.cpf[TAM_CPF - 1] = '\0';
 
         // Lê função do artista
-        fread(c.funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fread(c.funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
         c.funcaoArtista[TAM_TEXTO_PEQUENO - 1] = '\0';
 
         // Lê percentual de contribuição
-        fread(&c.percentualContribuicao, sizeof(int), 1, fp);
+        fread(&c.percentualContribuicao, sizeof(int), 1, arquivo);
 
         // Lê data de entrada
-        fread(&c.entrada.dia, sizeof(int), 1, fp);
-        fread(&c.entrada.mes, sizeof(int), 1, fp);
-        fread(&c.entrada.ano, sizeof(int), 1, fp);
+        fread(&c.entrada.dia, sizeof(int), 1, arquivo);
+        fread(&c.entrada.mes, sizeof(int), 1, arquivo);
+        fread(&c.entrada.ano, sizeof(int), 1, arquivo);
 
         // Lê data de saída
-        fread(&c.saida.dia, sizeof(int), 1, fp);
-        fread(&c.saida.mes, sizeof(int), 1, fp);
-        fread(&c.saida.ano, sizeof(int), 1, fp);
+        fread(&c.saida.dia, sizeof(int), 1, arquivo);
+        fread(&c.saida.mes, sizeof(int), 1, arquivo);
+        fread(&c.saida.ano, sizeof(int), 1, arquivo);
 
         // Adiciona colaboração à lista
         if (!adicionarColaboracao(lista, &c))
         {
-            fclose(fp);
+            fclose(arquivo);
             return i;
         }
     }
 
-    fclose(fp);
-    return 1;
+    fclose(arquivo);
+    return -3;
 }
 
 bool salvarColaboracoes(const ListaColaboracoes *lista)
 {
-    FILE *fp = fopen(NOME_ARQUIVO_COLABORACOES, "wb");
-    if (fp == NULL)
+    FILE *arquivo = fopen(NOME_ARQUIVO_COLABORACOES, "wb");
+    if (arquivo == NULL)
     {
-        return i;
+        return false;
     }
 
     // Escreve o total de colaborações
-    fwrite(&lista->total, sizeof(int), 1, fp);
+    fwrite(&lista->total, sizeof(int), 1, arquivo);
 
     int i;
     for (i = 0; i < lista->total; i++)
@@ -424,26 +432,26 @@ bool salvarColaboracoes(const ListaColaboracoes *lista)
         const Colaboracao *c = &lista->itens[i];
 
         // Chave da colaboração
-        fwrite(c->chaveColab.cpf, sizeof(char), TAM_CPF, fp);
-        fwrite(&c->chaveColab.id, sizeof(int), 1, fp);
+        fwrite(c->chaveColab.cpf, sizeof(char), TAM_CPF, arquivo);
+        fwrite(&c->chaveColab.id, sizeof(int), 1, arquivo);
 
         // Função do artista
-        fwrite(c->funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, fp);
+        fwrite(c->funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
 
         // Percentual de contribuição
-        fwrite(&c->percentualContribuicao, sizeof(int), 1, fp);
+        fwrite(&c->percentualContribuicao, sizeof(int), 1, arquivo);
 
         // Data de entrada
-        fwrite(&c->entrada.dia, sizeof(int), 1, fp);
-        fwrite(&c->entrada.mes, sizeof(int), 1, fp);
-        fwrite(&c->entrada.ano, sizeof(int), 1, fp);
+        fwrite(&c->entrada.dia, sizeof(int), 1, arquivo);
+        fwrite(&c->entrada.mes, sizeof(int), 1, arquivo);
+        fwrite(&c->entrada.ano, sizeof(int), 1, arquivo);
 
         // Data de saída
-        fwrite(&c->saida.dia, sizeof(int), 1, fp);
-        fwrite(&c->saida.mes, sizeof(int), 1, fp);
-        fwrite(&c->saida.ano, sizeof(int), 1, fp);
+        fwrite(&c->saida.dia, sizeof(int), 1, arquivo);
+        fwrite(&c->saida.mes, sizeof(int), 1, arquivo);
+        fwrite(&c->saida.ano, sizeof(int), 1, arquivo);
     }
 
-    fclose(fp);
-    return 1;
+    fclose(arquivo);
+    return true;
 }
