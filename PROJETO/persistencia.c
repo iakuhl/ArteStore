@@ -404,28 +404,68 @@ bool carregarColaboracoes(ListaColaboracoes *lista)
         Colaboracao c;
 
         // Lê a chave da colaboração (CPF e ID da obra)
-        fread(c.chaveColab.cpf, sizeof(char), TAM_CPF, arquivo);
-        fread(&c.chaveColab.id, sizeof(int), 1, arquivo);
+        if(fread(c.chaveColab.cpf, sizeof(char), TAM_CPF, arquivo) != TAM_CPF)
+		{
+			fclose(arquivo);
+			return false;
+		}
+        if(fread(&c.chaveColab.id, sizeof(int), 1, arquivo) != 1)
+		{
+			fclose(arquivo);
+			return false;
+		}
 
         // Força terminador nulo no CPF
         c.chaveColab.cpf[TAM_CPF - 1] = '\0';
 
         // Lê função do artista
-        fread(c.funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
+        if(fread(c.funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+		{
+			fclose(arquivo);
+			return false;
+		}
         c.funcaoArtista[TAM_TEXTO_PEQUENO - 1] = '\0';
 
         // Lê percentual de contribuição
-        fread(&c.percentualContribuicao, sizeof(int), 1, arquivo);
+        if(fread(&c.percentualContribuicao, sizeof(int), 1, arquivo) != 1)
+		{
+			fclose(arquivo);
+			return false;
+		}
 
         // Lê data de entrada
-        fread(&c.entrada.dia, sizeof(int), 1, arquivo);
-        fread(&c.entrada.mes, sizeof(int), 1, arquivo);
-        fread(&c.entrada.ano, sizeof(int), 1, arquivo);
+        if(fread(&c.entrada.dia, sizeof(int), 1, arquivo) != 1)
+		{
+			fclose(arquivo);
+			return false;
+		}
+        if(fread(&c.entrada.mes, sizeof(int), 1, arquivo) != 1)
+		{
+			fclose(arquivo);
+			return false;
+		}
+        if(fread(&c.entrada.ano, sizeof(int), 1, arquivo) != 1)
+		{
+			fclose(arquivo);
+			return false;
+		}
 
         // Lê data de saída
-        fread(&c.saida.dia, sizeof(int), 1, arquivo);
-        fread(&c.saida.mes, sizeof(int), 1, arquivo);
-        fread(&c.saida.ano, sizeof(int), 1, arquivo);
+        if(fread(&c.saida.dia, sizeof(int), 1, arquivo) != 1)
+		{
+			fclose(arquivo);
+			return false;
+		}
+        if(fread(&c.saida.mes, sizeof(int), 1, arquivo) != 1)
+		{
+			fclose(arquivo);
+			return false;
+		}
+        if(fread(&c.saida.ano, sizeof(int), 1, arquivo) != 1)
+		{
+			fclose(arquivo);
+			return false;
+		}
 
         // Adiciona colaboração à lista
         if (!adicionarColaboracao(lista, &c))
