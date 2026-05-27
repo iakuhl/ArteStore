@@ -15,6 +15,7 @@
 #define DEFINES_H
 
 // Todas as definições de constantes, como tamanhos de campos, estão neste arquivo para facilitar a manutenção.
+#define TAM_LIMITE_TELEFONE_REDES 5
 #define TAM_CPF 15
 #define TAM_TELEFONE 20
 #define TAM_TEXTO_PEQUENO 50
