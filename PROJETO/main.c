@@ -34,22 +34,20 @@
 bool carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
 {
     printf("Carregando %s:\n", NOME_ARQUIVO_ARTISTAS);
-    int carregadosArtistas = carregarArtistas(listaArtistas);
-    switch (carregadosArtistas)
+    int artistasCarregados = carregarArtistas(listaArtistas);
+    switch (artistasCarregados)
     {
-		case -2:
-			break;
-        case -1:
+        case -99: // Erro de alocação de memória, encerrar programa
             return false;
-        default:
+        default: // Retorna quantidade de Artistas carregados em caso de falha
             printf("Falha ao carregar lista de artistas, foram carregados somente %d artistas com sucesso.\n", carregadosArtistas);
             printf("Lista iniciada com os artistas carregados.");
             break;
     } // Fim switch Artistas
 
     printf("\n\nCarregando %s:\n", NOME_ARQUIVO_OBRAS);
-    int carregadosObras = carregarObras(listaObras);
-    switch (carregadosObras)
+    int obrasCarregadas = carregarObras(listaObras);
+    switch (obrasCarregadas)
     {
         case -3:
             printf(MSG_ARQUIVO_CARREGADO); // Lista de obras carregada com sucesso.
@@ -70,8 +68,8 @@ bool carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCo
     } // Fim switch Obras
 
     printf("\n\nCarregando %s:\n", NOME_ARQUIVO_COLABORACOES);
-    int carregadosColaboracoes = carregarColaboracoes(listaColaboracoes);
-    switch (carregadosColaboracoes)
+    int colaboracoesCarregadas = carregarColaboracoes(listaColaboracoes);
+    switch (colaboracoesCarregadas)
     {
         case -3:
             printf(MSG_ARQUIVO_CARREGADO); // Lista de colaboracoes carregada com sucesso.
