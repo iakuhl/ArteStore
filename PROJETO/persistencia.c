@@ -24,9 +24,9 @@
 #include "defines.h"
 #include "estruturas.h"
 
- /***************************
- * CARREGAMENTO DE ARTISTAS *
- ****************************/
+ /***********************************
+ * CARREGAMENTO GENÉRICO DE ARQUIVO *
+ ***********************************/
 
 FILE *carregarArquivo(char *nome, int *total)
 {
@@ -34,7 +34,7 @@ FILE *carregarArquivo(char *nome, int *total)
     if (arquivo == NULL) // Verifica se arquivo existe
     {
         printf(MSG_NAO_ENCONTRADO);
-        return NULL; // Retorna falso para criar lista vazia, após informar ao usuário.
+        return NULL;
     }
     
     // Verifica se foi possível ler o arquivo e se algum dado foi lido.
@@ -50,28 +50,39 @@ FILE *carregarArquivo(char *nome, int *total)
     return arquivo; // Retorna verdadeiro, arquivo carregado com sucesso.
 }
 
+// As funções de carregamento retornam inteiro para poder informar quantos itens de cada lista foram carregados, em caso de erro parcial.
+// Assim o usuário pode saber quais dados serão sobreescritos e/ou estão corrompidos.
+
+
+ /***************************
+ * CARREGAMENTO DE ARTISTAS *
+ ****************************/
+// -1 lista criada vazia ou com todos os dados carregados
+// -99 falha ao alocar memória
+// default para informar o último índice carregado sem erros
 int carregarArtistas(ListaArtistas *lista)
 {
-    // Tenta ler arquivo 
     FILE *arquivo;
     char nome[] = NOME_ARQUIVO_ARTISTAS;
     int total;
 
+	// Tenta ler arquivo, após, verifica se o arquivo contém dados e inicializa a lista com capacidade adequada.
 	arquivo = carregarArquivo(nome, &total);
 	if (arquivo == NULL)
 	{
 		inicializarListaArtistas(lista, 4);
-		return -2;
+		return -1;
 	}
     else
         inicializarListaArtistas(lista, total);
-    
+
+	// Verifica se a memória foi alocada com sucesso, retorna -99 em caso de falha, para tratar erro na main.
     if (lista->itens == NULL)
     {
-        return -99; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Retorna -1 para tratar erro na main.
+        return -99;
     }
 
-	// Ele entra no loop escrever o arquivo na lista somente após tratar todos os possíveis erros: Arquivo inexistente, vazio, corrompido ou com nenhum item.
+	// Entra no loop para escrever o arquivo na lista somente após tratar todos os possíveis erros: Arquivo inexistente, vazio, corrompido ou com nenhum item.
 	int i;
 	for (i = 0; i < total; i++)
 	{
@@ -220,7 +231,7 @@ int carregarArtistas(ListaArtistas *lista)
     }
     fclose(arquivo);
 	printf(MSG_SUCESSO_CARREGAMENTO);
-    return -2; // Sucesso total, todos os artistas carregados sem erros.
+    return -1; // Sucesso total, todos os artistas carregados sem erros.
 }
 
 bool salvarArtistas(const ListaArtistas *lista)
@@ -272,7 +283,9 @@ bool salvarArtistas(const ListaArtistas *lista)
  /************************
  * CARREGAMENTO DE OBRAS *
  *************************/
-
+// -1 lista criada vazia ou com todos os dados carregados
+// -99 falha ao alocar memória
+// default para informar o último índice carregado sem erros
 bool carregarObras(ListaObras *lista)
 {
     char nome[] = NOME_ARQUIVO_OBRAS;
@@ -383,7 +396,9 @@ bool salvarObras(const ListaObras *lista)
 /****************
  * COLABORAÇÕES *
  ****************/
-
+// -1 lista criada vazia ou com todos os dados carregados
+// -99 falha ao alocar memória
+// default para informar o último índice carregado sem erros
 bool carregarColaboracoes(ListaColaboracoes *lista)
 {
     char nome[] = NOME_ARQUIVO_COLABORACOES;
@@ -394,7 +409,7 @@ bool carregarColaboracoes(ListaColaboracoes *lista)
     if(arquivo == NULL)
 	{
         inicializarListaColaboracoes(lista, 4);
-		return -2;
+		return -1;
 	}
     else
         inicializarListaColaboracoes(lista, total);
