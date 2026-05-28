@@ -68,7 +68,7 @@ int carregarArtistas(ListaArtistas *lista)
     
     if (lista->itens == NULL)
     {
-        return -1; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Retorna -1 para tratar erro na main.
+        return -99; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Retorna -1 para tratar erro na main.
     }
 
 	// Ele entra no loop escrever o arquivo na lista somente após tratar todos os possíveis erros: Arquivo inexistente, vazio, corrompido ou com nenhum item.
@@ -219,7 +219,8 @@ int carregarArtistas(ListaArtistas *lista)
 		}
     }
     fclose(arquivo);
-    return -3; // Sucesso total, todos os artistas carregados sem erros.
+	printf(MSG_SUCESSO_CARREGAMENTO);
+    return -2; // Sucesso total, todos os artistas carregados sem erros.
 }
 
 bool salvarArtistas(const ListaArtistas *lista)
@@ -304,34 +305,34 @@ bool carregarObras(ListaObras *lista)
 			if(fread(&o.id, sizeof(int), 1, arquivo) != 1)
 			{
 			    fclose(arquivo);
-			    return false;
+			    return i;
 			}
             if(fread(&o.anoCriacao, sizeof(int), 1, arquivo) != 1)
 			{
 			    fclose(arquivo);
-			    return false;
+			    return i;
 			}
             if(fread(&o.valorCentavos, sizeof(int), 1, arquivo) != 1)
 			{
 			    fclose(arquivo);
-			    return false;
+			    return i;
 			}
     
             // Lê os campos de texto
             if(fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
 			{
 			    fclose(arquivo);
-			    return false;
+			    return i;
 			}
             if(fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
 			{
 			    fclose(arquivo);
-			    return false;
+			    return i;
 			}
             if(fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, arquivo) != TAM_TEXTO_PEQUENO)
 			{
 			    fclose(arquivo);
-			    return false;
+			    return i;
 			}
     		
             // Adiciona a obra à lista
@@ -344,7 +345,7 @@ bool carregarObras(ListaObras *lista)
     }
 
     fclose(arquivo);
-    return 1;
+    return -3;
 }
 
 bool salvarObras(const ListaObras *lista)
