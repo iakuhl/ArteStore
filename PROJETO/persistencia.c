@@ -31,7 +31,7 @@
  * CARREGAMENTO GENÉRICO DE ARQUIVO *
  ***********************************/
 
-FILE *carregarArquivo(char *nome, int *total)
+FILE *carregarArquivo(char *nome, int *total) // Retorna ponteiro para o arquivo, ou NULL em caso de arquivo inexistente, vazio ou corrompido. O total de itens lidos é alterado por referência.
 {
 	FILE *arquivo = fopen(nome, "rb"); // Carrega arquivo para leitura.
     if (arquivo == NULL) // Verifica se arquivo existe
@@ -41,6 +41,7 @@ FILE *carregarArquivo(char *nome, int *total)
     }
     
     // Verifica se foi possível ler o arquivo e se algum dado foi lido.
+	// Todas as listas utilizam o mesmo formato de gravação, com o total de itens no início do arquivo, então é possível usar a mesma função para ler o total e verificar se o arquivo está vazio ou corrompido.
     if (fread(total, sizeof(int), 1, arquivo) != 1 || *total <= 0) 
     {
         fclose(arquivo);
@@ -51,28 +52,31 @@ FILE *carregarArquivo(char *nome, int *total)
     return arquivo;
 }
 
-// As funções de carregamento retornam inteiro para poder informar quantos itens de cada lista foram carregados, em caso de erro parcial.
-// Assim o usuário pode saber quais dados serão sobreescritos e/ou estão corrompidos.
+/********************************************************************************
+ * Retornos das funções de carregamento específicas:							*
+ * -1: Lista inicializada vazia ou com todos os dados carregados com sucesso.	*
+ * -99: Falha ao alocar memória para a lista, mesmo com capacidade adequada.	*
+ * i (índice): Último índice carregado com sucesso.								*
+ ********************************************************************************/
 
+ /***********
+ * ARTISTAS *
+ ************/
 
- /***************************
- * CARREGAMENTO DE ARTISTAS *
- ****************************/
-
-int carregarArtistas(ListaArtistas *lista) // RETORNOS: -1 lista criada vazia ou com todos os dados carregados, -99 falha ao alocar memória, default para informar o último índice carregado sem erros.
+int carregarArtistas(ListaArtistas *lista) 
 {
     FILE *arquivo;
     char nome[] = NOME_ARQUIVO_ARTISTAS;
     int total, i, j, totalTelefones, totalRedes;
 
-	// Tenta ler arquivo, após, verifica se o arquivo contém dados e inicializa a lista com capacidade adequada.
+	// Tenta ler arquivo e inicializa a lista com capacidade adequada.
 	arquivo = carregarArquivo(nome, &total);
 
 	if (arquivo == NULL)
 	{
 		total = 4;
 	}
-		
+	
 	inicializarListaArtistas(lista, total);
 
 	if (lista->itens == NULL)
@@ -295,11 +299,11 @@ bool salvarArtistas(const ListaArtistas *lista)
     return true;
 }
 
- /************************
- * CARREGAMENTO DE OBRAS *
- *************************/
+ /********
+ * OBRAS *
+ *********/
 
-int carregarObras(ListaObras *lista) // RETORNOS: -1 lista criada vazia ou com todos os dados carregados, -99 falha ao alocar memória, default para informar o último índice carregado sem erros.
+int carregarObras(ListaObras *lista) 
 {
     char nome[] = NOME_ARQUIVO_OBRAS;
     FILE *arquivo;
@@ -432,7 +436,7 @@ bool salvarObras(const ListaObras *lista)
  * COLABORAÇÕES *
  ****************/
 
-int carregarColaboracoes(ListaColaboracoes *lista) // RETORNOS: -1 lista criada vazia ou com todos os dados carregados, -99 falha ao alocar memória, default para informar o último índice carregado sem erros.
+int carregarColaboracoes(ListaColaboracoes *lista) 
 {
     char nome[] = NOME_ARQUIVO_COLABORACOES;
     FILE *arquivo;

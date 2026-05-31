@@ -16,7 +16,7 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-// Todas as definições de constantes, como tamanhos de campos, estão neste arquivo para facilitar a manutenção.
+// Definições de constantes (tamanhos de campos, limites de listas e etc.)
 #define MAX_TELEFONES 5
 #define MAX_REDES_SOCIAIS 5
 #define TAM_CPF 15
@@ -25,8 +25,8 @@
 #define TAM_TEXTO_GRANDE 200
 #define TAM_BUFFER_LEITURA 64 // Utilizada para leitura de inteiros, garantindo que o buffer seja grande o suficiente para evitar estouro e permitindo a validação adequada da entrada do usuário.
 
-// Mensagens de erro para utils.c
-#define MSG_LOOP_INFINITO "O programa será encerrado sem salvar!\n" // Utilizada em utils.c para informar que ocorreu um erro grave durante a leitura de dados. 
+// Mensagens de erro para utils.c e main.c
+#define MSG_LOOP_INFINITO "O programa será encerrado sem salvar!\n" // Utilizada em main.c para informar que ocorreu um erro grave durante a leitura de dados. 
 #define MSG_ENTRADA_INVALIDA "Entrada inválida! Tente novamente.\n" // Utilizada em utils.c para informar que a entrada do usuário não é válida (ex: letras quando se espera um número, ou caracteres extras após um número).
 #define MSG_INTEIRO_INVALIDO "Número inválido! Informe um número inteiro válido: " // Utilizada em utils.c para informar entrada inválida.
 #define MSG_EOF_DETECTADO "EOF detectado. Encerrando entrada de dados.\n" // Utilizada em utils.c para informar que o usuário encerrou a entrada de dados (Ctrl+D ou Ctrl+Z).

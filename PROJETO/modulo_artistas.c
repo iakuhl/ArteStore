@@ -40,7 +40,7 @@ static int menuArtistas()
     return escolherOpcao(1, 4);
 }
 
-static bool cadastrarArtista(ListaArtistas *lista) // Dados obrigatórios, apenas.
+static bool cadastrarArtista(ListaArtistas *lista)
 {
     Artista a;
 
@@ -216,12 +216,12 @@ static void listarArtista(const ListaArtistas *lista, int indice)
 
 void listarTodosArtistas(const ListaArtistas *lista)
 {
+    int i;
     if (lista->total == 0)
     {
         printf("Nenhum artista cadastrado.\n");
         return;
     }
-    int i;
     for (i = 0; i < lista->total; i++)
     {
         listarArtista(lista, i);
