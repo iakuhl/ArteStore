@@ -85,10 +85,7 @@ int carregarArtistas(ListaArtistas *lista) // RETORNOS: -1 lista criada vazia ou
 	}
 
 	if (arquivo == NULL)
-	{
-		printf(MSG_ARQUIVO_VAZIO);
 		return -1;
-	}
 
 	// Entra no loop para escrever o arquivo na lista somente após tratar todos os possíveis erros: Arquivo inexistente, vazio, corrompido ou com nenhum item.
 	for (i = 0; i < total; i++)
@@ -310,10 +307,24 @@ int carregarObras(ListaObras *lista) // RETORNOS: -1 lista criada vazia ou com t
 
 	// Tenta ler arquivo, após, verifica se o arquivo contém dados e inicializa a lista com capacidade adequada.
 	arquivo = carregarArquivo(nome, &total);
-    if(arquivo == NULL)
-        inicializarListaObras(lista, 4);
-    else
-        inicializarListaObras(lista, total);
+	if (arquivo == NULL)
+	{
+		total = 4;
+	}
+		
+	inicializarListaObras(lista, total);
+
+	if (lista->itens == NULL)
+	{
+		if (arquivo != NULL)
+			fclose(arquivo);
+
+		printf(MSG_ERRO_ALOCAR_MEMORIA);
+		return -99;
+	}
+
+	if (arquivo == NULL)
+		return -1;
     
 	// Verifica se a memória foi alocada com sucesso, retorna -99 em caso de falha, para tratar erro na main.
     if (lista->itens == NULL)
@@ -425,18 +436,28 @@ int carregarColaboracoes(ListaColaboracoes *lista) // RETORNOS: -1 lista criada 
 {
     char nome[] = NOME_ARQUIVO_COLABORACOES;
     FILE *arquivo;
-    int total;
+    int total, i;
 
 	arquivo = carregarArquivo(nome, &total);
-    if(arquivo == NULL)
+	if (arquivo == NULL)
 	{
-        inicializarListaColaboracoes(lista, 4);
-		return -1;
+		total = 4;
 	}
-    else
-        inicializarListaColaboracoes(lista, total);
+		
+	inicializarListaColaboracoes(lista, total);
+
+	if (lista->itens == NULL)
+	{
+		if (arquivo != NULL)
+			fclose(arquivo);
+
+		printf(MSG_ERRO_ALOCAR_MEMORIA);
+		return -99;
+	}
+
+	if (arquivo == NULL)
+		return -1;
     
-    int i;
     for (i = 0; i < total; i++)
     {
         Colaboracao c;
@@ -445,12 +466,12 @@ int carregarColaboracoes(ListaColaboracoes *lista) // RETORNOS: -1 lista criada 
         if(fread(c.chaveColab.cpf, sizeof(char), TAM_CPF, arquivo) != TAM_CPF)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
         if(fread(&c.chaveColab.id, sizeof(int), 1, arquivo) != 1)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
 
         // Força terminador nulo no CPF
@@ -460,7 +481,7 @@ int carregarColaboracoes(ListaColaboracoes *lista) // RETORNOS: -1 lista criada 
         if(fread(c.funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
         c.funcaoArtista[TAM_TEXTO_PEQUENO - 1] = '\0';
 
@@ -468,41 +489,41 @@ int carregarColaboracoes(ListaColaboracoes *lista) // RETORNOS: -1 lista criada 
         if(fread(&c.percentualContribuicao, sizeof(int), 1, arquivo) != 1)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
 
         // Lê data de entrada
         if(fread(&c.entrada.dia, sizeof(int), 1, arquivo) != 1)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
         if(fread(&c.entrada.mes, sizeof(int), 1, arquivo) != 1)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
         if(fread(&c.entrada.ano, sizeof(int), 1, arquivo) != 1)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
 
         // Lê data de saída
         if(fread(&c.saida.dia, sizeof(int), 1, arquivo) != 1)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
         if(fread(&c.saida.mes, sizeof(int), 1, arquivo) != 1)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
         if(fread(&c.saida.ano, sizeof(int), 1, arquivo) != 1)
 		{
 			fclose(arquivo);
-			return false;
+			return i;
 		}
 
         // Adiciona colaboração à lista
@@ -514,7 +535,8 @@ int carregarColaboracoes(ListaColaboracoes *lista) // RETORNOS: -1 lista criada 
     }
 
     fclose(arquivo);
-    return -3;
+	printf(MSG_ARQUIVO_CARREGADO);
+    return -1;
 }
 
 bool salvarColaboracoes(const ListaColaboracoes *lista)
