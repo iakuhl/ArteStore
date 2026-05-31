@@ -1,8 +1,11 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
  * Arquivo: utils.h                                *
+ * Descrição: Protótipos das funções utilitárias   *
+ *            utilizadas por diferentes módulos    *
+ *            do sistema.                          *
  * Autor: Iano de Oliva Kuhlmann                   *
- * Colaboradores: chat.deepseek.com                *
+ * Colaboradores: ChatGPT (OpenAI), DeepSeek Chat  *
  * Disciplina: APR2                                *
  * Professora: Dra. Eloize Rossi Marques Seno      *
  ***************************************************/

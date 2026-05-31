@@ -1,8 +1,11 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
  * Arquivo: persistencia.c                         *
+ * Descrição: Implementação das rotinas de         *
+ *            gravação e leitura dos dados em      *
+ *            arquivos binários.                   *
  * Autor: Iano de Oliva Kuhlmann                   *
- * Colaboradores: chat.deepseek.com                *
+ * Colaboradores: ChatGPT (OpenAI), DeepSeek Chat  *
  * Disciplina: APR2                                *
  * Professora: Dra. Eloize Rossi Marques Seno      *
  ***************************************************/
@@ -33,21 +36,19 @@ FILE *carregarArquivo(char *nome, int *total)
 	FILE *arquivo = fopen(nome, "rb"); // Carrega arquivo para leitura.
     if (arquivo == NULL) // Verifica se arquivo existe
     {
-        printf(MSG_NAO_ENCONTRADO);
+        printf(MSG_ARQUIVO_NAO_ENCONTRADO);
         return NULL;
     }
     
     // Verifica se foi possível ler o arquivo e se algum dado foi lido.
-    size_t lidos = fread(total, sizeof(int), 1, arquivo);
-    if (lidos != 1 || *total <= 0) 
+    if (fread(total, sizeof(int), 1, arquivo) != 1 || *total <= 0) 
     {
         fclose(arquivo);
         printf(MSG_ARQUIVO_VAZIO); // Vazio ou corrompido.
-        return NULL; // Retorna falso para criar lista vazia, após informar ao usuário.
+        return NULL;
     }
-	
-    printf(MSG_ARQUIVO_CARREGADO);
-    return arquivo; // Retorna verdadeiro, arquivo carregado com sucesso.
+
+    return arquivo;
 }
 
 // As funções de carregamento retornam inteiro para poder informar quantos itens de cada lista foram carregados, em caso de erro parcial.
@@ -57,33 +58,39 @@ FILE *carregarArquivo(char *nome, int *total)
  /***************************
  * CARREGAMENTO DE ARTISTAS *
  ****************************/
-// -1 lista criada vazia ou com todos os dados carregados
-// -99 falha ao alocar memória
-// default para informar o último índice carregado sem erros
-int carregarArtistas(ListaArtistas *lista)
+
+int carregarArtistas(ListaArtistas *lista) // RETORNOS: -1 lista criada vazia ou com todos os dados carregados, -99 falha ao alocar memória, default para informar o último índice carregado sem erros.
 {
     FILE *arquivo;
     char nome[] = NOME_ARQUIVO_ARTISTAS;
-    int total;
+    int total, i, j, totalTelefones, totalRedes;
 
 	// Tenta ler arquivo, após, verifica se o arquivo contém dados e inicializa a lista com capacidade adequada.
 	arquivo = carregarArquivo(nome, &total);
+
 	if (arquivo == NULL)
 	{
-		inicializarListaArtistas(lista, 4);
+		total = 4;
+	}
+		
+	inicializarListaArtistas(lista, total);
+
+	if (lista->itens == NULL)
+	{
+		if (arquivo != NULL)
+			fclose(arquivo);
+
+		printf(MSG_ERRO_ALOCAR_MEMORIA);
+		return -99;
+	}
+
+	if (arquivo == NULL)
+	{
+		printf(MSG_ARQUIVO_VAZIO);
 		return -1;
 	}
-    else
-        inicializarListaArtistas(lista, total);
-
-	// Verifica se a memória foi alocada com sucesso, retorna -99 em caso de falha, para tratar erro na main.
-    if (lista->itens == NULL)
-    {
-        return -99;
-    }
 
 	// Entra no loop para escrever o arquivo na lista somente após tratar todos os possíveis erros: Arquivo inexistente, vazio, corrompido ou com nenhum item.
-	int i;
 	for (i = 0; i < total; i++)
 	{
 		Artista a;
@@ -147,12 +154,18 @@ int carregarArtistas(ListaArtistas *lista)
 		}
 
 		// Lê telefones
-		int totalTelefones;
 		if(fread(&totalTelefones, sizeof(int), 1, arquivo) != 1)
 		{
 			fclose(arquivo);
 			return i;
 		}
+
+		if(totalTelefones < 0 || totalTelefones > MAX_TELEFONES) // Limite para evitar alocação excessiva em caso de arquivo corrompido.
+		{
+			fclose(arquivo);
+			return i;
+		}
+
 		if (totalTelefones > 0)
 		{
 			a.telefones = (Telefone *) malloc(sizeof(Telefone) * totalTelefones);
@@ -178,26 +191,31 @@ int carregarArtistas(ListaArtistas *lista)
 		}
 
 		// Lê redes sociais
-		int totalRedes;
 		if(fread(&totalRedes, sizeof(int), 1, arquivo) != 1)
 		{
 			free(a.telefones);
 			fclose(arquivo);
 			return i;
 		}
+		
+		if( totalRedes < 0 || totalRedes > MAX_REDES_SOCIAIS) // Limite para evitar alocação excessiva em caso de arquivo corrompido.
+		{
+			free(a.telefones);
+			fclose(arquivo);
+			return i;
+		}
+
 		if (totalRedes > 0)
 		{
 			a.redesSociais = (redeSocial *) malloc(sizeof(redeSocial) * totalRedes);
 			if (a.redesSociais == NULL)
 			{
-				free(a.redesSociais);
 				free(a.telefones);
 				fclose(arquivo);
 				return i;
 			}
 			a.totalRedesSociais = totalRedes;
 			a.capacidadeRedesSociais = totalRedes;
-			int j;
 			for (j = 0; j < totalRedes; j++)
 			{
 				if(fread(a.redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
@@ -230,7 +248,7 @@ int carregarArtistas(ListaArtistas *lista)
 		}
     }
     fclose(arquivo);
-	printf(MSG_SUCESSO_CARREGAMENTO);
+	printf(MSG_ARQUIVO_CARREGADO);
     return -1; // Sucesso total, todos os artistas carregados sem erros.
 }
 
@@ -283,82 +301,88 @@ bool salvarArtistas(const ListaArtistas *lista)
  /************************
  * CARREGAMENTO DE OBRAS *
  *************************/
-// -1 lista criada vazia ou com todos os dados carregados
-// -99 falha ao alocar memória
-// default para informar o último índice carregado sem erros
-bool carregarObras(ListaObras *lista)
+
+int carregarObras(ListaObras *lista) // RETORNOS: -1 lista criada vazia ou com todos os dados carregados, -99 falha ao alocar memória, default para informar o último índice carregado sem erros.
 {
     char nome[] = NOME_ARQUIVO_OBRAS;
     FILE *arquivo;
-    int total;
+    int total, i;
 
+	// Tenta ler arquivo, após, verifica se o arquivo contém dados e inicializa a lista com capacidade adequada.
 	arquivo = carregarArquivo(nome, &total);
-    if(arquivo == NULL) // Se retorno falso, arquivo não carregado, inicia lista vazia.
-	{
+    if(arquivo == NULL)
         inicializarListaObras(lista, 4);
-		return -2;
-	}
     else
         inicializarListaObras(lista, total);
     
+	// Verifica se a memória foi alocada com sucesso, retorna -99 em caso de falha, para tratar erro na main.
     if (lista->itens == NULL)
     {
         printf(MSG_ERRO_ALOCAR_MEMORIA);
-        return -1; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Retorna -1 para tratar erro na main.
+        return -99; // Falha ao alocar memória para a lista, mesmo com capacidade adequada. Retorna -1 para tratar erro na main.
     }
+	else
+	{
+		if (total == 0)
+		{
+			fclose(arquivo);
+			printf(MSG_ARQUIVO_VAZIO); // Arquivo vazio, lista iniciada vazia.
+			return -1;
+		}
+		if(total>0)
+		{
+			for (i = 0; i < total; i++)
+			{
+				Obra o;
+				
+				// Lê os inteiros
+				if(fread(&o.id, sizeof(int), 1, arquivo) != 1)
+				{
+					fclose(arquivo);
+					return i;
+				}
+				if(fread(&o.anoCriacao, sizeof(int), 1, arquivo) != 1)
+				{
+					fclose(arquivo);
+					return i;
+				}
+				if(fread(&o.valorCentavos, sizeof(int), 1, arquivo) != 1)
+				{
+					fclose(arquivo);
+					return i;
+				}
+		
+				// Lê os campos de texto
+				if(fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+				{
+					fclose(arquivo);
+					return i;
+				}
+				if(fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+				{
+					fclose(arquivo);
+					return i;
+				}
+				if(fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, arquivo) != TAM_TEXTO_GRANDE)
+				{
+					fclose(arquivo);
+					return i;
+				}
+				
+				// Adiciona a obra à lista
+				if (!adicionarObra(lista, &o))
+				{
+					fclose(arquivo);
+					return i;
+				}
+			}
+		}
 
-    if(total>0)
-    {
-        int i;
-        for (i = 0; i < total; i++)
-        {
-            Obra o;
-    		
-            // Lê os inteiros
-			if(fread(&o.id, sizeof(int), 1, arquivo) != 1)
-			{
-			    fclose(arquivo);
-			    return i;
-			}
-            if(fread(&o.anoCriacao, sizeof(int), 1, arquivo) != 1)
-			{
-			    fclose(arquivo);
-			    return i;
-			}
-            if(fread(&o.valorCentavos, sizeof(int), 1, arquivo) != 1)
-			{
-			    fclose(arquivo);
-			    return i;
-			}
-    
-            // Lê os campos de texto
-            if(fread(o.titulo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
-			{
-			    fclose(arquivo);
-			    return i;
-			}
-            if(fread(o.tipo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
-			{
-			    fclose(arquivo);
-			    return i;
-			}
-            if(fread(o.descricao, sizeof(char), TAM_TEXTO_GRANDE, arquivo) != TAM_TEXTO_PEQUENO)
-			{
-			    fclose(arquivo);
-			    return i;
-			}
-    		
-            // Adiciona a obra à lista
-            if (!adicionarObra(lista, &o))
-            {
-                fclose(arquivo);
-                return i;
-            }
-        }
-    }
+	}
 
     fclose(arquivo);
-    return -3;
+	printf(MSG_ARQUIVO_CARREGADO);
+    return -1;
 }
 
 bool salvarObras(const ListaObras *lista)
@@ -396,10 +420,8 @@ bool salvarObras(const ListaObras *lista)
 /****************
  * COLABORAÇÕES *
  ****************/
-// -1 lista criada vazia ou com todos os dados carregados
-// -99 falha ao alocar memória
-// default para informar o último índice carregado sem erros
-bool carregarColaboracoes(ListaColaboracoes *lista)
+
+int carregarColaboracoes(ListaColaboracoes *lista) // RETORNOS: -1 lista criada vazia ou com todos os dados carregados, -99 falha ao alocar memória, default para informar o último índice carregado sem erros.
 {
     char nome[] = NOME_ARQUIVO_COLABORACOES;
     FILE *arquivo;

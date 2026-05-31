@@ -1,8 +1,11 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
- * Arquivo: modulo_artistas.c                      *
+ * Arquivo: modulo_artistas.c                       *
+ * Descrição: Implementação das funcionalidades    *
+ *            relacionadas ao gerenciamento de     *
+ *            artistas.                            *
  * Autor: Iano de Oliva Kuhlmann                   *
- * Colaboradores: chat.deepseek.com                *
+ * Colaboradores: ChatGPT (OpenAI), DeepSeek Chat  *
  * Disciplina: APR2                                *
  * Professora: Dra. Eloize Rossi Marques Seno      *
  ***************************************************/
@@ -211,7 +214,7 @@ static void listarArtista(const ListaArtistas *lista, int indice)
     }
 }
 
-static void listarTodosArtistas(const ListaArtistas *lista)
+void listarTodosArtistas(const ListaArtistas *lista)
 {
     if (lista->total == 0)
     {

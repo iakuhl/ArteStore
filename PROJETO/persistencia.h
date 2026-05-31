@@ -1,8 +1,11 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
  * Arquivo: persistencia.h                         *
+ * Descrição: Protótipos das funções responsáveis  *
+ *            pela gravação e recuperação dos      *
+ *            dados em arquivos binários.          *
  * Autor: Iano de Oliva Kuhlmann                   *
- * Colaboradores: chat.deepseek.com                *
+ * Colaboradores: ChatGPT (OpenAI), DeepSeek Chat  *
  * Disciplina: APR2                                *
  * Professora: Dra. Eloize Rossi Marques Seno      *
  ***************************************************/

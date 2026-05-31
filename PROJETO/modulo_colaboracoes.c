@@ -1,8 +1,11 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
  * Arquivo: modulo_colaboracoes.c                  *
+ * Descrição: Implementação das funcionalidades    *
+ *            de vínculo e gerenciamento das       *
+ *            colaborações entre artistas e obras. *
  * Autor: Iano de Oliva Kuhlmann                   *
- * Colaboradores: chat.deepseek.com                *
+ * Colaboradores: ChatGPT (OpenAI), DeepSeek Chat  *
  * Disciplina: APR2                                *
  * Professora: Dra. Eloize Rossi Marques Seno      *
  ***************************************************/

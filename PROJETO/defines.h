@@ -1,8 +1,10 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
  * Arquivo: defines.h                              *
+ * Descrição: Constantes, macros e mensagens       *
+ *            utilizadas em todo o sistema.        *
  * Autor: Iano de Oliva Kuhlmann                   *
- * Colaboradores: chat.deepseek.com                *
+ * Colaboradores: ChatGPT (OpenAI), DeepSeek Chat  *
  * Disciplina: APR2                                *
  * Professora: Dra. Eloize Rossi Marques Seno      *
  ***************************************************/
@@ -15,7 +17,8 @@
 #define DEFINES_H
 
 // Todas as definições de constantes, como tamanhos de campos, estão neste arquivo para facilitar a manutenção.
-#define TAM_LIMITE_TELEFONE_REDES 5
+#define MAX_TELEFONES 5
+#define MAX_REDES_SOCIAIS 5
 #define TAM_CPF 15
 #define TAM_TELEFONE 20
 #define TAM_TEXTO_PEQUENO 50

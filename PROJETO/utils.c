@@ -1,17 +1,23 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
  * Arquivo: utils.c                                *
+ * Descrição: Implementação das funções            *
+ *            utilitárias compartilhadas entre os  *
+ *            módulos do sistema.                  *
  * Autor: Iano de Oliva Kuhlmann                   *
- * Colaboradores: chat.deepseek.com                *
+ * Colaboradores: ChatGPT (OpenAI), DeepSeek Chat  *
  * Disciplina: APR2                                *
  * Professora: Dra. Eloize Rossi Marques Seno      *
  ***************************************************/
+
 /***********************************************************
  * ARQUIVO DE FUNÇÕES UTILITÁRIAS E DE TRATAMENTO DE DADOS *
  ***********************************************************/
+
 /*****************************
  * BIBLIOTECAS E IMPORTAÇÕES *
  *****************************/
+
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
@@ -20,9 +26,11 @@
 #include <string.h>
 #include "utils.h"
 #include "defines.h"
+
 /**********************************************
  * FUNÇÕES DE TRATAMENTO E VALIDAÇÃO DE DADOS *
  **********************************************/
+
 static void limparBuffer() // Limpa o buffer de entrada para evitar problemas com entradas inválidas.
 {
     int c;
@@ -32,6 +40,7 @@ static void limparBuffer() // Limpa o buffer de entrada para evitar problemas co
 		c = getchar();
 	}
 }
+
 static bool verificarLimiteString(const char *texto) // Verifica se a string ultrapassa o limite permitido, considerando o caractere nulo.
 {
     /* Tratamento de buffer, verifica se a entrada coube completamente na string. Se '\n' não estiver presente, a entrada excedeu o limite. *
@@ -43,6 +52,7 @@ static bool verificarLimiteString(const char *texto) // Verifica se a string ult
     }
     return true;
 }
+
 static bool dadosInformados(const char *entrada, int tamanho)
 {
 	if (fgets(entrada, tamanho, stdin) == NULL)
@@ -157,6 +167,7 @@ bool removeMascaraCPF(char *cpf)
     // Após remoção, verifica validade (já inclui teste de comprimento e dígitos)
     return validarCPF(cpf);
 }
+
 bool validarCPF(const char cpf[]) // Função para validar CPF, deverá ser aprimorada para tratar casos de CPFs com formatação (com pontos e hífen).
 {
 	int i;
@@ -181,7 +192,7 @@ int escolherOpcao(int min, int max)
         {
             // Se falhou (EOF ou erro), retornar ao menu principal e limpar memória.
             printf(MSG_LOOP_INFINITO);
-            return -1; // Retorna -1 para indicar erro
+            return -99; // Retorna -99 para indicar erro crítico
         }
 
         if (opcao >= min && opcao <= max)

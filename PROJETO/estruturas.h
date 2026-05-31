@@ -1,8 +1,10 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
  * Arquivo: estruturas.h                           *
+ * Descrição: Definição das estruturas de dados    *
+ *            utilizadas pelo sistema.             *
  * Autor: Iano de Oliva Kuhlmann                   *
- * Colaboradores: chat.deepseek.com                *
+ * Colaboradores: ChatGPT (OpenAI), DeepSeek Chat  *
  * Disciplina: APR2                                *
  * Professora: Dra. Eloize Rossi Marques Seno      *
  ***************************************************/
@@ -53,7 +55,7 @@ typedef struct
 	Data nascimento;
 
 	// Array dinâmico de redes sociais, cada artista pode ter um número variável de redes sociais.
-	redeSocial *redesSociais; 
+	redeSocial *redesSociais;
 	int totalRedesSociais;
 	int capacidadeRedesSociais;
 
