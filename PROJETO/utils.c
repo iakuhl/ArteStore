@@ -53,7 +53,7 @@ static bool verificarLimiteString(const char *texto) // Verifica se a string ult
     return true;
 }
 
-static bool dadosInformados(const char *entrada, int tamanho)
+static bool dadosInformados(char *entrada, int tamanho)
 {
 	if (fgets(entrada, tamanho, stdin) == NULL)
 	{
@@ -80,8 +80,10 @@ bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
 
         // Verifica se a entrada ultrapassa o limite do buffer
         if(!verificarLimiteString(entrada))
-            printf("MSG_LIMITE_CARACTERES_ATINGIDO");
+        {
+            printf(MSG_LIMITE_CARACTERES_ATINGIDO);
             continue;
+        }
 
         errno = 0; // Prepara errno para detectar overflow
         valor = strtol(entrada, &fim, 10); // Converte a string para long em base decimal
@@ -179,9 +181,27 @@ bool validarCPF(const char cpf[]) // Função para validar CPF, deverá ser apri
             return false;
     return true;
 }
+
 /************************
  * FUNÇÕES DE UTILIDADE *
  ************************/
+
+bool lerSimNao(char *resposta)
+{
+    do
+    {
+        if (!lerString(resposta, 3))
+            return false;
+
+        if (*resposta == 's' || *resposta == 'S' ||
+            *resposta == 'n' || *resposta == 'N')
+            return true;
+
+        printf("Resposta inválida. Por favor, responda com 's' ou 'n'.\n");
+
+    } while (true);
+}
+
 int escolherOpcao(int min, int max)
 {
     int opcao;

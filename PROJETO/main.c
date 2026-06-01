@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <locale.h>
 
 #include "utils.h"
 #include "estruturas.h"
@@ -51,9 +52,8 @@ bool carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCo
 
     if (artistasCarregados >= 0)
     {
-        printf("Falha ao carregar lista de artistas. "
-               "Foram carregados %d artistas com sucesso.\n",
-               artistasCarregados);
+        printf("Falha ao carregar lista de artistas. ");
+        printf("Foram carregados %d artistas com sucesso.\n", artistasCarregados);
 
         printf("Lista iniciada com os artistas carregados:\n");
         listarTodosArtistas(listaArtistas);
@@ -70,9 +70,8 @@ bool carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCo
 
     if (obrasCarregadas >= 0)
     {
-        printf("Falha ao carregar lista de obras. "
-               "Foram carregadas %d obras com sucesso.\n",
-               obrasCarregadas);
+        printf("Falha ao carregar lista de obras. ");
+        printf("Foram carregadas %d obras com sucesso.\n", obrasCarregadas);
 
         printf("Lista iniciada com as obras carregadas.\n");
     }
@@ -88,9 +87,8 @@ bool carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCo
 
     if (colaboracoesCarregadas >= 0)
     {
-        printf("Falha ao carregar lista de colaborações. "
-               "Foram carregadas %d colaborações com sucesso.\n",
-               colaboracoesCarregadas);
+        printf("Falha ao carregar lista de colaborações. ");
+        printf("Foram carregadas %d colaborações com sucesso.\n", colaboracoesCarregadas);
 
         printf("Lista iniciada com as colaborações carregadas.\n");
     }
@@ -106,9 +104,9 @@ void liberarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCol
 
 void salvarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
 {
-	salvarArtistas(&listaArtistas);
-	salvarObras(&listaObras);
-	salvarColaboracoes(&listaColaboracoes);
+	salvarArtistas(listaArtistas);
+	salvarObras(listaObras);
+	salvarColaboracoes(listaColaboracoes);
 }
 
 
@@ -125,25 +123,27 @@ int menuPrincipal()
     printf("4 - Menu Relatorios\n");
     printf("5 - Encerrar Programa\n");
 
-    printf("Escolha uma opção: ");
     return escolherOpcao(1, 5);
 }
 
 int main()
 {
+    int opcao;
+    setlocale(LC_ALL, ""); // Configura a localidade para o ambiente do usuário, garantindo suporte a acentos e caracteres especiais.
     // Declaração das listas principais
     ListaArtistas listaArtistas;
     ListaObras listaObras;
     ListaColaboracoes listaColaboracoes;
 
     // Inicialização das listas com capacidade inicial (pode ser ajustada conforme necessidade)
-	
     bool executando = true;
 	if(carregarDados(&listaArtistas, &listaObras, &listaColaboracoes))
 	{
 	    do
 		{
-	        switch (menuPrincipal())
+            opcao = menuPrincipal();
+            printf("Opcao escolhida: %d\n", opcao); // Debug: Exibe a opção escolhida pelo usuário.
+	        switch (opcao)
 	        {
 	        case 1:
 	            if(!moduloArtistas(&listaArtistas))
@@ -200,6 +200,7 @@ int main()
 	        case 5:
 				printf("Encerrando programa...");
 				salvarDados(&listaArtistas, &listaObras, &listaColaboracoes);
+                printf("Dados salvos com sucesso. Agora sim vai encerrar essa bagunça.\n");
 	            executando = false;
 	            break;
 	
@@ -213,6 +214,8 @@ int main()
 	}
 	
 	// Libera memória das listas antes de encerrar o programa.
-	liberarDados(&listaArtistas, &listaObras, &listaColaboracoes);
+	printf("Chamando liberarDados()\n");
+    liberarDados(&listaArtistas, &listaObras, &listaColaboracoes);
+    printf("Fim do programa\n");
     return 0;
 }

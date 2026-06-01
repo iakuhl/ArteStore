@@ -19,6 +19,8 @@
  *****************************/
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 
 #include "modulo_artistas.h"
@@ -43,6 +45,7 @@ static int menuArtistas()
 static bool cadastrarArtista(ListaArtistas *lista)
 {
     Artista a;
+    char resposta[3]; // Para ler a resposta de continuar adicionando telefones ou redes sociais
 
     printf("--- Cadastrar Artista ---\n");
 
@@ -91,13 +94,12 @@ static bool cadastrarArtista(ListaArtistas *lista)
     if (!lerInteiro(&a.nascimento.ano))
         return false;
 
-    // Telefones (ao menos um obrigatório; você pode definir como regra)
+        
     a.telefones = NULL;
     a.totalTelefones = 0;
     a.capacidadeTelefones = 0;
 
-    printf("Telefones (deixe vazio para encerrar):\n");
-    while (true)
+    do
     {
         char telefone[TAM_TELEFONE];
         printf("  Telefone %d: ", a.totalTelefones + 1);
@@ -107,8 +109,6 @@ static bool cadastrarArtista(ListaArtistas *lista)
             free(a.telefones);
             return false;
         }
-        if (strlen(telefone) == 0)
-            break;
 
         Telefone *temp = (Telefone *) realloc(a.telefones, sizeof(Telefone) * (a.totalTelefones + 1));
         if (temp == NULL)
@@ -121,7 +121,14 @@ static bool cadastrarArtista(ListaArtistas *lista)
         strncpy(a.telefones[a.totalTelefones].numeroTelefone, telefone, TAM_TELEFONE - 1);
         a.telefones[a.totalTelefones].numeroTelefone[TAM_TELEFONE - 1] = '\0';
         a.totalTelefones++;
-    }
+        
+        printf("Deseja adicionar outro telefone? (s/n): ");
+        if (!lerSimNao(resposta))
+        {
+            free(a.telefones);
+            return false;
+        }
+    }while (resposta[0] == 's' || resposta[0] == 'S');
     a.capacidadeTelefones = a.totalTelefones;
 
     // Redes sociais (opcionais)
@@ -129,8 +136,14 @@ static bool cadastrarArtista(ListaArtistas *lista)
     a.totalRedesSociais = 0;
     a.capacidadeRedesSociais = 0;
 
-    printf("Redes sociais (deixe plataforma vazia para encerrar):\n");
-    while (true)
+    printf("Deseja adicionar redes sociais? (s/n): ");
+    if (!lerSimNao(resposta))
+    {
+        free(a.telefones);
+        return false;
+    }
+
+    while (resposta[0] == 's' || resposta[0] == 'S')
     {
         char plataforma[TAM_TEXTO_PEQUENO];
         char usuario[TAM_TEXTO_PEQUENO];
@@ -142,8 +155,6 @@ static bool cadastrarArtista(ListaArtistas *lista)
             free(a.redesSociais);
             return false;
         }
-        if (strlen(plataforma) == 0)
-            break;
 
         printf("  Usuário: ");
         if (!lerString(usuario, TAM_TEXTO_PEQUENO))
@@ -167,6 +178,14 @@ static bool cadastrarArtista(ListaArtistas *lista)
         strncpy(a.redesSociais[a.totalRedesSociais].usuario, usuario, TAM_TEXTO_PEQUENO - 1);
         a.redesSociais[a.totalRedesSociais].usuario[TAM_TEXTO_PEQUENO - 1] = '\0';
         a.totalRedesSociais++;
+        
+        printf("Deseja adicionar outra rede social? (s/n): ");
+        if(!lerSimNao(resposta))
+        {
+            free(a.telefones);
+            free(a.redesSociais);
+            return false;
+        }
     }
     a.capacidadeRedesSociais = a.totalRedesSociais;
 
