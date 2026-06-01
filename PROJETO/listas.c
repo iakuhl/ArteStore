@@ -59,7 +59,7 @@ bool adicionarArtista(ListaArtistas *lista, Artista *artista)
     return true;
 }
 
-int indicePorCPF(const ListaArtistas *lista, const char *cpf)
+int indiceArtistaPorCPF(const ListaArtistas *lista, const char *cpf)
 {
     // Busca linear pelo CPF do artista na lista, comparando o CPF de cada artista com o CPF fornecido. Retorna o índice do artista encontrado ou -1 se não encontrado.
     int i;

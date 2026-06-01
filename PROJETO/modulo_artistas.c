@@ -63,7 +63,7 @@ static bool cadastrarArtista(ListaArtistas *lista)
             continue;
         }
 
-        if (indicePorCPF(lista, a.cpf) != -1)
+        if (indiceArtistaPorCPF(lista, a.cpf) != -1)
         {
             printf("CPF já cadastrado. Tente novamente: ");
             continue;
@@ -267,7 +267,7 @@ bool buscarArtistaPorCPF(const ListaArtistas *lista, int *indice)
         return true; 
     }
 
-    *indice = indicePorCPF(lista, cpf);
+    *indice = indiceArtistaPorCPF(lista, cpf);
     if (*indice == -1)
     {
         printf("Artista não encontrado.\n");

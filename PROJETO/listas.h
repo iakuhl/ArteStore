@@ -24,7 +24,7 @@ void inicializarListaArtistas(ListaArtistas *lista, int capacidadeInicial);
 // Adiciona um artista ao final da lista, realocando se necessário
 bool adicionarArtista(ListaArtistas *lista, Artista *artista);
 // Busca um artista pelo CPF (retorna índice ou -1)
-int buscarArtistaPorCPF(const ListaArtistas *lista, const char *cpf);
+int indiceArtistaPorCPF(const ListaArtistas *lista, const char *cpf);
 // Remove um artista pelo índice
 bool removerArtista(ListaArtistas *lista, int indice);
 // Libera toda a memória da lista de artistas (inclui telefones)

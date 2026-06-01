@@ -210,8 +210,6 @@ int escolherOpcao(int min, int max)
         printf("Escolha uma opção (%d-%d): ", min, max);
         if (!lerInteiro(&opcao))
         {
-            // Se falhou (EOF ou erro), retornar ao menu principal e limpar memória.
-            printf(MSG_LOOP_INFINITO);
             return -99; // Retorna -99 para indicar erro crítico
         }
 

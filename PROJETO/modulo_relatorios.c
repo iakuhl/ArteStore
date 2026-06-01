@@ -20,7 +20,11 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
+#include "modulo_artistas.h"
+#include "modulo_obras.h"
+#include "modulo_colaboracoes.h"
 #include "modulo_relatorios.h"
 #include "defines.h"
 #include "estruturas.h"
@@ -40,7 +44,7 @@ static bool relatorioObrasPorArtista(const ListaColaboracoes *listaColaboracoes,
     if (indiceArtista == -1)
     {
         printf("Artista nao encontrado.\n");
-        return true; // Retorna true para não encerrar o módulo, apenas informar que o artista não foi encontrado.
+        return true;
     }
     else
     {

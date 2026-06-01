@@ -65,16 +65,16 @@ static bool cadastrarColaboracao(ListaColaboracoes *listaColaboracoes, const Lis
 
     // CPF do artista
     printf("CPF do artista: ");
-    if (lerString(cpfDigitado, TAM_CPF) == false)
+    if (!lerString(cpfDigitado, TAM_CPF))
         return false;
     
-    if (removeMascaraCPF(cpfDigitado) == false)
+    if (!removeMascaraCPF(cpfDigitado))
     {
         printf("CPF invalido.\n");
         return true; // Retorna true para não encerrar o módulo, apenas informar que o CPF é inválido.
     }
 
-    indiceArtista = buscarArtistaPorCPF(listaArtistas, cpfDigitado);
+    indiceArtista = indiceArtistaPorCPF(listaArtistas, cpfDigitado);
     if (indiceArtista == -1)
     {
         printf("Artista nao encontrado.\n");
@@ -83,7 +83,7 @@ static bool cadastrarColaboracao(ListaColaboracoes *listaColaboracoes, const Lis
 
     // ID da obra
     printf("ID da obra: ");
-    if (lerInteiro(&idObra) == false)
+    if (!lerInteiro(&idObra))
         return false;
 
     if (idObra <= 0)
@@ -184,7 +184,7 @@ static void listarColaboracoes(const ListaColaboracoes *listaColaboracoes, const
         const Obra *obra = NULL;
 
         // Busca o artista correspondente
-        int indiceArtista = buscarArtistaPorCPF(listaArtistas, colab->chaveColab.cpf);
+        int indiceArtista = indiceArtistaPorCPF(listaArtistas, colab->chaveColab.cpf);
         if (indiceArtista != -1)
         {
             artista = &listaArtistas->itens[indiceArtista];
