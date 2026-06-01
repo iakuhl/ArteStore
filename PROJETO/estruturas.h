@@ -49,7 +49,7 @@ typedef struct
 typedef struct
 {
 	char cpf[TAM_CPF]; // Chave única para cada artista.
-	char nome[TAM_TEXTO_PEQUENO];
+	char nome[TAM_TEXTO_MEDIO];
 	char nacionalidade[TAM_TEXTO_PEQUENO];
 	char estilo[TAM_TEXTO_PEQUENO];
 	Data nascimento;
@@ -74,7 +74,7 @@ typedef struct
 	
 	int valorCentavos; // Valor em centavos para evitar erro de conversão float.
 
-	char titulo[TAM_TEXTO_PEQUENO];
+	char titulo[TAM_TEXTO_MEDIO];
 	char tipo[TAM_TEXTO_PEQUENO];
 	char descricao[TAM_TEXTO_GRANDE];
 
