@@ -22,7 +22,8 @@
 #define TAM_SIM_NAO 3 // Para ler respostas de "sim" ou "não" (s/n) com espaço para o caractere nulo.
 #define TAM_CPF 16
 #define TAM_TELEFONE 20
-#define TAM_TEXTO_PEQUENO 50
+#define TAM_TEXTO_PEQUENO 20
+#define TAM_TEXTO_MEDIO 50
 #define TAM_TEXTO_GRANDE 200
 #define TAM_BUFFER_LEITURA 64 // Utilizada para leitura de inteiros, garantindo que o buffer seja grande o suficiente para evitar estouro e permitindo a validação adequada da entrada do usuário.
 
