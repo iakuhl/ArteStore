@@ -25,6 +25,7 @@ bool lerString(char texto[], int tamanho); // Validação robusta para entrada d
 bool validarCPF(const char cpf[]); // Função para validar CPF.
 bool removeMascaraCPF(char *cpf); // Remove pontos e hífen de um CPF, mantendo apenas os dígitos, e valida o resultado. Retorna true se o CPF é válido (com ou sem máscara) e false caso contrário.
 
+bool lerSimNao(char *resposta); // Função para ler uma resposta de sim ou não do usuário, retornando true para sim e false para não.
 int escolherOpcao(int min, int max); // Função para ler a escolha do usuário em um menu, garantindo que seja um número inteiro dentro do intervalo permitido.
 
 #endif // UTILS_H

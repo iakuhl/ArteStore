@@ -197,9 +197,11 @@ bool lerSimNao(char *resposta)
             *resposta == 'n' || *resposta == 'N')
             return true;
 
-        printf("Resposta inválida. Por favor, responda com 's' ou 'n'.\n");
-
-    } while (true);
+        if(resposta[0] != 's' && resposta[0] != 'S' && resposta[0] != 'n' && resposta[0] != 'N')
+        {
+            printf("Resposta inválida. Por favor, responda com 's' ou 'n'.\n");
+        }
+    } while (resposta[0] != 's' && resposta[0] != 'S' && resposta[0] != 'n' && resposta[0] != 'N');
 }
 
 int escolherOpcao(int min, int max)
