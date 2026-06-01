@@ -19,6 +19,8 @@
 
 #include "estruturas.h"
 
+void listarTodasObras(const ListaObras *lista);
+
 bool moduloObras(ListaObras *lista);
 
 #endif // MODULO_OBRAS_H

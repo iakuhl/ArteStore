@@ -129,7 +129,7 @@ static void listarObra(const ListaObras *lista, int indice)
     printf("------------------------\n");
 }
 
-static void listarTodasObras(const ListaObras *lista)
+void listarTodasObras(const ListaObras *lista)
 {
     if (lista->total == 0)
     {

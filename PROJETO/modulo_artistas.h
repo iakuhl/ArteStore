@@ -20,6 +20,8 @@
 #include "estruturas.h"
 
 void listarTodosArtistas(const ListaArtistas *lista);
+bool buscarArtistaPorCPF(const ListaArtistas *lista, int *indice);
+void imprimirArtistaPorIndice(const ListaArtistas *lista, int indice);
 
 bool moduloArtistas(ListaArtistas *lista);
 

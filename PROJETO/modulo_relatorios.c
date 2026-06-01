@@ -28,6 +28,61 @@
 #include "listas.h"
 #include "persistencia.h"
 
+
+static bool relatorioObrasPorArtista(const ListaColaboracoes *listaColaboracoes, const ListaObras *listaObras, const ListaArtistas *listaArtistas)
+{
+    int indiceArtista;
+    printf("\n--- Relatorio de Obras por Artista ---\n");
+    if(!buscarArtistaPorCPF(listaArtistas, &indiceArtista))
+    {
+        return false;
+    }
+    if (indiceArtista == -1)
+    {
+        printf("Artista nao encontrado.\n");
+        return true; // Retorna true para não encerrar o módulo, apenas informar que o artista não foi encontrado.
+    }
+    else
+    {
+        const Artista *artista = &listaArtistas->itens[indiceArtista];
+        const Colaboracao *colab;
+        const Obra *obra;
+        bool encontrouObras;
+
+        int i, indiceObra;
+
+        printf("Obras do artista %s (CPF: ", artista->nome);
+        imprimeCPF(artista->cpf);
+        printf("):\n");
+
+        encontrouObras = false;
+        for (i = 0; i < listaColaboracoes->total; i++)
+        {
+            colab = &listaColaboracoes->itens[i];
+            if (strcmp(colab->chaveColab.cpf, artista->cpf) == 0)
+            {
+                encontrouObras = true;
+                obra = NULL;
+                indiceObra = buscarObraPorID(listaObras, colab->chaveColab.id);
+                if (indiceObra != -1)
+                {
+                    obra = &listaObras->itens[indiceObra];
+                    printf("- %s (ID: %d), Papel: %s, Contribuicao: %.2f%%\n", obra->titulo, obra->id, colab->funcaoArtista, colab->percentualContribuicao);
+                }
+                else
+                {
+                    printf("- Obra ID %d (nao encontrada), Papel: %s, Contribuicao: %.2f%%\n", colab->chaveColab.id, colab->funcaoArtista, colab->percentualContribuicao);
+                }
+            }
+        }
+        if (!encontrouObras)
+        {
+            printf("Nenhuma obra encontrada para este artista.\n");
+        }
+    }
+    return true; 
+}
+
 static int menuRelatorios()
 {
     printf("### MENU RELATORIOS ###\n");
@@ -48,6 +103,7 @@ bool moduloRelatorios(ListaArtistas *listaArtistas, ListaObras *listaObras, List
         {
             case 1:
                 // Todas as obras de um artista específico, listando o título da obra, a função do artista na obra e o percentual de contribuição.
+                relatorioObrasPorArtista(listaColaboracoes, listaObras, listaArtistas);
                 break;
             case 2:
                 // Todas as obras de um tipo específico (ex: pintura, escultura, etc), listando o título da obra, o nome do artista principal e a data de criação.

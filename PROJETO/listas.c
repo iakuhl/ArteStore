@@ -24,7 +24,10 @@
 #include "listas.h"
 #include "estruturas.h"
 
-/* ARTISTAS */
+
+/************
+ * ARTISTAS *
+ ************/
 
 void inicializarListaArtistas(ListaArtistas *lista, int capacidadeInicial)
 {
@@ -39,6 +42,7 @@ void inicializarListaArtistas(ListaArtistas *lista, int capacidadeInicial)
 
 bool adicionarArtista(ListaArtistas *lista, Artista *artista)
 {
+    // Verifica se há espaço suficiente para adicionar o artista, se não houver, realoca a lista com mais capacidade.
     if (lista->total >= lista->capacidade)
     {
         int novaCap = lista->capacidade + 4;
@@ -48,13 +52,16 @@ bool adicionarArtista(ListaArtistas *lista, Artista *artista)
         lista->itens = temp;
         lista->capacidade = novaCap;
     }
+
+    // Adiciona o artista à lista, copiando os dados do artista para a posição atual da lista e incrementando o total de artistas.
     lista->itens[lista->total] = *artista;
     lista->total++;
     return true;
 }
 
-int buscarArtistaPorCPF(const ListaArtistas *lista, const char *cpf)
+int indicePorCPF(const ListaArtistas *lista, const char *cpf)
 {
+    // Busca linear pelo CPF do artista na lista, comparando o CPF de cada artista com o CPF fornecido. Retorna o índice do artista encontrado ou -1 se não encontrado.
     int i;
     for (i = 0; i < lista->total; i++)
     {
@@ -96,7 +103,10 @@ void liberarListaArtistas(ListaArtistas *lista)
     lista->capacidade = 0;
 }
 
-/* OBRAS */
+
+/*********
+ * OBRAS *
+ *********/
 
 void inicializarListaObras(ListaObras *lista, int capacidadeInicial)
 {
@@ -156,7 +166,10 @@ void liberarListaObras(ListaObras *lista)
     lista->capacidade = 0;
 }
 
-/* COLABORACOES */
+
+/****************
+ * COLABORACOES *
+ ****************/
 
 void inicializarListaColaboracoes(ListaColaboracoes *lista, int capacidadeInicial)
 {

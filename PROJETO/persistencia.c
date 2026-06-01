@@ -256,45 +256,96 @@ int carregarArtistas(ListaArtistas *lista)
 bool salvarArtistas(const ListaArtistas *lista)
 {
     FILE *arquivo = fopen(NOME_ARQUIVO_ARTISTAS, "wb");
+	int i, j;
+
     if (arquivo == NULL)
         return false;
 
     // Escreve o total de artistas
-    fwrite(&lista->total, sizeof(int), 1, arquivo);
+    if(fwrite(&lista->total, sizeof(int), 1, arquivo) != 1)
+    {
+        fclose(arquivo);
+        return false;
+    }
 
-    int i;
     for (i = 0; i < lista->total; i++)
     {
         const Artista *a = &lista->itens[i];
 
         // Campos de texto com tamanho fixo
-        fwrite(a->cpf, sizeof(char), TAM_CPF, arquivo);
-        fwrite(a->nome, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
-        fwrite(a->nacionalidade, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
-        fwrite(a->estilo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
+        if(fwrite(a->cpf, sizeof(char), TAM_CPF, arquivo) != TAM_CPF)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(a->nome, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(a->nacionalidade, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(a->estilo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+        {
+            fclose(arquivo);
+            return false;
+        }
 
         // Data
-        fwrite(&a->nascimento.dia, sizeof(int), 1, arquivo);
-        fwrite(&a->nascimento.mes, sizeof(int), 1, arquivo);
-        fwrite(&a->nascimento.ano, sizeof(int), 1, arquivo);
+        if(fwrite(&a->nascimento.dia, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(&a->nascimento.mes, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(&a->nascimento.ano, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
 
         // Telefones
-        fwrite(&a->totalTelefones, sizeof(int), 1, arquivo);
-        int j;
+        if(fwrite(&a->totalTelefones, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
         for (j = 0; j < a->totalTelefones; j++)
         {
-            fwrite(a->telefones[j].numeroTelefone, sizeof(char), TAM_TELEFONE, arquivo);
+            if(fwrite(a->telefones[j].numeroTelefone, sizeof(char), TAM_TELEFONE, arquivo) != TAM_TELEFONE)
+            {
+                fclose(arquivo);
+                return false;
+            }
         }
 
         // Redes sociais
-        fwrite(&a->totalRedesSociais, sizeof(int), 1, arquivo);
+        if(fwrite(&a->totalRedesSociais, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
         for (j = 0; j < a->totalRedesSociais; j++)
         {
-            fwrite(a->redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
-            fwrite(a->redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
+            if(fwrite(a->redesSociais[j].redeSocial, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+            {
+                fclose(arquivo);
+                return false;
+            }
+            if(fwrite(a->redesSociais[j].usuario, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+            {
+                fclose(arquivo);
+                return false;
+            }
         }
     }
-
     fclose(arquivo);
     return true;
 }
@@ -403,29 +454,57 @@ int carregarObras(ListaObras *lista)
 bool salvarObras(const ListaObras *lista)
 {
     FILE *arquivo = fopen(NOME_ARQUIVO_OBRAS, "wb");
+	int i;
     if (arquivo == NULL)
     {
         return false;
     }
 
     // Escreve o total de obras no início do arquivo
-    fwrite(&lista->total, sizeof(int), 1, arquivo);
+    if(fwrite(&lista->total, sizeof(int), 1, arquivo) != 1)
+    {
+        fclose(arquivo);
+        return false;
+    }
 
     // Escreve cada obra
-    int i;
     for (i = 0; i < lista->total; i++)
     {
         const Obra *o = &lista->itens[i];
 
         // Campos inteiros
-        fwrite(&o->id, sizeof(int), 1, arquivo);
-        fwrite(&o->anoCriacao, sizeof(int), 1, arquivo);
-        fwrite(&o->valorCentavos, sizeof(int), 1, arquivo);
+        if(fwrite(&o->id, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(&o->anoCriacao, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(&o->valorCentavos, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
 
         // Campos de texto com tamanho fixo
-        fwrite(o->titulo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
-        fwrite(o->tipo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
-        fwrite(o->descricao, sizeof(char), TAM_TEXTO_GRANDE, arquivo);
+        if(fwrite(o->titulo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(o->tipo, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(o->descricao, sizeof(char), TAM_TEXTO_GRANDE, arquivo) != TAM_TEXTO_GRANDE)
+        {
+            fclose(arquivo);
+            return false;
+        }
     }
 
     fclose(arquivo);
@@ -546,38 +625,82 @@ int carregarColaboracoes(ListaColaboracoes *lista)
 bool salvarColaboracoes(const ListaColaboracoes *lista)
 {
     FILE *arquivo = fopen(NOME_ARQUIVO_COLABORACOES, "wb");
+	int i;
     if (arquivo == NULL)
     {
         return false;
     }
 
     // Escreve o total de colaborações
-    fwrite(&lista->total, sizeof(int), 1, arquivo);
+    if(fwrite(&lista->total, sizeof(int), 1, arquivo) != 1)
+    {
+        fclose(arquivo);
+        return false;
+    }
 
-    int i;
     for (i = 0; i < lista->total; i++)
     {
         const Colaboracao *c = &lista->itens[i];
 
         // Chave da colaboração
-        fwrite(c->chaveColab.cpf, sizeof(char), TAM_CPF, arquivo);
-        fwrite(&c->chaveColab.id, sizeof(int), 1, arquivo);
+        if(fwrite(c->chaveColab.cpf, sizeof(char), TAM_CPF, arquivo) != TAM_CPF)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(&c->chaveColab.id, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
 
         // Função do artista
-        fwrite(c->funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, arquivo);
+        if(fwrite(c->funcaoArtista, sizeof(char), TAM_TEXTO_PEQUENO, arquivo) != TAM_TEXTO_PEQUENO)
+        {
+            fclose(arquivo);
+            return false;
+        }
 
         // Percentual de contribuição
-        fwrite(&c->percentualContribuicao, sizeof(int), 1, arquivo);
+        if(fwrite(&c->percentualContribuicao, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
 
         // Data de entrada
-        fwrite(&c->entrada.dia, sizeof(int), 1, arquivo);
-        fwrite(&c->entrada.mes, sizeof(int), 1, arquivo);
-        fwrite(&c->entrada.ano, sizeof(int), 1, arquivo);
+        if(fwrite(&c->entrada.dia, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(&c->entrada.mes, sizeof(int), 1, arquivo) != 1)
+        {
+			fclose(arquivo);
+			return false;
+		}
+        if(fwrite(&c->entrada.ano, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
 
         // Data de saída
-        fwrite(&c->saida.dia, sizeof(int), 1, arquivo);
-        fwrite(&c->saida.mes, sizeof(int), 1, arquivo);
-        fwrite(&c->saida.ano, sizeof(int), 1, arquivo);
+        if(fwrite(&c->saida.dia, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(&c->saida.mes, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
+        if(fwrite(&c->saida.ano, sizeof(int), 1, arquivo) != 1)
+        {
+            fclose(arquivo);
+            return false;
+        }
     }
 
     fclose(arquivo);

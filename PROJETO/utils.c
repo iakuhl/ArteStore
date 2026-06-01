@@ -190,17 +190,14 @@ bool lerSimNao(char *resposta)
 {
     do
     {
-        if (!lerString(resposta, 3))
+        if (!lerString(resposta, TAM_SIM_NAO))
             return false;
 
-        if (*resposta == 's' || *resposta == 'S' ||
-            *resposta == 'n' || *resposta == 'N')
+        if (*resposta == 's' || *resposta == 'S' || *resposta == 'n' || *resposta == 'N')
             return true;
 
-        if(resposta[0] != 's' && resposta[0] != 'S' && resposta[0] != 'n' && resposta[0] != 'N')
-        {
+        else
             printf("Resposta inválida. Por favor, responda com 's' ou 'n'.\n");
-        }
     } while (resposta[0] != 's' && resposta[0] != 'S' && resposta[0] != 'n' && resposta[0] != 'N');
     return true;
 }
