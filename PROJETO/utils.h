@@ -27,5 +27,6 @@ bool removeMascaraCPF(char *cpf); // Remove pontos e hífen de um CPF, mantendo 
 
 bool lerSimNao(char *resposta); // Função para ler uma resposta de sim ou não do usuário, retornando true para sim e false para não.
 int escolherOpcao(int min, int max); // Função para ler a escolha do usuário em um menu, garantindo que seja um número inteiro dentro do intervalo permitido.
+void imprimeCPF(const char *cpf); // Função para imprimir um CPF formatado (XXX.XXX.XXX-XX).
 
 #endif // UTILS_H

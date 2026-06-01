@@ -47,13 +47,13 @@ bool moduloRelatorios(ListaArtistas *listaArtistas, ListaObras *listaObras, List
         switch (menuRelatorios())
         {
             case 1:
-                // Relatório de Artistas
+                // Todas as obras de um artista específico, listando o título da obra, a função do artista na obra e o percentual de contribuição.
                 break;
             case 2:
-                // Relatório de Obras
+                // Todas as obras de um tipo específico (ex: pintura, escultura, etc), listando o título da obra, o nome do artista principal e a data de criação.
                 break;
             case 3:
-                // Relatório de Colaborações
+                // Todas as colaborações realizadas entre as datas X e Y (informadas pelo usuário), listando o nome do artista, o título da obra, o papel desempenhado por cada artista e o percentual de contribuição.
                 break;
             case 4:
                 printf("Voltando ao Menu Principal...\n");

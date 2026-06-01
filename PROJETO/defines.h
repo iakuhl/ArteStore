@@ -19,7 +19,7 @@
 // Definições de constantes (tamanhos de campos, limites de listas e etc.)
 #define MAX_TELEFONES 5
 #define MAX_REDES_SOCIAIS 5
-#define TAM_CPF 15
+#define TAM_CPF 16
 #define TAM_TELEFONE 20
 #define TAM_TEXTO_PEQUENO 50
 #define TAM_TEXTO_GRANDE 200

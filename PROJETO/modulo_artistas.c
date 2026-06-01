@@ -1,6 +1,6 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
- * Arquivo: modulo_artistas.c                       *
+ * Arquivo: modulo_artistas.c                      *
  * Descrição: Implementação das funcionalidades    *
  *            relacionadas ao gerenciamento de     *
  *            artistas.                            *
@@ -206,10 +206,16 @@ static void listarArtista(const ListaArtistas *lista, int indice)
 {
     const Artista *a = &lista->itens[indice];
     printf("\n--- Artista %d ---\n", indice + 1);
-    printf("CPF: %s\n", a->cpf);
     printf("Nome: %s\n", a->nome);
+
+    printf("CPF: ");
+    imprimeCPF(a->cpf);
+    printf("\n");
+
     printf("Nascimento: %02d/%02d/%d\n", a->nascimento.dia, a->nascimento.mes, a->nascimento.ano);
+
     printf("Estilo: %s\n", a->estilo);
+
     printf("Nacionalidade: %s\n", a->nacionalidade);
 
     if (a->totalTelefones > 0)

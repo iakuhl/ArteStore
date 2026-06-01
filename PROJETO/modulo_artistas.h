@@ -1,6 +1,6 @@
 /***************************************************
  * Projeto: Sistema de Curadoria de Obras de Artes *
- * Arquivo: modulo_artistas.h                       *
+ * Arquivo: modulo_artistas.h                      *
  * Descrição: Protótipos das funções de cadastro,  *
  *            consulta, alteração e remoção de     *
  *            artistas.                            *

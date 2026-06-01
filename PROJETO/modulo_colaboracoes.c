@@ -47,12 +47,12 @@ static bool cadastrarColaboracao(ListaColaboracoes *listaColaboracoes, const Lis
     if (listaArtistas->total == 0)
     {
         printf("\nNao ha artistas cadastrados. Impossivel cadastrar colaboracao.\n");
-        return false;
+        return true;
     }
     if (listaObras->total == 0)
     {
         printf("\nNao ha obras cadastradas. Impossivel cadastrar colaboracao.\n");
-        return false;
+        return true;
     }
 
     Colaboracao c;
@@ -166,6 +166,7 @@ static bool cadastrarColaboracao(ListaColaboracoes *listaColaboracoes, const Lis
     }
 
     printf("Colaboracao cadastrada com sucesso!\n");
+    return true;
 }
 
 static void listarColaboracoes(const ListaColaboracoes *listaColaboracoes, const ListaArtistas *listaArtistas, const ListaObras *listaObras)
@@ -199,7 +200,9 @@ static void listarColaboracoes(const ListaColaboracoes *listaColaboracoes, const
         printf("\n--- Colaboracao %d ---\n", i + 1);
         if (artista != NULL)
         {
-            printf("Artista: %s (CPF: %s)\n", artista->nome, colab->chaveColab.cpf);
+            printf("Artista: %s (CPF: ", artista->nome);
+            imprimeCPF(artista->cpf);
+            printf(")\n");
         }
         else
         {

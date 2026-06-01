@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <locale.h>
 
 #include "utils.h"
 #include "estruturas.h"
@@ -61,7 +60,7 @@ bool carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCo
 
 
     // CARREGAMENTO DE OBRAS
-    printf("\n\nCarregando %s:\n", NOME_ARQUIVO_OBRAS);
+    printf("\nCarregando %s:\n", NOME_ARQUIVO_OBRAS);
 
     int obrasCarregadas = carregarObras(listaObras);
     // Se -99, houve um erro crítico (arquivo corrompido, leitura falhou, etc) e o programa não pode continuar.
@@ -78,7 +77,7 @@ bool carregarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCo
 
 
     // CARREGAMENTO DE COLABORAÇÕES
-    printf("\n\nCarregando %s:\n", NOME_ARQUIVO_COLABORACOES);
+    printf("\nCarregando %s:\n", NOME_ARQUIVO_COLABORACOES);
 
     int colaboracoesCarregadas = carregarColaboracoes(listaColaboracoes);
     // Se -99, houve um erro crítico (arquivo corrompido, leitura falhou, etc) e o programa não pode continuar.
@@ -126,10 +125,17 @@ int menuPrincipal()
     return escolherOpcao(1, 5);
 }
 
+// As funções dos módulos retornam false em caso de erro crítico (exemplo: falha de leitura, arquivo corrompido, etc) e true em caso de sucesso ou erro de validação (exemplo: entrada inválida, ID já cadastrado, etc).
+// O menu principal interpreta um retorno false como um sinal para encerrar o programa imediatamente, enquanto um retorno true pode ser acompanhado de mensagens informativas para o usuário sem encerrar o programa.
+
+// Os possíveis erros críticos podem ocorrer durante a leitura de dados (ex: EOF inesperado, erro de leitura, arquivo corrompido) ou durante a execução de um módulo (ex: falha ao alocar memória, falha ao salvar dados, etc).
+// Nesses casos, o programa exibirá uma mensagem de erro e encerrará sem salvar os dados atuais em memória para evitar corrupção dos arquivos de persistência.
+
+// Os erros de validação, por outro lado, são situações em que a entrada do usuário não atende aos critérios esperados (ex: CPF inválido, ID já cadastrado, valor negativo, etc).
+// Nesses casos, o programa exibirá uma mensagem informativa para o usuário e permitirá que ele tente novamente ou retorne ao menu principal sem encerrar o programa.
+
 int main()
 {
-    int opcao;
-    setlocale(LC_ALL, ""); // Configura a localidade para o ambiente do usuário, garantindo suporte a acentos e caracteres especiais.
     // Declaração das listas principais
     ListaArtistas listaArtistas;
     ListaObras listaObras;
@@ -141,9 +147,7 @@ int main()
 	{
 	    do
 		{
-            opcao = menuPrincipal();
-            printf("Opcao escolhida: %d\n", opcao); // Debug: Exibe a opção escolhida pelo usuário.
-	        switch (opcao)
+	        switch (menuPrincipal())
 	        {
 	        case 1:
 	            if(!moduloArtistas(&listaArtistas))
@@ -198,9 +202,9 @@ int main()
 				break;
 	
 	        case 5:
-				printf("Encerrando programa...");
+				printf("Salvando dados...");
 				salvarDados(&listaArtistas, &listaObras, &listaColaboracoes);
-                printf("Dados salvos com sucesso. Agora sim vai encerrar essa bagunça.\n");
+                printf("Dados salvos com sucesso...\n");
 	            executando = false;
 	            break;
 	
@@ -214,8 +218,7 @@ int main()
 	}
 	
 	// Libera memória das listas antes de encerrar o programa.
-	printf("Chamando liberarDados()\n");
+	printf("Encerrando programa...\n");
     liberarDados(&listaArtistas, &listaObras, &listaColaboracoes);
-    printf("Fim do programa\n");
     return 0;
 }

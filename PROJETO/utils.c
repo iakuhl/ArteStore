@@ -202,6 +202,7 @@ bool lerSimNao(char *resposta)
             printf("Resposta inválida. Por favor, responda com 's' ou 'n'.\n");
         }
     } while (resposta[0] != 's' && resposta[0] != 'S' && resposta[0] != 'n' && resposta[0] != 'N');
+    return true;
 }
 
 int escolherOpcao(int min, int max)
@@ -222,4 +223,13 @@ int escolherOpcao(int min, int max)
         else
             printf(MSG_ENTRADA_INVALIDA);
     }
+}
+
+void imprimeCPF(const char *cpf) // Função para imprimir um CPF formatado (XXX.XXX.XXX-XX).
+{
+    printf("%c%c%c.%c%c%c.%c%c%c-%c%c",
+           cpf[0], cpf[1], cpf[2],
+           cpf[3], cpf[4], cpf[5],
+           cpf[6], cpf[7], cpf[8],
+           cpf[9], cpf[10]);
 }
