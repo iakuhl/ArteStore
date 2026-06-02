@@ -25,6 +25,10 @@
 #include "estruturas.h"
 
 
+// As funções deste arquivo tem objetivo de adequar as listas para a aplicação do programa.
+// Este arquivo só trabalha com expansão do tamahho das listas, liberação de memória, redução do tamanho das listas, criação e inicialização das listas.
+
+
 /************
  * ARTISTAS *
  ************/
@@ -40,13 +44,14 @@ void inicializarListaArtistas(ListaArtistas *lista, int capacidadeInicial)
         lista->capacidade = 0;
 }
 
-bool adicionarArtista(ListaArtistas *lista, Artista *artista)
+bool expandirListaArtista(ListaArtistas *lista, Artista *artista)
 {
+	Artista *temp;
     // Verifica se há espaço suficiente para adicionar o artista, se não houver, realoca a lista com mais capacidade.
     if (lista->total >= lista->capacidade)
     {
-        int novaCap = lista->capacidade + 4;
-        Artista *temp = (Artista *) realloc(lista->itens, sizeof(Artista) * novaCap);
+        int novaCap = lista->capacidade + 4; // Crescimento linear, pensado em listas pequenas, mas é possível alterar para *2, por exemplo.
+        temp = (Artista *) realloc(lista->itens, sizeof(Artista) * novaCap);
         if (temp == NULL)
             return false;
         lista->itens = temp;
@@ -73,6 +78,7 @@ int indiceArtistaPorCPF(const ListaArtistas *lista, const char *cpf)
 
 bool removerArtista(ListaArtistas *lista, int indice)
 {
+    int i;
     if (indice < 0 || indice >= lista->total)
         return false;
 
@@ -81,7 +87,6 @@ bool removerArtista(ListaArtistas *lista, int indice)
     free(lista->itens[indice].redesSociais);
 
     // Move os elementos seguintes para trás
-    int i;
     for (i = indice; i < lista->total - 1; i++)
         lista->itens[i] = lista->itens[i + 1];
     
@@ -119,7 +124,7 @@ void inicializarListaObras(ListaObras *lista, int capacidadeInicial)
         lista->capacidade = 0;
 }
 
-bool adicionarObra(ListaObras *lista, Obra *obra)
+bool expandirListaObras(ListaObras *lista, Obra *obra)
 {
     if (lista->total >= lista->capacidade)
     {
@@ -134,7 +139,7 @@ bool adicionarObra(ListaObras *lista, Obra *obra)
     return true;
 }
 
-int buscarObraPorID(const ListaObras *lista, int id)
+int indiceObraPorID(const ListaObras *lista, int id)
 {
     int i;
     for (i = 0; i < lista->total; i++)
@@ -182,7 +187,7 @@ void inicializarListaColaboracoes(ListaColaboracoes *lista, int capacidadeInicia
         lista->capacidade = 0;
 }
 
-bool adicionarColaboracao(ListaColaboracoes *lista, Colaboracao *colab)
+bool expandirListaColaboracoes(ListaColaboracoes *lista, Colaboracao *colab)
 {
     if (lista->total >= lista->capacidade)
     {
@@ -197,13 +202,12 @@ bool adicionarColaboracao(ListaColaboracoes *lista, Colaboracao *colab)
     return true;
 }
 
-int buscarColaboracao(const ListaColaboracoes *lista, const char *cpf, int idObra)
+int indiceColaboracaoPorChave(const ListaColaboracoes *lista, const char *cpf, int idObra)
 {
     int i;
     for (i = 0; i < lista->total; i++)
     {
-        if (strcmp(lista->itens[i].chaveColab.cpf, cpf) == 0 &&
-            lista->itens[i].chaveColab.id == idObra)
+        if (strcmp(lista->itens[i].chaveColab.cpf, cpf) == 0 && lista->itens[i].chaveColab.id == idObra)
             return i;
     }
     return -1;
@@ -211,10 +215,11 @@ int buscarColaboracao(const ListaColaboracoes *lista, const char *cpf, int idObr
 
 bool removerColaboracao(ListaColaboracoes *lista, int indice)
 {
+    int i;
     if (indice < 0 || indice >= lista->total)
         return false;
     
-    for (int i = indice; i < lista->total - 1; i++)
+    for (i = indice; i < lista->total - 1; i++)
     {
         lista->itens[i] = lista->itens[i + 1];
     }
