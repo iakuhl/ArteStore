@@ -58,9 +58,9 @@ static bool dadosInformados(char *entrada, int tamanho)
 	if (fgets(entrada, tamanho, stdin) == NULL)
 	{
 		if (feof(stdin))
-			printf("MSG_EOF_DETECTADO");
+			printf(MSG_EOF_DETECTADO);
 		else
-			printf("MSG_ERRO_LEITURA");
+			printf(MSG_ERRO_LEITURA);
 		return false;
 	}
 	return true;
@@ -131,7 +131,7 @@ bool lerString(char texto[], int tamanho) // Validação robusta para entrada de
         // Verifica se a entrada ultrapassa o limite do buffer
         if(!verificarLimiteString(texto))
         {
-            printf("MSG_LIMITE_CARACTERES_ATINGIDO");
+            printf(MSG_LIMITE_CARACTERES_ATINGIDO);
             continue;
         }
 
