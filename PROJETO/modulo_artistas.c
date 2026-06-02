@@ -48,6 +48,7 @@
             // Excluir.
             // Editar/Alterar.
 
+// Desta forma, o projeto respeita a arquitetura das listas dinâmicas de telefones e redes sociais.
 
 /*********
  * MENUS *
@@ -86,10 +87,6 @@ static int menuAlteracaoArtista()
  * SUB-MODULO DE ALTERAÇÕES *
  ****************************/
 
-/************************
- * MODULO DE ALTERAÇÕES *
- ************************/
-
 /* Protótipos das funções auxiliares (definidas a seguir) */
 static void listarTelefones(const Artista *a);
 static bool adicionarTelefone(Artista *a);
@@ -110,7 +107,7 @@ static bool alterarArtista(ListaArtistas *lista, int indice)
 {
     bool executando = true;
     Artista *a = &lista->itens[indice];
-
+    int op;
     char novoNome[TAM_TXTO_MEDIO];
     char novaNacionalidade[TAM_TEXTO_PEQUENO];
     char novoEstilo[TAM_TEXTO_PEQUENO];
@@ -118,13 +115,13 @@ static bool alterarArtista(ListaArtistas *lista, int indice)
 
     do
     {
-        int op = menuAlteracaoArtista();
-        if (op == -99)
+        op = menuAlteracaoArtista();
+        if (op == -99) // Teste de erro crítico
             return false;
 
         switch (op)
         {
-        case 1: // Nome
+        case 1: // Aterar nome
             printf("Novo nome: ");
             if (!lerString(novoNome, TAM_TXTO_MEDIO))
                 return false;
@@ -132,13 +129,14 @@ static bool alterarArtista(ListaArtistas *lista, int indice)
             printf("Confirma a alteração do nome para \"%s\"? (s/n): ", novoNome);
             if (!lerSimNao(confirma))
                 return false;
+            
             if (confirma[0] == 's' || confirma[0] == 'S')
                 strcpy(a->nome, novoNome);
             else
                 printf("Alteração cancelada.\n");
             break;
 
-        case 2: // Nacionalidade
+        case 2: // Alterar nacionalidade
             printf("Nova nacionalidade: ");
             if (!lerString(novaNacionalidade, TAM_TEXTO_PEQUENO))
                 return false;
@@ -152,7 +150,7 @@ static bool alterarArtista(ListaArtistas *lista, int indice)
                 printf("Alteração cancelada.\n");
             break;
 
-        case 3: // Estilo
+        case 3: // Alterar estilo
             printf("Novo estilo: ");
             if (!lerString(novoEstilo, TAM_TEXTO_PEQUENO))
                 return false;
@@ -160,18 +158,19 @@ static bool alterarArtista(ListaArtistas *lista, int indice)
             printf("Confirma a alteração do estilo para \"%s\"? (s/n): ", novoEstilo);
             if (!lerSimNao(confirma))
                 return false;
+            
             if (confirma[0] == 's' || confirma[0] == 'S')
                 strcpy(a->estilo, novoEstilo);
             else
                 printf("Alteração cancelada.\n");
             break;
 
-        case 4: // Telefones
+        case 4: // Alterar Telefones
             if (!alterarTelefones(a))
                 return false;
             break;
 
-        case 5: // Redes Sociais
+        case 5: // Alterar Redes Sociais
             if (!alterarRedesSociais(a))
                 return false;
             break;
@@ -326,15 +325,14 @@ static bool alterarTelefones(Artista *a)
 /* ─── Redes Sociais ─── */
 static void listarRedesSociais(const Artista *a)
 {
+    int i;
     if (a->totalRedesSociais == 0)
     {
         printf("Nenhuma rede social cadastrada.\n");
         return;
     }
-    for (int i = 0; i < a->totalRedesSociais; i++)
-        printf("  %d: %s - %s\n", i + 1,
-               a->redesSociais[i].redeSocial,
-               a->redesSociais[i].usuario);
+    for (i = 0; i < a->totalRedesSociais; i++)
+        printf("  %d: %s - %s\n", i + 1, a->redesSociais[i].redeSocial, a->redesSociais[i].usuario);
 }
 
 static bool adicionarRedeSocial(Artista *a)
@@ -342,100 +340,109 @@ static bool adicionarRedeSocial(Artista *a)
     char novaPlat[TAM_TEXTO_PEQUENO];
     char novoUser[TAM_TEXTO_PEQUENO];
     char confirma[TAM_SIM_NAO];
+    redeSocial *temp = (redeSocial *)realloc(a->redesSociais, sizeof(redeSocial) * (a->totalRedesSociais + 1));
 
     printf("  Plataforma: ");
     if (!lerString(novaPlat, TAM_TEXTO_PEQUENO))
         return false;
+    
     printf("  Usuário: ");
     if (!lerString(novoUser, TAM_TEXTO_PEQUENO))
         return false;
-
+    
     printf("Confirma a adição da rede social \"%s\" com usuário \"%s\"? (s/n): ", novaPlat, novoUser);
     if (!lerSimNao(confirma))
         return false;
-    if (!(confirma[0] == 's' || confirma[0] == 'S'))
+    if (confirma[0] == 's' || confirma[0] == 'S')
+    {
+        if (temp == NULL)
+        {
+            printf("Erro de memória ao adicionar rede social.\n");
+            return false;
+        }
+        a->redesSociais = temp;
+        strcpy(a->redesSociais[a->totalRedesSociais].redeSocial, novaPlat);
+        strcpy(a->redesSociais[a->totalRedesSociais].usuario, novoUser);
+        a->totalRedesSociais++;
+        a->capacidadeRedesSociais = a->totalRedesSociais;
+        
+        printf("Rede social adicionada.\n");
+        return true;
+    }
+    else
     {
         printf("Adição cancelada.\n");
         return true;
     }
-
-    redeSocial *temp = (redeSocial *)realloc(a->redesSociais,
-                                             sizeof(redeSocial) * (a->totalRedesSociais + 1));
-    if (temp == NULL)
-    {
-        printf("Erro de memória ao adicionar rede social.\n");
-        return false;
-    }
-    a->redesSociais = temp;
-    strcpy(a->redesSociais[a->totalRedesSociais].redeSocial, novaPlat);
-    strcpy(a->redesSociais[a->totalRedesSociais].usuario,     novoUser);
-    a->totalRedesSociais++;
-    a->capacidadeRedesSociais = a->totalRedesSociais;
-
-    printf("Rede social adicionada.\n");
-    return true;
 }
 
 static bool removerRedeSocial(Artista *a)
 {
+    int idx, i;
+    char confirma[TAM_SIM_NAO];
+    
     listarRedesSociais(a);
     if (a->totalRedesSociais == 0)
         return true;
 
     printf("Índice da rede social a remover (1 a %d): ", a->totalRedesSociais);
-    int idx = escolherOpcao(1, a->totalRedesSociais);
+    idx = escolherOpcao(1, a->totalRedesSociais);
     if (idx == -99) return false;
     idx--;
 
-    char confirma[TAM_SIM_NAO];
-    printf("Confirma a remoção da rede social \"%s\" (usuário \"%s\")? (s/n): ",
-           a->redesSociais[idx].redeSocial, a->redesSociais[idx].usuario);
+    printf("Confirma a remoção da rede social \"%s\" (usuário \"%s\")? (s/n): ", a->redesSociais[idx].redeSocial, a->redesSociais[idx].usuario);
     if (!lerSimNao(confirma))
         return false;
-    if (!(confirma[0] == 's' || confirma[0] == 'S'))
+    
+    // Percorre a lista de Redes Sociais a partir do índice, sobreescrevendo o índice atual com o próximo, até o final da lista.
+    if (confirma[0] == 's' || confirma[0] == 'S')
+    {
+        for (i = idx; i < a->totalRedesSociais - 1; i++)
+        {
+            a->redesSociais[i] = a->redesSociais[i + 1];
+        }
+        a->totalRedesSociais--;
+        printf("Rede social removida.\n");
+        return true;
+    }
+    else
     {
         printf("Remoção cancelada.\n");
         return true;
     }
-
-    for (int i = idx; i < a->totalRedesSociais - 1; i++)
-        a->redesSociais[i] = a->redesSociais[i + 1];
-    a->totalRedesSociais--;
-    printf("Rede social removida.\n");
-    return true;
 }
 
 static bool editarRedeSocial(Artista *a)
 {
+    int idx, i;
+    char confirma[TAM_SIM_NAO], char novaPlat[TAM_TEXTO_PEQUENO], char novoUser[TAM_TEXTO_PEQUENO];
+    
     listarRedesSociais(a);
     if (a->totalRedesSociais == 0)
         return true;
 
     printf("Índice da rede social a editar (1 a %d): ", a->totalRedesSociais);
-    int idx = escolherOpcao(1, a->totalRedesSociais);
-    if (idx == -99) return false;
+    idx = escolherOpcao(1, a->totalRedesSociais);
+    if (idx == -99)
+        return false;
     idx--;
-
-    char novaPlat[TAM_TEXTO_PEQUENO];
-    char novoUser[TAM_TEXTO_PEQUENO];
 
     printf("Nova plataforma: ");
     if (!lerString(novaPlat, TAM_TEXTO_PEQUENO))
         return false;
+    
     printf("Novo usuário: ");
     if (!lerString(novoUser, TAM_TEXTO_PEQUENO))
         return false;
 
-    char confirma[TAM_SIM_NAO];
-    printf("Confirma as alterações (plataforma: \"%s\" -> \"%s\", usuário: \"%s\" -> \"%s\")? (s/n): ",
-           a->redesSociais[idx].redeSocial, novaPlat,
-           a->redesSociais[idx].usuario, novoUser);
+    printf("Confirma as alterações (plataforma: \"%s\" -> \"%s\", usuário: \"%s\" -> \"%s\")? (s/n): ", a->redesSociais[idx].redeSocial, novaPlat, a->redesSociais[idx].usuario, novoUser);
     if (!lerSimNao(confirma))
         return false;
+    
     if (confirma[0] == 's' || confirma[0] == 'S')
     {
         strcpy(a->redesSociais[idx].redeSocial, novaPlat);
-        strcpy(a->redesSociais[idx].usuario,     novoUser);
+        strcpy(a->redesSociais[idx].usuario, novoUser);
         printf("Rede social atualizada.\n");
     }
     else
@@ -457,16 +464,31 @@ static bool alterarRedesSociais(Artista *a)
         printf("4 - Editar rede social\n");
         printf("5 - Voltar\n");
         printf("Escolha: ");
-        int op = escolherOpcao(1, 5);
-        if (op == -99) return false;
+        int op;
+        op = escolherOpcao(1, 5);
+        if (op == -99)
+            return false;
 
         switch (op)
         {
-        case 1: listarRedesSociais(a); break;
-        case 2: if (!adicionarRedeSocial(a)) return false; break;
-        case 3: if (!removerRedeSocial(a))   return false; break;
-        case 4: if (!editarRedeSocial(a))    return false; break;
-        case 5: gerenciando = false; break;
+        case 1:
+            listarRedesSociais(a);
+            break;
+        case 2:
+            if (!adicionarRedeSocial(a))
+                return false;
+            break;
+        case 3:
+            if (!removerRedeSocial(a))  
+                return false;
+            break;
+        case 4:
+            if (!editarRedeSocial(a))
+                return false;
+            break;
+        case 5
+            gerenciando = false;
+            break;
         }
     } while (gerenciando);
     return true;
