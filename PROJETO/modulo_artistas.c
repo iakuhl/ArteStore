@@ -83,6 +83,33 @@ static int menuAlteracaoArtista()
 }
 
 
+static int menuTelefones()
+{
+    printf("\n### Gerenciar Telefones de %s ###\n", a->nome);
+    printf("1 - Listar telefones\n");
+    printf("2 - Adicionar telefone\n");
+    printf("3 - Remover telefone\n");
+    printf("4 - Editar telefone\n");
+    printf("5 - Voltar\n");
+
+    printf("Escolha uma opção: ");
+    return escolherOpcao(1, 5);
+}
+
+static int menuRedesSociais()
+{
+    printf("\n### Gerenciar Redes Sociais de %s ###\n", a->nome);
+    printf("1 - Listar redes sociais\n");
+    printf("2 - Adicionar rede social\n");
+    printf("3 - Remover rede social\n");
+    printf("4 - Editar rede social\n");
+    printf("5 - Voltar\n");
+    
+    printf("Escolha uma opção: ");
+    return escolherOpcao(1, 5);
+}
+
+
 /****************************
  * SUB-MODULO DE ALTERAÇÕES *
  ****************************/
@@ -202,6 +229,7 @@ static void listarTelefones(const Artista *a)
 
 static bool adicionarTelefone(Artista *a)
 {
+    Telefone *temp;
     char novoNum[TAM_TELEFONE];
     char confirma[TAM_SIM_NAO];
 
@@ -212,14 +240,14 @@ static bool adicionarTelefone(Artista *a)
     printf("Confirma a adição do telefone \"%s\"? (s/n): ", novoNum);
     if (!lerSimNao(confirma))
         return false;
+    
     if (!(confirma[0] == 's' || confirma[0] == 'S'))
     {
         printf("Adição cancelada.\n");
-        return true;                // não é erro, apenas volta ao menu
+        return true;
     }
 
-    Telefone *temp = (Telefone *)realloc(a->telefones,
-                                         sizeof(Telefone) * (a->totalTelefones + 1));
+    temp = (Telefone *)realloc(a->telefones, sizeof(Telefone) * (a->totalTelefones + 1));
     if (temp == NULL)
     {
         printf("Erro de memória ao adicionar telefone.\n");
@@ -236,26 +264,29 @@ static bool adicionarTelefone(Artista *a)
 
 static bool removerTelefone(Artista *a)
 {
+    int idx, i;
+    char confirma[TAM_SIM_NAO];
     listarTelefones(a);
     if (a->totalTelefones == 0)
         return true;
 
     printf("Índice do telefone a remover (1 a %d): ", a->totalTelefones);
-    int idx = escolherOpcao(1, a->totalTelefones);
-    if (idx == -99) return false;
+    idx = escolherOpcao(1, a->totalTelefones);
+    if (idx == -99)
+        return false;
     idx--;
 
-    char confirma[TAM_SIM_NAO];
     printf("Confirma a remoção do telefone \"%s\"? (s/n): ", a->telefones[idx].numeroTelefone);
     if (!lerSimNao(confirma))
         return false;
+    
     if (!(confirma[0] == 's' || confirma[0] == 'S'))
     {
         printf("Remoção cancelada.\n");
         return true;
     }
 
-    for (int i = idx; i < a->totalTelefones - 1; i++)
+    for (i = idx; i < a->totalTelefones - 1; i++)
         a->telefones[i] = a->telefones[i + 1];
     a->totalTelefones--;
     printf("Telefone removido.\n");
@@ -297,28 +328,40 @@ static bool editarTelefone(Artista *a)
 
 static bool alterarTelefones(Artista *a)
 {
-    bool gerenciando = true;
+    bool executando = true;
     do
     {
-        printf("\n### Gerenciar Telefones de %s ###\n", a->nome);
-        printf("1 - Listar telefones\n");
-        printf("2 - Adicionar telefone\n");
-        printf("3 - Remover telefone\n");
-        printf("4 - Editar telefone\n");
-        printf("5 - Voltar\n");
-        printf("Escolha: ");
-        int op = escolherOpcao(1, 5);
-        if (op == -99) return false;
+        int op;
+        op = menuTelefones();
+        if (op == -99)
+            return false;
 
         switch (op)
         {
-        case 1: listarTelefones(a); break;
-        case 2: if (!adicionarTelefone(a)) return false; break;
-        case 3: if (!removerTelefone(a))   return false; break;
-        case 4: if (!editarTelefone(a))    return false; break;
-        case 5: gerenciando = false; break;
+        case 1:
+            listarTelefones(a);
+            break;
+            
+        case 2:
+            if (!adicionarTelefone(a))
+                return false;
+            break;
+            
+        case 3:
+            if (!removerTelefone(a))
+                return false;
+            break;
+            
+        case 4:
+            if (!editarTelefone(a))
+                return false;
+            break;
+            
+        case 5:
+            executando = false;
+            break;
         }
-    } while (gerenciando);
+    } while (executando);
     return true;
 }
 
@@ -454,18 +497,11 @@ static bool editarRedeSocial(Artista *a)
 
 static bool alterarRedesSociais(Artista *a)
 {
-    bool gerenciando = true;
+    bool executando = true;
     do
     {
-        printf("\n### Gerenciar Redes Sociais de %s ###\n", a->nome);
-        printf("1 - Listar redes sociais\n");
-        printf("2 - Adicionar rede social\n");
-        printf("3 - Remover rede social\n");
-        printf("4 - Editar rede social\n");
-        printf("5 - Voltar\n");
-        printf("Escolha: ");
         int op;
-        op = escolherOpcao(1, 5);
+        op = menuRedesSociais();
         if (op == -99)
             return false;
 
@@ -487,10 +523,10 @@ static bool alterarRedesSociais(Artista *a)
                 return false;
             break;
         case 5
-            gerenciando = false;
+            executando = false;
             break;
         }
-    } while (gerenciando);
+    } while (executando);
     return true;
 }
 /**********************
@@ -644,7 +680,8 @@ static bool cadastrarArtista(ListaArtistas *lista)
         }
     }
     a.capacidadeRedesSociais = a.totalRedesSociais;
-
+    
+    
     // Adiciona à lista
     if (adicionarArtista(lista, &a) == false)
     {
