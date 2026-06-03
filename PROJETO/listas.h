@@ -33,14 +33,14 @@ void liberarListaArtistas(ListaArtistas *lista);
 // Análogas para obras
 void inicializarListaObras(ListaObras *lista, int capacidadeInicial);
 bool adicionarObra(ListaObras *lista, Obra *obra);
-int buscarObraPorID(const ListaObras *lista, int id);
+int indiceObraPorID(const ListaObras *lista, int id);
 bool removerObra(ListaObras *lista, int indice);
 void liberarListaObras(ListaObras *lista);
 
 // Análogas para colaborações
 void inicializarListaColaboracoes(ListaColaboracoes *lista, int capacidadeInicial);
 bool adicionarColaboracao(ListaColaboracoes *lista, Colaboracao *colab);
-int buscarColaboracao(const ListaColaboracoes *lista, const char *cpf, int idObra);
+int indiceColaboracaoPorChave(const ListaColaboracoes *lista, const char *cpf, int idObra);
 bool removerColaboracao(ListaColaboracoes *lista, int indice);
 void liberarListaColaboracoes(ListaColaboracoes *lista);
 

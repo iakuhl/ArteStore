@@ -19,8 +19,8 @@
 // Todas as definições de constantes, como tamanhos de campos, estão no arquivo defines.h para facilitar a manutenção e evitar "números mágicos" espalhados pelo código.
 #include "defines.h"
 
-// Todos os dados deverão passar por validação constantes no arquivo utils.c e/ou na execução do código principal / modulo específico.
-// Todas as estruturas armazenam dados "crus", a máscara de formatação será aplicada somente na exibição dos relatórios.
+// A validação de dados será realizada nas funções do arquivo utils.c ou nas funções específicas dos módulos.
+// Todas as estruturas armazenam dados "crus", a máscara de formatação será aplicada somente na exibição dos relatórios ou na exibição das listagens, mediante formação aplicada na exibição.
 
 /**************
  * ESTRUTURAS *
@@ -38,12 +38,11 @@ typedef struct
 	char numeroTelefone[TAM_TELEFONE];
 } Telefone;
 
-
 typedef struct
 {
 	char redeSocial[TAM_TEXTO_PEQUENO];
 	char usuario[TAM_TEXTO_PEQUENO];
-}redeSocial;
+} redeSocial;
 
 // Estrutura para Artistas.
 typedef struct

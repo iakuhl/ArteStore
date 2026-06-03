@@ -42,7 +42,7 @@ FILE *carregarArquivo(char *nome, int *total) // Retorna ponteiro para o arquivo
     
     // Verifica se foi possível ler o arquivo e se algum dado foi lido.
 	// Todas as listas utilizam o mesmo formato de gravação, com o total de itens no início do arquivo, então é possível usar a mesma função para ler o total e verificar se o arquivo está vazio ou corrompido.
-    if (fread(total, sizeof(int), 1, arquivo) != 1 || *total <= 0) 
+    if (fread(total, sizeof(int), 1, arquivo) != 1 || *total <= 0 || *total > MAX_LISTAS) // Limite para evitar alocação excessiva em caso de arquivos corrompidos.
     {
         fclose(arquivo);
         printf(MSG_ARQUIVO_VAZIO); // Vazio ou corrompido.
@@ -53,17 +53,23 @@ FILE *carregarArquivo(char *nome, int *total) // Retorna ponteiro para o arquivo
 }
 
 /********************************************************************************
- * Retornos das funções de carregamento específicas:							*
- * -1: Lista inicializada vazia ou com todos os dados carregados com sucesso.	*
+ * Retornos das funções de carregamento:										*
+ * -1: Lista inicializada vazia ou com TODOS os dados carregados com sucesso.	*
  * -99: Falha ao alocar memória para a lista, mesmo com capacidade adequada.	*
  * i (índice): Último índice carregado com sucesso.								*
  ********************************************************************************/
+
+/****************************************
+ * Retornos das funções de salvamento:	*
+ * true: Dados salvos com sucesso.		*
+ * false: Falha ao salvar os dados.		*
+ ****************************************/
 
  /***********
  * ARTISTAS *
  ************/
 
-int carregarArtistas(ListaArtistas *lista) 
+int carregarArtistas(ListaArtistas *lista)
 {
     FILE *arquivo;
     char nome[] = NOME_ARQUIVO_ARTISTAS;
@@ -72,13 +78,12 @@ int carregarArtistas(ListaArtistas *lista)
 	// Tenta ler arquivo e inicializa a lista com capacidade adequada.
 	arquivo = carregarArquivo(nome, &total);
 
+	// Se o arquivo não existe, está vazio ou corrompido, inicia lista com capacidade mínima (escolhi 4 tanto como capacidade inicial, quanto como incremento em realloc).
 	if (arquivo == NULL)
-	{
 		total = 4;
-	}
 	
 	inicializarListaArtistas(lista, total);
-
+	// Caso lista não inicialize corretamente, retornar erro.
 	if (lista->itens == NULL)
 	{
 		if (arquivo != NULL)
@@ -257,6 +262,7 @@ bool salvarArtistas(const ListaArtistas *lista)
 {
     FILE *arquivo = fopen(NOME_ARQUIVO_ARTISTAS, "wb");
 	int i, j;
+	const Artista *a;
 
     if (arquivo == NULL)
         return false;
@@ -270,7 +276,7 @@ bool salvarArtistas(const ListaArtistas *lista)
 
     for (i = 0; i < lista->total; i++)
     {
-        const Artista *a = &lista->itens[i];
+        a = &lista->itens[i];
 
         // Campos de texto com tamanho fixo
         if(fwrite(a->cpf, sizeof(char), TAM_CPF, arquivo) != TAM_CPF)
@@ -454,11 +460,10 @@ int carregarObras(ListaObras *lista)
 bool salvarObras(const ListaObras *lista)
 {
     FILE *arquivo = fopen(NOME_ARQUIVO_OBRAS, "wb");
+	const Obra *o;
 	int i;
     if (arquivo == NULL)
-    {
         return false;
-    }
 
     // Escreve o total de obras no início do arquivo
     if(fwrite(&lista->total, sizeof(int), 1, arquivo) != 1)
@@ -470,7 +475,7 @@ bool salvarObras(const ListaObras *lista)
     // Escreve cada obra
     for (i = 0; i < lista->total; i++)
     {
-        const Obra *o = &lista->itens[i];
+        o = &lista->itens[i];
 
         // Campos inteiros
         if(fwrite(&o->id, sizeof(int), 1, arquivo) != 1)
@@ -625,6 +630,7 @@ int carregarColaboracoes(ListaColaboracoes *lista)
 bool salvarColaboracoes(const ListaColaboracoes *lista)
 {
     FILE *arquivo = fopen(NOME_ARQUIVO_COLABORACOES, "wb");
+	const Colaboracao *c;
 	int i;
     if (arquivo == NULL)
     {
@@ -640,7 +646,7 @@ bool salvarColaboracoes(const ListaColaboracoes *lista)
 
     for (i = 0; i < lista->total; i++)
     {
-        const Colaboracao *c = &lista->itens[i];
+        c = &lista->itens[i];
 
         // Chave da colaboração
         if(fwrite(c->chaveColab.cpf, sizeof(char), TAM_CPF, arquivo) != TAM_CPF)

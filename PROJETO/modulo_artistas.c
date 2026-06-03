@@ -30,29 +30,29 @@
 #include "listas.h"
 #include "persistencia.h"
 
-// O módulo de artistas é o mais extenso de todo o projeto, ele possui a seguinte estrutura:
+// O módulo de artistas possui a seguinte estrutura:
 // Menu principal:
     // Listar um ou todos.
     // Cadastrar.
     // Excluir.
-    // Alterar dados de artista (sub-módulo):
+    // Alterar dados (sub-módulo do menu de artistas):
         // Nome.
         // Nacionalidade.
         // Estilo.
-        // Gerenciamento de Telefones: ("sub-sub-módulo"):
+        // Telefones: (sub-módulo do menu de alteração de artistas):
             // Adicionar.
             // Excluir.
             // Editar/Alterar.
-        // Gerenciamento de Redes Sociais: ("sub-sub-módulo"):
+        // Redes Sociais: (sub-módulo do menu de alteração de artistas):
             // Adicionar.
             // Excluir.
             // Editar/Alterar.
 
-// Desta forma, o projeto respeita a arquitetura das listas dinâmicas de telefones e redes sociais.
+// As operações de exclusão e alteração de artistas solicitam confirmação do usuário antes de realizar a ação.
 
-/*********
- * MENUS *
- *********/
+/*********************
+ * EXIBIÇÃO DE MENUS *
+ *********************/
 
 static int menuArtistas()
 {
@@ -61,10 +61,11 @@ static int menuArtistas()
     printf("2 - Listar todos os artistas\n");
     printf("3 - Imprimir informações de um artista\n");
     printf("4 - Excluir artista\n");
-    printf("5 - Voltar ao Menu Principal\n");
+    printf("5 - Alterar dados de um artista\n");
 
-    printf("Escolha uma opção: ");
-    return escolherOpcao(1, 5);
+    printf("6 - Voltar ao Menu Principal\n");
+
+    return escolherOpcao(1, 6);
 }
 
 static int menuAlteracaoArtista()
@@ -76,176 +77,59 @@ static int menuAlteracaoArtista()
     printf("3 - Estilo\n");
     printf("4 - Telefones\n");
     printf("5 - Redes Sociais\n");
+
     printf("6 - Salvar e Retornar ao menu Artistas");
 
-    printf("Escolha uma opção: ");
     return escolherOpcao(1, 6);
 }
 
-
 static int menuTelefones()
 {
-    printf("\n### Gerenciar Telefones de %s ###\n", a->nome);
-    printf("1 - Listar telefones\n");
-    printf("2 - Adicionar telefone\n");
-    printf("3 - Remover telefone\n");
-    printf("4 - Editar telefone\n");
-    printf("5 - Voltar\n");
+    printf("\n### Gerenciar Telefones ###\n");
+    printf("1 - Adicionar telefone\n");
+    printf("2 - Remover telefone\n");
+    printf("3 - Editar telefone\n");
 
-    printf("Escolha uma opção: ");
-    return escolherOpcao(1, 5);
+    printf("4 - Voltar\n");
+
+    return escolherOpcao(1, 4);
 }
 
 static int menuRedesSociais()
 {
-    printf("\n### Gerenciar Redes Sociais de %s ###\n", a->nome);
-    printf("1 - Listar redes sociais\n");
-    printf("2 - Adicionar rede social\n");
-    printf("3 - Remover rede social\n");
-    printf("4 - Editar rede social\n");
-    printf("5 - Voltar\n");
-    
-    printf("Escolha uma opção: ");
-    return escolherOpcao(1, 5);
+    printf("\n### Gerenciar Redes Sociais ###\n");
+    printf("1 - Adicionar rede social\n");
+    printf("2 - Remover rede social\n");
+    printf("3 - Editar rede social\n");
+
+    printf("4 - Voltar\n");
+
+    return escolherOpcao(1, 4);
 }
 
-
-/****************************
- * SUB-MODULO DE ALTERAÇÕES *
- ****************************/
-
-/* Protótipos das funções auxiliares (definidas a seguir) */
-static void listarTelefones(const Artista *a);
-static bool adicionarTelefone(Artista *a);
-static bool removerTelefone(Artista *a);
-static bool editarTelefone(Artista *a);
-static bool alterarTelefones(Artista *a);
-
-static void listarRedesSociais(const Artista *a);
-static bool adicionarRedeSocial(Artista *a);
-static bool removerRedeSocial(Artista *a);
-static bool editarRedeSocial(Artista *a);
-static bool alterarRedesSociais(Artista *a);
-
-/*******************************
- * alterarArtista (principal)  *
- *******************************/
-static bool alterarArtista(ListaArtistas *lista, int indice)
-{
-    bool executando = true;
-    Artista *a = &lista->itens[indice];
-    int op;
-    char novoNome[TAM_TXTO_MEDIO];
-    char novaNacionalidade[TAM_TEXTO_PEQUENO];
-    char novoEstilo[TAM_TEXTO_PEQUENO];
-    char confirma[TAM_SIM_NAO];
-
-    do
-    {
-        op = menuAlteracaoArtista();
-        if (op == -99) // Teste de erro crítico
-            return false;
-
-        switch (op)
-        {
-        case 1: // Aterar nome
-            printf("Novo nome: ");
-            if (!lerString(novoNome, TAM_TXTO_MEDIO))
-                return false;
-
-            printf("Confirma a alteração do nome para \"%s\"? (s/n): ", novoNome);
-            if (!lerSimNao(confirma))
-                return false;
-            
-            if (confirma[0] == 's' || confirma[0] == 'S')
-                strcpy(a->nome, novoNome);
-            else
-                printf("Alteração cancelada.\n");
-            break;
-
-        case 2: // Alterar nacionalidade
-            printf("Nova nacionalidade: ");
-            if (!lerString(novaNacionalidade, TAM_TEXTO_PEQUENO))
-                return false;
-
-            printf("Confirma a alteração da nacionalidade para \"%s\"? (s/n): ", novaNacionalidade);
-            if (!lerSimNao(confirma))
-                return false;
-            if (confirma[0] == 's' || confirma[0] == 'S')
-                strcpy(a->nacionalidade, novaNacionalidade);
-            else
-                printf("Alteração cancelada.\n");
-            break;
-
-        case 3: // Alterar estilo
-            printf("Novo estilo: ");
-            if (!lerString(novoEstilo, TAM_TEXTO_PEQUENO))
-                return false;
-
-            printf("Confirma a alteração do estilo para \"%s\"? (s/n): ", novoEstilo);
-            if (!lerSimNao(confirma))
-                return false;
-            
-            if (confirma[0] == 's' || confirma[0] == 'S')
-                strcpy(a->estilo, novoEstilo);
-            else
-                printf("Alteração cancelada.\n");
-            break;
-
-        case 4: // Alterar Telefones
-            if (!alterarTelefones(a))
-                return false;
-            break;
-
-        case 5: // Alterar Redes Sociais
-            if (!alterarRedesSociais(a))
-                return false;
-            break;
-
-        case 6: // Salvar e retornar
-            executando = false;
-            break;
-        }
-    } while (executando);
-
-    return true;
-}
-
-/**************************************
- * GERENCIAMENTO DE TELEFONES E REDES *
- **************************************/
+/*************************************************
+ * FUNÇÕES DE GERENCIAMENTO DE TELEFONES E REDES *
+ *************************************************/
 
 /* ─── Telefones ─── */
 static void listarTelefones(const Artista *a)
 {
-    if (a->totalTelefones == 0)
-    {
+    int i;
+    if (a->totalTelefones > 0)
+        for (i = 0; i < a->totalTelefones; i++)
+            printf("  %d: %s\n", i + 1, a->telefones[i].numeroTelefone);
+    else
         printf("Nenhum telefone cadastrado.\n");
-        return;
-    }
-    for (int i = 0; i < a->totalTelefones; i++)
-        printf("  %d: %s\n", i + 1, a->telefones[i].numeroTelefone);
 }
 
 static bool adicionarTelefone(Artista *a)
 {
     Telefone *temp;
     char novoNum[TAM_TELEFONE];
-    char confirma[TAM_SIM_NAO];
 
     printf("  Número do telefone: ");
     if (!lerString(novoNum, TAM_TELEFONE))
         return false;
-
-    printf("Confirma a adição do telefone \"%s\"? (s/n): ", novoNum);
-    if (!lerSimNao(confirma))
-        return false;
-    
-    if (!(confirma[0] == 's' || confirma[0] == 'S'))
-    {
-        printf("Adição cancelada.\n");
-        return true;
-    }
 
     temp = (Telefone *)realloc(a->telefones, sizeof(Telefone) * (a->totalTelefones + 1));
     if (temp == NULL)
@@ -266,102 +150,58 @@ static bool removerTelefone(Artista *a)
 {
     int idx, i;
     char confirma[TAM_SIM_NAO];
-    listarTelefones(a);
-    if (a->totalTelefones == 0)
-        return true;
 
-    printf("Índice do telefone a remover (1 a %d): ", a->totalTelefones);
     idx = escolherOpcao(1, a->totalTelefones);
     if (idx == -99)
         return false;
     idx--;
 
-    printf("Confirma a remoção do telefone \"%s\"? (s/n): ", a->telefones[idx].numeroTelefone);
+    printf(MSG_CONFIRMAR_EXCLUSAO, a->telefones[idx].numeroTelefone);
     if (!lerSimNao(confirma))
         return false;
     
-    if (!(confirma[0] == 's' || confirma[0] == 'S'))
+    if (confirma[0] == 's' || confirma[0] == 'S')
     {
-        printf("Remoção cancelada.\n");
-        return true;
+        for (i = idx; i < a->totalTelefones - 1; i++)
+        {
+            a->telefones[i] = a->telefones[i + 1];
+        }
+        a->totalTelefones--;
+        printf("Telefone removido.\n");
     }
-
-    for (i = idx; i < a->totalTelefones - 1; i++)
-        a->telefones[i] = a->telefones[i + 1];
-    a->totalTelefones--;
-    printf("Telefone removido.\n");
+    else
+        printf(MSG_EXCLUSAO_CANCELADA);
+    
     return true;
 }
 
 static bool editarTelefone(Artista *a)
 {
-    listarTelefones(a);
-    if (a->totalTelefones == 0)
-        return true;
+    int idx;
+    char confirma[TAM_SIM_NAO], novoNum[TAM_TELEFONE];
 
-    printf("Índice do telefone a editar (1 a %d): ", a->totalTelefones);
-    int idx = escolherOpcao(1, a->totalTelefones);
-    if (idx == -99) return false;
+    idx = escolherOpcao(1, a->totalTelefones);
+    if (idx == -99)
+        return false;
+
     idx--;
 
-    char novoNum[TAM_TELEFONE];
     printf("Novo número: ");
     if (!lerString(novoNum, TAM_TELEFONE))
         return false;
 
-    char confirma[TAM_SIM_NAO];
-    printf("Confirma a alteração do telefone de \"%s\" para \"%s\"? (s/n): ",
-           a->telefones[idx].numeroTelefone, novoNum);
+    printf(MSG_CONFIRMAR_ALTERACAO, a->telefones[idx].numeroTelefone, novoNum);
     if (!lerSimNao(confirma))
         return false;
+    
     if (confirma[0] == 's' || confirma[0] == 'S')
     {
         strcpy(a->telefones[idx].numeroTelefone, novoNum);
-        printf("Telefone atualizado.\n");
+        printf(MSG_ALTERACAO_REALIZADA_SUCESSO);
     }
     else
-    {
-        printf("Edição cancelada.\n");
-    }
-    return true;
-}
-
-static bool alterarTelefones(Artista *a)
-{
-    bool executando = true;
-    do
-    {
-        int op;
-        op = menuTelefones();
-        if (op == -99)
-            return false;
-
-        switch (op)
-        {
-        case 1:
-            listarTelefones(a);
-            break;
-            
-        case 2:
-            if (!adicionarTelefone(a))
-                return false;
-            break;
-            
-        case 3:
-            if (!removerTelefone(a))
-                return false;
-            break;
-            
-        case 4:
-            if (!editarTelefone(a))
-                return false;
-            break;
-            
-        case 5:
-            executando = false;
-            break;
-        }
-    } while (executando);
+        printf(MSG_ALTERACAO_CANCELADA);
+    
     return true;
 }
 
@@ -369,20 +209,16 @@ static bool alterarTelefones(Artista *a)
 static void listarRedesSociais(const Artista *a)
 {
     int i;
-    if (a->totalRedesSociais == 0)
-    {
+    if (a->totalRedesSociais > 0)
+        for (i = 0; i < a->totalRedesSociais; i++)
+            printf("  %d: %s - %s\n", i + 1, a->redesSociais[i].redeSocial, a->redesSociais[i].usuario);
+    else
         printf("Nenhuma rede social cadastrada.\n");
-        return;
-    }
-    for (i = 0; i < a->totalRedesSociais; i++)
-        printf("  %d: %s - %s\n", i + 1, a->redesSociais[i].redeSocial, a->redesSociais[i].usuario);
 }
 
 static bool adicionarRedeSocial(Artista *a)
 {
-    char novaPlat[TAM_TEXTO_PEQUENO];
-    char novoUser[TAM_TEXTO_PEQUENO];
-    char confirma[TAM_SIM_NAO];
+    char novaPlat[TAM_TEXTO_PEQUENO], novoUser[TAM_TEXTO_PEQUENO];
     redeSocial *temp = (redeSocial *)realloc(a->redesSociais, sizeof(redeSocial) * (a->totalRedesSociais + 1));
 
     printf("  Plataforma: ");
@@ -393,30 +229,19 @@ static bool adicionarRedeSocial(Artista *a)
     if (!lerString(novoUser, TAM_TEXTO_PEQUENO))
         return false;
     
-    printf("Confirma a adição da rede social \"%s\" com usuário \"%s\"? (s/n): ", novaPlat, novoUser);
-    if (!lerSimNao(confirma))
+    if (temp == NULL)
+    {
+        printf("Erro de memória ao adicionar rede social.\n");
         return false;
-    if (confirma[0] == 's' || confirma[0] == 'S')
-    {
-        if (temp == NULL)
-        {
-            printf("Erro de memória ao adicionar rede social.\n");
-            return false;
-        }
-        a->redesSociais = temp;
-        strcpy(a->redesSociais[a->totalRedesSociais].redeSocial, novaPlat);
-        strcpy(a->redesSociais[a->totalRedesSociais].usuario, novoUser);
-        a->totalRedesSociais++;
-        a->capacidadeRedesSociais = a->totalRedesSociais;
-        
-        printf("Rede social adicionada.\n");
-        return true;
     }
-    else
-    {
-        printf("Adição cancelada.\n");
-        return true;
-    }
+    a->redesSociais = temp;
+    strcpy(a->redesSociais[a->totalRedesSociais].redeSocial, novaPlat);
+    strcpy(a->redesSociais[a->totalRedesSociais].usuario, novoUser);
+    a->totalRedesSociais++;
+    a->capacidadeRedesSociais = a->totalRedesSociais;
+    
+    printf("Rede social adicionada.\n");
+    return true;
 }
 
 static bool removerRedeSocial(Artista *a)
@@ -428,7 +253,7 @@ static bool removerRedeSocial(Artista *a)
     if (a->totalRedesSociais == 0)
         return true;
 
-    printf("Índice da rede social a remover (1 a %d): ", a->totalRedesSociais);
+    printf("Qual rede social deseja remover (1 a %d): ", a->totalRedesSociais);
     idx = escolherOpcao(1, a->totalRedesSociais);
     if (idx == -99) return false;
     idx--;
@@ -450,7 +275,7 @@ static bool removerRedeSocial(Artista *a)
     }
     else
     {
-        printf("Remoção cancelada.\n");
+        printf(MSG_EXCLUSAO_CANCELADA);
         return true;
     }
 }
@@ -458,13 +283,13 @@ static bool removerRedeSocial(Artista *a)
 static bool editarRedeSocial(Artista *a)
 {
     int idx, i;
-    char confirma[TAM_SIM_NAO], char novaPlat[TAM_TEXTO_PEQUENO], char novoUser[TAM_TEXTO_PEQUENO];
+    char confirma[TAM_SIM_NAO], novaPlat[TAM_TEXTO_PEQUENO], novoUser[TAM_TEXTO_PEQUENO];
     
     listarRedesSociais(a);
     if (a->totalRedesSociais == 0)
         return true;
 
-    printf("Índice da rede social a editar (1 a %d): ", a->totalRedesSociais);
+    printf("Qual rede social deseja editar (1 a %d): ", a->totalRedesSociais);
     idx = escolherOpcao(1, a->totalRedesSociais);
     if (idx == -99)
         return false;
@@ -490,52 +315,20 @@ static bool editarRedeSocial(Artista *a)
     }
     else
     {
-        printf("Edição cancelada.\n");
+        printf(MSG_ALTERACAO_CANCELADA);
     }
     return true;
 }
 
-static bool alterarRedesSociais(Artista *a)
-{
-    bool executando = true;
-    do
-    {
-        int op;
-        op = menuRedesSociais();
-        if (op == -99)
-            return false;
-
-        switch (op)
-        {
-        case 1:
-            listarRedesSociais(a);
-            break;
-        case 2:
-            if (!adicionarRedeSocial(a))
-                return false;
-            break;
-        case 3:
-            if (!removerRedeSocial(a))  
-                return false;
-            break;
-        case 4:
-            if (!editarRedeSocial(a))
-                return false;
-            break;
-        case 5
-            executando = false;
-            break;
-        }
-    } while (executando);
-    return true;
-}
-/**********************
- * FUNÇÃO DE CADASTRO *
- **********************/
+/*******************************
+ * FUNÇÕES DO MÓDULO PRINCIPAL *
+ *******************************/
 
 static bool cadastrarArtista(ListaArtistas *lista)
 {
     Artista a;
+    Telefone *tempTelefones;
+    redeSocial *tempRedes;
     char resposta[TAM_SIM_NAO], telefone[TAM_TELEFONE], plataforma[TAM_TEXTO_PEQUENO], usuario[TAM_TEXTO_PEQUENO];
     bool cpfValido = false;
 
@@ -605,14 +398,14 @@ static bool cadastrarArtista(ListaArtistas *lista)
             return false;
         }
 
-        Telefone *temp = (Telefone *) realloc(a.telefones, sizeof(Telefone) * (a.totalTelefones + 1));
-        if (temp == NULL)
+        tempTelefones = (Telefone *) realloc(a.telefones, sizeof(Telefone) * (a.totalTelefones + 1));
+        if (tempTelefones == NULL)
         {
+            printf(MSG_ERRO_ALOCAR_MEMORIA);
             free(a.telefones);
-            printf("Erro de memória.\n");
             return false;
         }
-        a.telefones = temp;
+        a.telefones = tempTelefones;
         strncpy(a.telefones[a.totalTelefones].numeroTelefone, telefone, TAM_TELEFONE - 1);
         a.telefones[a.totalTelefones].numeroTelefone[TAM_TELEFONE - 1] = '\0';
         a.totalTelefones++;
@@ -656,15 +449,15 @@ static bool cadastrarArtista(ListaArtistas *lista)
             return false;
         }
 
-        redeSocial *temp = (redeSocial *) realloc(a.redesSociais, sizeof(redeSocial) * (a.totalRedesSociais + 1));
-        if (temp == NULL)
+        tempRedes = (redeSocial *) realloc(a.redesSociais, sizeof(redeSocial) * (a.totalRedesSociais + 1));
+        if (tempRedes == NULL)
         {
+            printf(MSG_ERRO_ALOCAR_MEMORIA);
             free(a.telefones);
             free(a.redesSociais);
-            printf("Erro de memória.\n");
             return false;
         }
-        a.redesSociais = temp;
+        a.redesSociais = tempRedes;
         strncpy(a.redesSociais[a.totalRedesSociais].redeSocial, plataforma, TAM_TEXTO_PEQUENO - 1);
         a.redesSociais[a.totalRedesSociais].redeSocial[TAM_TEXTO_PEQUENO - 1] = '\0';
         strncpy(a.redesSociais[a.totalRedesSociais].usuario, usuario, TAM_TEXTO_PEQUENO - 1);
@@ -683,21 +476,17 @@ static bool cadastrarArtista(ListaArtistas *lista)
     
     
     // Adiciona à lista
-    if (adicionarArtista(lista, &a) == false)
+    if (!adicionarArtista(lista, &a))
     {
-        printf("Erro ao adicionar artista à lista.\n");
+        printf(MSG_ERRO_ALOCAR_MEMORIA);
         free(a.telefones);
         free(a.redesSociais);
         return false;
     }
 
-    printf("Artista cadastrado com sucesso!\n");
+    printf(MSG_CADASTRO_REALIZADO_SUCESSO);
     return true;
 }
-
-/*****************************************
- * FUNÇÕES DE BUSCA E IMPRESSÃO/LISTAGEM *
- *****************************************/
 
 void imprimirArtistaPorIndice(const ListaArtistas *lista, int indice)
 {
@@ -740,14 +529,11 @@ void listarTodosArtistas(const ListaArtistas *lista)
 {
     int i;
     if (lista->total == 0)
-    {
         printf("Nenhum artista cadastrado.\n");
-        return;
-    }
-    for (i = 0; i < lista->total; i++)
-    {
-        imprimirArtistaPorIndice(lista, i);
-    }
+    else
+        for (i = 0; i < lista->total; i++)
+            imprimirArtistaPorIndice(lista, i);
+    return;
 }
 
 bool buscarArtistaPorCPF(const ListaArtistas *lista, int *indice)
@@ -771,10 +557,6 @@ bool buscarArtistaPorCPF(const ListaArtistas *lista, int *indice)
     return true;
 }
 
-/**********************
- * FUNÇÃO DE EXCLUSÃO *
- **********************/
-
 static bool excluirArtista(ListaArtistas *lista, int indice)
 {
     imprimirArtistaPorIndice(lista, indice);
@@ -782,98 +564,267 @@ static bool excluirArtista(ListaArtistas *lista, int indice)
     char resposta[TAM_SIM_NAO];
     if (!lerSimNao(resposta))
         return false;
-    
-    if (removerArtista(lista, indice))
+    if (resposta[0] != 's' && resposta[0] != 'S')
     {
-        printf("Artista excluído com sucesso.\n");
+        printf(MSG_EXCLUSAO_CANCELADA);
         return true;
     }
     else
     {
-        printf("Erro ao excluir artista.\n");
-        return false;
+        if (removerArtista(lista, indice))
+        {
+            printf("Artista excluído com sucesso.\n");
+            return true;
+        }
+        else
+        {
+            printf("Erro ao excluir artista.\n");
+            return false;
+        }
     }
 }
-// Retorna para a main FALSE em caso de erro irrecuperável (erro de memória, EOF nas funções que recebem entrada do usuário e etc).
-// Retorna para a main TRUE quando o usuário desejar encerrar o módulo, os erros simples (entrada inválida) são tratados internamente.
+
+/*************************
+ * MODULOS E SUB-MODULOS *
+ *************************/
+
+// Retornam FALSE em caso de erro irrecuperável (erro de memória, EOF nas funções que recebem entrada do usuário e etc).
+// Retornam TRUE quando o usuário desejar encerrar o módulo, os erros simples (entrada inválida) são tratados internamente.
+
+static bool moduloTelefones(Artista *a)
+{
+    bool executando = true;
+    do
+    {
+        int op;
+        op = menuTelefones();
+        if (op == -99)
+            return false;
+        
+        switch (op)
+        {   
+        case 1:
+            if (!adicionarTelefone(a))
+                return false;
+            break;
+            
+        case 2:
+            if (a->totalTelefones > 0)
+            {
+                printf("Qual telefone deseja remover?\n");
+                listarTelefones(a);
+                if (!removerTelefone(a))
+                    return false;
+            }
+            else
+                printf(MSG_NENHUM_CADASTRADO, "telefone");
+
+            break;
+            
+        case 3:
+            if (a->totalTelefones > 0)
+            {
+                printf("Qual telefone deseja editar?\n");
+                listarTelefones(a);
+                if (!editarTelefone(a))
+                    return false;
+            }
+            else
+                printf(MSG_NENHUM_CADASTRADO, "telefone");
+
+            break;
+            
+        case 4:
+            executando = false;
+            break;
+        }
+    } while (executando);
+    return true;
+}
+
+static bool moduloRedesSociais(Artista *a)
+{
+    bool executando = true;
+    do
+    {
+        int op;
+        op = menuRedesSociais();
+        if (op == -99)
+            return false;
+
+        switch (op)
+        {
+        case 1:
+            listarRedesSociais(a);
+            break;
+
+        case 2:
+            if (!adicionarRedeSocial(a))
+                return false;
+            break;
+
+        case 3:
+            if (!removerRedeSocial(a))  
+                return false;
+            break;
+
+        case 4:
+            if (!editarRedeSocial(a))
+                return false;
+            break;
+
+        case 5:
+            executando = false;
+            break;
+        }
+    } while (executando);
+    return true;
+}
+
+static bool moduloAlteracaoArtista(ListaArtistas *lista, int indice)
+{
+    bool executando = true;
+    Artista *a = &lista->itens[indice];
+    int op;
+    char novoNome[TAM_TEXTO_MEDIO], novaNacionalidade[TAM_TEXTO_PEQUENO], novoEstilo[TAM_TEXTO_PEQUENO], confirma[TAM_SIM_NAO];
+
+    do
+    {
+        op = menuAlteracaoArtista();
+        if (op == -99)
+            return false;
+
+        switch (op)
+        {
+        case 1:
+            printf("Novo nome: ");
+            if (!lerString(novoNome, TAM_TEXTO_MEDIO))
+                return false;
+
+            printf(MSG_CONFIRMAR_ALTERACAO, a->nome, novoNome);
+            if (!lerSimNao(confirma))
+                return false;
+            
+            if (confirma[0] == 's' || confirma[0] == 'S')
+            {
+                strcpy(a->nome, novoNome);
+                printf(MSG_ALTERACAO_REALIZADA_SUCESSO);
+            }
+            else
+                printf(MSG_ALTERACAO_CANCELADA);
+
+            break;
+
+        case 2:
+            printf("Nova nacionalidade: ");
+            if (!lerString(novaNacionalidade, TAM_TEXTO_PEQUENO))
+                return false;
+
+            printf(MSG_CONFIRMAR_ALTERACAO, a->nacionalidade, novaNacionalidade);
+            if (!lerSimNao(confirma))
+                return false;
+            if (confirma[0] == 's' || confirma[0] == 'S')
+            {
+                strcpy(a->nacionalidade, novaNacionalidade);
+                printf(MSG_ALTERACAO_REALIZADA_SUCESSO);
+            }
+            else
+                printf(MSG_ALTERACAO_CANCELADA);
+
+            break;
+
+        case 3:
+            printf("Novo estilo: ");
+            if (!lerString(novoEstilo, TAM_TEXTO_PEQUENO))
+                return false;
+
+            printf(MSG_CONFIRMAR_ALTERACAO, a->estilo, novoEstilo);
+            if (!lerSimNao(confirma))
+                return false;
+            
+            if (confirma[0] == 's' || confirma[0] == 'S')
+            {
+                strcpy(a->estilo, novoEstilo);
+                printf(MSG_ALTERACAO_REALIZADA_SUCESSO);
+            }
+            else
+                printf(MSG_ALTERACAO_CANCELADA);
+            break;
+
+        case 4:
+            if (!moduloTelefones(a))
+                return false;
+            break;
+
+        case 5:
+            if (!moduloRedesSociais(a))
+                return false;
+            break;
+
+        case 6: // Salvar e retornar
+            executando = false;
+            break;
+        }
+    } while (executando);
+
+    return true;
+}
+
 bool moduloArtistas(ListaArtistas *lista)
 {
     bool executando = true;
-    int indice;
-    while (executando)
+    int indice, op;
+
+    do
     {
-        switch (menuArtistas())
+        op = menuArtistas();
+        if (op == -99)
+            return false;
+        switch (op)
         {
             case 1: // Cadastrar novo artista
                 if(!cadastrarArtista(lista))
-                {
-                    printf("Erro ao cadastrar artista!!\n"); 
                     return false;
-                }
                 else
                 {
                     printf("Artista cadastrado com sucesso!\n");
                     printf("Salvando dados...\n");
                     if(!salvarArtistas(lista))
-                    {
-                        printf("Erro ao salvar dados dos artistas!!\n");
                         return false;
-                    }
                     else
-                    {
-                        printf("Dados dos artistas salvos com sucesso!\n");
-                    }
+                        printf(MSG_DADOS_SALVOS_SUCESSO, "artistas");
                 }
                 break;
 
-            case 2: // Listar todos os artistas (exibição completa de todos os dados de cada artista)
+            case 2:
                 listarTodosArtistas(lista);
                 break;
 
-            case 3: // Imprimir todos os dados de um artista específico, usa a função de busca por CPF para receber o índice, depois imprime por índice
+            case 3:
                 if (!buscarArtistaPorCPF(lista, &indice))
-                {
-                    printf("Erro ao buscar artista!!\n");
                     return false;
-                }
+
                 if (indice != -1)
-                {
                     imprimirArtistaPorIndice(lista, indice);
-                }
+            
                 break;
 
-            case 4: // Excluir um usuário, após confirmação dos dados, usa as funções de busca por CPF, lerSimNao e Excluir artista.
-                printf("Qual artista deseja excluir?");
+            case 4:
                 if (!buscarArtistaPorCPF(lista, &indice))
-                {
-                    printf("Erro ao buscar artista para exclusão!!\n");
                     return false;
-                }
+
                 if (indice != -1)
-                {
                     if (!excluirArtista(lista, indice))
-                    {
-                        printf("Erro ao excluir artista.\n");
                         return false;
-                    }
-                }
                 break;
 
-            case 5:  // Alterar um artista específico, usa a função de busca por CPF para receber o índice passar o índice para a função de alterar artista.
-                printf("Qual artista deseja alterar?");
+            case 5:
                 if (!buscarArtistaPorCPF(lista, &indice))
-                {
-                    printf("Erro ao buscar artista para exclusão!!\n");
                     return false;
-                }
+
                 if (indice != -1)
-                {
-                    if (!alterarArtista(lista, indice))
-                    {
-                        printf("Erro ao alterar artista.\n");
+                    if (!moduloAlteracaoArtista(lista, indice))
                         return false;
-                    }
-                }
                 break;
             
             case 6:
@@ -882,7 +833,7 @@ bool moduloArtistas(ListaArtistas *lista)
             
             case -99: // Erro irrecuperável
                 return false;
-        }
-    }
+        } // fim do switch do menu de artistas
+    }while (executando);
     return true;
 }

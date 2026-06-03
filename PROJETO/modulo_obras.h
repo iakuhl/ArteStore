@@ -19,6 +19,7 @@
 
 #include "estruturas.h"
 
+void listarObra(const ListaObras *lista, int indice);
 void listarTodasObras(const ListaObras *lista);
 
 bool moduloObras(ListaObras *lista);

@@ -32,15 +32,29 @@
 #include "listas.h"
 #include "persistencia.h"
 
+static int menuRelatorios()
+{
+    printf("### MENU RELATORIOS ###\n");
+    printf("1 - Relatorio de Obras por Artista\n");
+    printf("2 - Relatorio de Obras por Tipo\n");
+    printf("3 - Relatorio de Colaboracoes por data\n");
+    printf("4 - Voltar ao Menu Principal\n");
+
+    return escolherOpcao(1, 4);
+}
 
 static bool relatorioObrasPorArtista(const ListaColaboracoes *listaColaboracoes, const ListaObras *listaObras, const ListaArtistas *listaArtistas)
 {
-    int indiceArtista;
+    int indiceArtista, i, indiceObra;
+    const Artista *artista;
+    const Colaboracao *colab;
+    const Obra *obra;
+    bool encontrouObras;
+
     printf("\n--- Relatorio de Obras por Artista ---\n");
     if(!buscarArtistaPorCPF(listaArtistas, &indiceArtista))
-    {
         return false;
-    }
+
     if (indiceArtista == -1)
     {
         printf("Artista nao encontrado.\n");
@@ -48,13 +62,8 @@ static bool relatorioObrasPorArtista(const ListaColaboracoes *listaColaboracoes,
     }
     else
     {
-        const Artista *artista = &listaArtistas->itens[indiceArtista];
-        const Colaboracao *colab;
-        const Obra *obra;
-        bool encontrouObras;
-
-        int i, indiceObra;
-
+        artista = &listaArtistas->itens[indiceArtista];
+        
         printf("Obras do artista %s (CPF: ", artista->nome);
         imprimeCPF(artista->cpf);
         printf("):\n");
@@ -67,43 +76,72 @@ static bool relatorioObrasPorArtista(const ListaColaboracoes *listaColaboracoes,
             {
                 encontrouObras = true;
                 obra = NULL;
-                indiceObra = buscarObraPorID(listaObras, colab->chaveColab.id);
+                indiceObra = indiceObraPorID(listaObras, colab->chaveColab.id);
                 if (indiceObra != -1)
                 {
                     obra = &listaObras->itens[indiceObra];
-                    printf("- %s (ID: %d), Papel: %s, Contribuicao: %.2f%%\n", obra->titulo, obra->id, colab->funcaoArtista, colab->percentualContribuicao);
+                    printf("- %s (ID: %d), Papel: %s, Contribuicao: %d%%\n", obra->titulo, obra->id, colab->funcaoArtista, colab->percentualContribuicao);
                 }
                 else
                 {
-                    printf("- Obra ID %d (nao encontrada), Papel: %s, Contribuicao: %.2f%%\n", colab->chaveColab.id, colab->funcaoArtista, colab->percentualContribuicao);
+                    printf("- Obra ID %d (nao encontrada), Papel: %s, Contribuicao: %d%%\n", colab->chaveColab.id, colab->funcaoArtista, colab->percentualContribuicao);
                 }
             }
         }
         if (!encontrouObras)
-        {
             printf("Nenhuma obra encontrada para este artista.\n");
-        }
     }
     return true; 
 }
 
-static int menuRelatorios()
+static bool relatorioObrasPorTipo(const ListaColaboracoes *listaColaboracoes, const ListaObras *listaObras, const ListaArtistas *listaArtistas)
 {
-    printf("### MENU RELATORIOS ###\n");
-    printf("1 - Relatorio de Artistas\n");
-    printf("2 - Relatorio de Obras\n");
-    printf("3 - Relatorio de Colaboracoes\n");
-    printf("4 - Voltar ao Menu Principal\n");
+    int indiceArtista, i, indiceObra;
+    char tipoInformado[TAM_TEXTO_PEQUENO];
+    const Artista *artista;
+    const Colaboracao *colab;
+    const Obra *obra;
+    bool encontrouColab;
 
-    printf("Escolha uma opção: ");
-    return escolherOpcao(1, 4);
+    printf("\n--- Relatorio de Obras por Tipo ---\n");
+    printf("Informe o tipo desejado: ");
+    if (!lerString(tipoInformado,TAM_TEXTO_PEQUENO))
+        return false;
+
+    for (i = 0; i < listaObras->total; i++)
+    {
+        if (listaObras->itens[i].tipo == tipoInformado)
+        {
+            listarObra(listaObras,i);
+            
+            if(encontrouColab)
+            {
+                printf("Autor: %s", artista->nome);
+            }
+            else
+                printf("Autor não identificado");
+        }
+    }
+    artista = &listaArtistas->itens[indiceArtista];
+    
+    printf("Obras do artista %s (CPF: ", artista->nome);
+    imprimeCPF(artista->cpf);
+    printf("):\n");
+
+    encontrouColab = false;
+
+    if (!encontrouColab)
+        printf("Nenhuma obra encontrada para este artista.\n");
+    return true; 
 }
 
 bool moduloRelatorios(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaColaboracoes *listaColaboracoes)
 {
+    int op;
     do
     {
-        switch (menuRelatorios())
+        op = menuRelatorios();
+        switch (op)
         {
             case 1:
                 // Todas as obras de um artista específico, listando o título da obra, a função do artista na obra e o percentual de contribuição.

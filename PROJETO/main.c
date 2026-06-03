@@ -32,9 +32,6 @@
 #include "modulo_colaboracoes.h"
 #include "modulo_relatorios.h"
 
-// Funções de carregamento e liberação de dados, utilizam as funções de persistência e listas para gerenciar os dados em memória.
-// Mensagens personalizadas para cada retorno possível (exemplo: Lista vazia, lista semi-preenchida, arquivo corrompido...)
-
 /************************************************************************************************************
  * FUNÇÕES DE CARREGAMENTO, SALVAMENTO E LIBERAÇÃO DE DADOS, ITERAGEM DIRETAMENTE COM PERSISTÊNCIA E LISTAS *
  ************************************************************************************************************/
@@ -128,13 +125,20 @@ bool salvarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCola
 }
 
 
+
+void encerrarSemSalvar(bool *executando) // Exibe mensagem de erro e altera flag de execução para encerrar o programa sem salvar os dados atuais em memória.
+{
+    printf(MSG_ENCERRANDO_SEM_SALVAR);
+    *executando = false;
+}
+
 /*****************************************
  * MENU PRINCIPAL E EXECUÇÃO DO PROGRAMA *
  *****************************************/
 
 int menuPrincipal()
 {
-    printf("### MENU PRINCIPAL ###\n");
+    printf("\n\n### MENU PRINCIPAL ###\n");
     printf("1 - Menu Artistas\n");
     printf("2 - Menu Obras\n");
     printf("3 - Menu Colaboracoes\n");
@@ -144,129 +148,120 @@ int menuPrincipal()
     return escolherOpcao(1, 5);
 }
 
-// As funções dos módulos retornam false em caso de erro crítico (exemplo: falha de leitura, arquivo corrompido, etc) e true em caso de sucesso ou erro de validação (exemplo: entrada inválida, ID já cadastrado, etc).
-// O menu principal interpreta um retorno false como um sinal para encerrar o programa imediatamente, enquanto um retorno true pode ser acompanhado de mensagens informativas para o usuário sem encerrar o programa.
+// As funções dos módulos retornam false em caso de erro crítico (exemplo: falha de leitura, arquivo corrompido, etc) e true em caso de encerramento normal.
+// O menu principal interpreta um retorno false como um sinal para encerrar o programa imediatamente sem salvar os dados atuais em memória para evitar corrupção dos arquivos de persistência.
+// Os possíveis erros críticos podem ocorrer: 
+    // durante a leitura de dados (ex: estado de EOF na entrada de dados, erro de leitura...).
+    // durante a execução de um módulo (ex: falha ao alocar memória, falha ao salvar dados...).
 
-// Os possíveis erros críticos podem ocorrer durante a leitura de dados (ex: EOF inesperado, erro de leitura, arquivo corrompido) ou durante a execução de um módulo (ex: falha ao alocar memória, falha ao salvar dados, etc).
-// Nesses casos, o programa exibirá uma mensagem de erro e encerrará sem salvar os dados atuais em memória para evitar corrupção dos arquivos de persistência.
-
-// Os erros de validação, por outro lado, são situações em que a entrada do usuário não atende aos critérios esperados (ex: CPF inválido, ID já cadastrado, valor negativo, etc).
-// Nesses casos, os erros são tratados diretamente pelos módulos, e funções de utilidade. 
+// Os erros de validação (ex: CPF inválido, ID já cadastrado, valor negativo para data...) são tratados internamente em cada módulo ou em funções de utilidade, e não causam o encerramento do programa.
+// Apenas exibem mensagens de erro e solicitam nova entrada do usuário.
 
 int main()
 {
-    // Declaração das listas principais
+    // Declaração das listas
     ListaArtistas listaArtistas;
     ListaObras listaObras;
     ListaColaboracoes listaColaboracoes;
 
-    // Inicialização das listas com capacidade inicial (pode ser ajustada conforme necessidade)
-    bool executando = true;
-	if(carregarDados(&listaArtistas, &listaObras, &listaColaboracoes))
+    bool executando = true; // Flag de controle do loop principal.
+    int op; // Escolha do usuário no menu (-99 em caso de erro crítico).
+
+    // Inicialização das listas
+	if(!carregarDados(&listaArtistas, &listaObras, &listaColaboracoes))
+        printf("\n#######################################################\n# Devido a erros críticos, o programa será encerrado. #\n#######################################################\n");
+    else
 	{
 	    do
 		{
-	        switch (menuPrincipal())
-	        {
-	        case 1:
-	            if(!moduloArtistas(&listaArtistas))
-	            {
-	                printf(MSG_ENCERRANDO_SEM_SALVAR);
-	                executando = false;
-	            }
-                else
+            op = menuPrincipal();
+            if (op == -99)
+                encerrarSemSalvar(&executando);
+            else
+            {
+                switch (op)
                 {
-                    printf("Salvando dados...\n");
-                    if(!salvarArtistas(&listaArtistas))
-                    {
-                        printf(MSG_ERRO_SALVAR_DADOS, "artistas");
-                    }
-                    else
-                    {
-                        printf(MSG_DADOS_SALVOS_SUCESSO, "artistas");
-                    }
-                }
-	            break;
-	
-	        case 2:
-				if(!moduloObras(&listaObras))
-				{
-					printf(MSG_ENCERRANDO_SEM_SALVAR);
-					executando = false;
-				}
-                else
-                {
-                    printf("Salvando dados...\n");
-                    if(!salvarObras(&listaObras))
-                    {
-                        printf(MSG_ERRO_SALVAR_DADOS, "obras");
-                    }
-                    else
-                    {
-                        printf(MSG_DADOS_SALVOS_SUCESSO, "obras");
-                    }
-                }
-				break;
-	
-	        case 3:
-				if(!moduloColaboracoes(&listaColaboracoes, &listaArtistas, &listaObras))
-				{
-					printf(MSG_ENCERRANDO_SEM_SALVAR);
-					executando = false;
-				}
-                else
-                {
-                    printf("Salvando dados...\n");
-                    if(!salvarColaboracoes(&listaColaboracoes))
-                    {
-                        printf(MSG_ERRO_SALVAR_DADOS, "colaborações");
-                    }
-                    else
-                    {
-                        printf(MSG_DADOS_SALVOS_SUCESSO, "colaborações");
-                    }
-                }
-				break;
-	
-	        case 4:
-				if(!moduloRelatorios(&listaArtistas, &listaObras, &listaColaboracoes))
-				{
-					printf(MSG_ENCERRANDO_SEM_SALVAR);
-					executando = false;
-				}
-                else
-                {
-                    printf("Salvando dados...\n");
-                    if(!salvarDados(&listaArtistas, &listaObras, &listaColaboracoes))
-                    {
-                        printf(MSG_ERRO_SALVAR_DADOS, "dados gerais");
-                    }
-                    else
-                    {
-                        printf(MSG_DADOS_SALVOS_SUCESSO, "dados gerais");
-                    }
-                }
-				break;
-	
-	        case 5:
-				printf("Salvando dados...");
-				if(!salvarDados(&listaArtistas, &listaObras, &listaColaboracoes))
-				{
-					printf(MSG_ERRO_SALVAR_DADOS, "dados gerais");
-				}
-				else
-				{
-					printf(MSG_DADOS_SALVOS_SUCESSO, "dados gerais");
-				}
-	            executando = false;
-	            break;
-	
-	        case -99:
-				printf(MSG_ENCERRANDO_SEM_SALVAR);
-				executando = false;
-	            break;
-	        } // fim switch
-	
+                    case 1:
+                        if(!moduloArtistas(&listaArtistas))
+                        {
+                            encerrarSemSalvar(&executando);
+                            break;
+                        }
+                        else
+                        {
+                            printf("Salvando dados...\n");
+                            if(!salvarArtistas(&listaArtistas))
+                            {
+                                printf(MSG_ERRO_SALVAR_DADOS, "artistas");
+                                encerrarSemSalvar(&executando);
+                            }
+                            else
+                                printf(MSG_DADOS_SALVOS_SUCESSO, "artistas");
+                        }
+                        break;
+            
+                    case 2:
+                        if(!moduloObras(&listaObras))
+                            encerrarSemSalvar(&executando);
+                        else
+                        {
+                            printf("Salvando dados...\n");
+                            if(!salvarObras(&listaObras))
+                            {
+                                printf(MSG_ERRO_SALVAR_DADOS, "obras");
+                                encerrarSemSalvar(&executando);
+                            }
+                            else
+                                printf(MSG_DADOS_SALVOS_SUCESSO, "obras");
+                        }
+                        break;
+            
+                    case 3:
+                        if(!moduloColaboracoes(&listaColaboracoes, &listaArtistas, &listaObras))
+                            encerrarSemSalvar(&executando);
+                        else
+                        {
+                            printf("Salvando dados...\n");
+                            if(!salvarColaboracoes(&listaColaboracoes))
+                            {
+                                printf(MSG_ERRO_SALVAR_DADOS, "colaborações");
+                                encerrarSemSalvar(&executando);
+                            }
+                            else
+                                printf(MSG_DADOS_SALVOS_SUCESSO, "colaborações");
+                        }
+                        break;
+            
+                    case 4:
+                        if(!moduloRelatorios(&listaArtistas, &listaObras, &listaColaboracoes))
+                            encerrarSemSalvar(&executando);
+                        else
+                        {
+                            printf("Salvando dados...\n");
+                            if(!salvarDados(&listaArtistas, &listaObras, &listaColaboracoes))
+                            {
+                                printf(MSG_ERRO_SALVAR_DADOS, "dados gerais");
+                                encerrarSemSalvar(&executando);
+                            }
+                            else
+                                printf(MSG_DADOS_SALVOS_SUCESSO, "dados gerais");
+                        }
+                        break;
+            
+                    case 5:
+                        printf("Salvando dados...");
+                        if(!salvarDados(&listaArtistas, &listaObras, &listaColaboracoes))
+                        {
+                            printf(MSG_ERRO_SALVAR_DADOS, "dados gerais");
+                            printf(MSG_ENCERRANDO_SEM_SALVAR);
+                        }
+                        else
+                            printf(MSG_DADOS_SALVOS_SUCESSO, "dados gerais");
+                        
+                        executando = false;
+                        break;
+                } // fim switch
+            }
 	    } while (executando);
 	}
 	

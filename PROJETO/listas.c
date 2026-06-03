@@ -25,9 +25,9 @@
 #include "estruturas.h"
 
 
-// As funções deste arquivo tem objetivo de adequar as listas para a aplicação do programa.
-// Este arquivo só trabalha com expansão do tamahho das listas, liberação de memória, redução do tamanho das listas, criação e inicialização das listas.
-
+// As funções deste arquivo tem objetivo de adequar as listas para a aplicação do programa sem interação direta com o usuário.
+// Desta forma os possíveis erros de entrada do usuário, ou de memória são tratados em seus respectivos módulos.
+// Assim, fica mais fácil identificar e tratar os erros.
 
 /************
  * ARTISTAS *
@@ -44,7 +44,7 @@ void inicializarListaArtistas(ListaArtistas *lista, int capacidadeInicial)
         lista->capacidade = 0;
 }
 
-bool expandirListaArtista(ListaArtistas *lista, Artista *artista)
+bool adicionarArtista(ListaArtistas *lista, Artista *artista)
 {
 	Artista *temp;
     // Verifica se há espaço suficiente para adicionar o artista, se não houver, realoca a lista com mais capacidade.
@@ -124,7 +124,7 @@ void inicializarListaObras(ListaObras *lista, int capacidadeInicial)
         lista->capacidade = 0;
 }
 
-bool expandirListaObras(ListaObras *lista, Obra *obra)
+bool adicionarObra(ListaObras *lista, Obra *obra)
 {
     if (lista->total >= lista->capacidade)
     {
@@ -187,7 +187,7 @@ void inicializarListaColaboracoes(ListaColaboracoes *lista, int capacidadeInicia
         lista->capacidade = 0;
 }
 
-bool expandirListaColaboracoes(ListaColaboracoes *lista, Colaboracao *colab)
+bool adicionarColaboracao(ListaColaboracoes *lista, Colaboracao *colab)
 {
     if (lista->total >= lista->capacidade)
     {

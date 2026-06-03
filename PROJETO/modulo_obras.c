@@ -30,16 +30,32 @@
 #include "listas.h"
 #include "persistencia.h"
 
+static int menuAlteracaoObras()
+{
+    printf("### MENU DE ALTERAÇÕES DE OBRAS ###\n");
+    printf("Escolha uma opção para alterar:\n");
+    printf("1 - Título\n");
+    printf("2 - Tipo\n");
+    printf("3 - Ano de Criação\n");
+    printf("4 - Valor\n");
+    printf("5 - Descrição\n");
+
+    printf("6 - Salvar e Retornar ao menu Obras");
+
+    return escolherOpcao(1, 6);
+}
+
 static int menuObras()
 {
     printf("\n### MENU OBRAS ###\n");
     printf("1 - Cadastrar Obra\n");
     printf("2 - Listar Todas as Obras\n");
     printf("3 - Buscar Obra por ID\n");
-    printf("4 - Voltar ao Menu Principal\n");
+    printf("4 - Alterar Obra\n");
 
-    printf("Escolha uma opção: ");
-    return escolherOpcao(1, 4);
+    printf("5 - Voltar ao Menu Principal\n");
+
+    return escolherOpcao(1, 5);
 }
 
 static bool cadastrarObra(ListaObras *lista)
@@ -59,7 +75,7 @@ static bool cadastrarObra(ListaObras *lista)
         return true; // Retorna true para não encerrar o módulo, apenas informar que houve um erro de validação.
     }
 
-    if (buscarObraPorID(lista, o.id) != -1)
+    if (indiceObraPorID(lista, o.id) != -1)
     {
         printf("ID já cadastrado.\n");
         return true; // Retorna true para não encerrar o módulo, apenas informar que houve um erro de validação.
@@ -116,7 +132,7 @@ static bool cadastrarObra(ListaObras *lista)
     return true;
 }
 
-static void listarObra(const ListaObras *lista, int indice)
+void listarObra(const ListaObras *lista, int indice)
 {
     const Obra *o = &lista->itens[indice];
     printf("\n--- Obra %d ---\n", indice + 1);
@@ -142,31 +158,133 @@ void listarTodasObras(const ListaObras *lista)
         listarObra(lista, i);
 }
 
-static bool buscarObra(const ListaObras *lista)
+static bool buscarObra(const ListaObras *lista, int *indice)
 {
     int id;
-    printf("ID da obra a buscar: ");
+    printf("Informe o ID da obra: ");
     if (!lerInteiro(&id))
         return false;
 
-    int indice = buscarObraPorID(lista, id);
-    if (indice == -1)
+    *indice = indiceObraPorID(lista, id);
+    if (*indice == -1)
     {
         printf("Obra não encontrada.\n");
         return true;
     }
 
-    listarObra(lista, indice);
+    listarObra(lista, *indice);
+    return true;
+}
+
+static bool moduloAlteracaoObra(ListaObras *lista, int indice)
+{
+    Obra *o = &lista->itens[indice];
+    int op, novoAno, novoValor;
+    char confirma[TAM_SIM_NAO], novoTitulo[TAM_TEXTO_PEQUENO], novoTipo[TAM_TEXTO_PEQUENO], novaDescricao[TAM_TEXTO_GRANDE];
+    bool executando = true;
+
+    while (executando)
+    {
+        op = menuAlteracaoObras();
+        if (op == -99)
+            return false;
+        
+        switch (op)
+        {
+            case 1:
+                printf("Novo título: ");
+                if (!lerString(novoTitulo, TAM_TEXTO_PEQUENO))
+                    return false;
+                
+                printf(MSG_CONFIRMAR_ALTERACAO, o->titulo, novoTitulo);
+                if(!lerSimNao(confirma))
+                    return false;
+                if(confirma[0] == 's' || confirma[0] == 'S')
+                {
+                    strcpy(o->titulo, novoTitulo);
+                    printf(MSG_ALTERACAO_REALIZADA_SUCESSO);
+                }
+                else
+                    printf(MSG_ALTERACAO_CANCELADA);
+                break;
+            case 2:
+                printf("Novo tipo: ");
+                if (!lerString(novoTipo, TAM_TEXTO_PEQUENO))
+                    return false;
+                printf(MSG_CONFIRMAR_ALTERACAO, o->tipo, novoTipo);
+                if(!lerSimNao(confirma))
+                    return false;
+                if(confirma[0] == 's' || confirma[0] == 'S')
+                {
+                    strcpy(o->tipo, novoTipo);
+                    printf(MSG_ALTERACAO_REALIZADA_SUCESSO);
+                }
+                else
+                    printf(MSG_ALTERACAO_CANCELADA);
+                break;
+            case 3:
+                printf("Novo ano de criação: ");
+                if (!lerInteiro(&novoAno))
+                    return false;
+                printf(MSG_CONFIRMAR_ALTERACAO, o->anoCriacao, novoAno);
+                if(!lerSimNao(confirma))
+                    return false;
+                if(confirma[0] == 's' || confirma[0] == 'S')
+                {
+                    o->anoCriacao = novoAno;
+                    printf(MSG_ALTERACAO_REALIZADA_SUCESSO);
+                }
+                else
+                    printf(MSG_ALTERACAO_CANCELADA);
+                break;
+            case 4:
+                printf("Novo valor em centavos: ");
+
+                do
+                {
+                    if (!lerInteiro(&novoValor))
+                        return false;
+                    if (novoValor < 0)
+                        printf("Valor não pode ser negativo. Tente novamente: ");
+                } while (novoValor < 0);
+
+                printf(MSG_CONFIRMAR_ALTERACAO, o->valorCentavos, novoValor);
+                if(!lerSimNao(confirma))
+                    return false;
+                if(confirma[0] == 's' || confirma[0] == 'S')
+                {
+                    o->valorCentavos = novoValor;
+                    printf(MSG_ALTERACAO_REALIZADA_SUCESSO);
+                }
+                else
+                    printf(MSG_ALTERACAO_CANCELADA);
+                break;
+            case 5:
+                printf("Nova descrição: ");
+                if (!lerString(novaDescricao, TAM_TEXTO_GRANDE))
+                    return false;
+                // em implementação
+                break;
+            case 6:
+                executando = false;
+                break;
+        }
+    }
     return true;
 }
 
 bool moduloObras(ListaObras *lista)
 {
+    int indice, op;
     bool executando = true;
 
     while (executando)
     {
-        switch (menuObras())
+        op = menuObras();
+        if (op == -99)
+            return false;
+
+        switch (op)
         {
             case 1:
                 if (!cadastrarObra(lista))
@@ -178,17 +296,34 @@ bool moduloObras(ListaObras *lista)
                 listarTodasObras(lista);
                 break;
             case 3:
-                if (!buscarObra(lista))
+                if (!buscarObra(lista, &indice))
                 {
                     return false;
                 }
                 break;
             case 4:
+                if(!buscarObra(lista, &indice))
+                {
+                    return false;
+                }
+                else
+                {
+                    indice = indiceObraPorID(lista, indice);
+                    if (indice == -1)
+                    {
+                        printf("Obra não encontrada.\n");
+                        break;
+                    }
+
+                    if (!moduloAlteracaoObra(lista, indice))
+                        return false;
+                }
+                break;
+
+            case 5:
                 executando = false;
                 break;
-            case -1:
-                return false;
-        }
+        } // Fim do switch Obras
     }
     return true;
 }

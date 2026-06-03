@@ -92,7 +92,7 @@ static bool cadastrarColaboracao(ListaColaboracoes *listaColaboracoes, const Lis
         return true; // Retorna true para não encerrar o módulo, apenas informar que o ID é inválido.
     }
 
-    indiceObra = buscarObraPorID(listaObras, idObra);
+    indiceObra = indiceObraPorID(listaObras, idObra);
     if (indiceObra == -1)
     {
         printf("Obra nao encontrada.\n");
@@ -100,7 +100,7 @@ static bool cadastrarColaboracao(ListaColaboracoes *listaColaboracoes, const Lis
     }
 
     // Verifica se já existe colaboração com mesma chave (cpf + idObra)
-    if (buscarColaboracao(listaColaboracoes, cpfDigitado, idObra) != -1)
+    if (indiceColaboracaoPorChave(listaColaboracoes, cpfDigitado, idObra) != -1)
     {
         printf("Ja existe uma colaboracao entre este artista e esta obra.\n");
         return true; // Retorna true para não encerrar o módulo, apenas informar que a colaboração já existe.
@@ -191,7 +191,7 @@ static void listarColaboracoes(const ListaColaboracoes *listaColaboracoes, const
         }
 
         // Busca a obra correspondente
-        int indiceObra = buscarObraPorID(listaObras, colab->chaveColab.id);
+        int indiceObra = indiceObraPorID(listaObras, colab->chaveColab.id);
         if (indiceObra != -1)
         {
             obra = &listaObras->itens[indiceObra];
