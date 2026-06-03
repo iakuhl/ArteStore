@@ -260,36 +260,36 @@ void imprimeValor(int valor)
 }
 
 
-/*
-time_t converterData(Data d) {
+time_t converterData(Data d) // Usarei para realizar as comparações de data no módulo relatório.
+{
     struct tm t = {0};
     t.tm_mday = d.dia;
-    t.tm_mon = d.mes - 1;     // C usa 0-11
-    t.tm_year = d.ano - 1900; // C usa anos desde 1900
+    t.tm_mon = d.mes - 1;
+    t.tm_year = d.ano - 1900;
     
     return mktime(&t);
 }
-*/
 
-/*
+
 bool validarData(Data d)
 {
 	struct tm t = {0};
-    // 1. Validação matemática básica (valores impossíveis)
-    if (d.ano < 1 || d.mes < 1 || d.mes > 12 || d.dia < 1 || d.dia > 31) {
-        return false;
-    }
-		
-	t = converterData(d);
-    // mktime tenta normalizar a data. Se falhar, retorna -1
-    if (mktime(&t) == -1)
-        return false;
 
-    // 3. Se o mktime alterou o dia ou o mês, a data original era inválida
-    // Exemplo: se o usuário digitou 31/04, o mktime muda para 01/05.
-    if (t.tm_mday != d.dia || (t.tm_mon + 1) != d.mes) {
+    // 1. Validação matemática básica (valores impossíveis)
+    if (d.ano < 1 || d.mes < 1 || d.mes > 12 || d.dia < 1 || d.dia > 31)
         return false;
-    }
+		
+    t.tm_mday = d.dia;
+    t.tm_mon = d.mes - 1;
+    t.tm_year = d.ano - 1900;
+	
+    if (mktime(&t) == -1) // Ajusta t (corrige datas impossíveis) e retorna time_t ou -1 em caso de erro.
+        return false;
+	// Compara se t após os ajustes é diferente das datas informadas pelo usuário, se for diferente, a data precisou ser ajustada, logo é inválida.
+    if (t.tm_mday != d.dia || (t.tm_mon + 1) != d.mes || (t.tm_year+1900) != d.ano)
+        return false;
+	
+	// Se nenhuma das validações anteriores retornaram falso, então a data está correta.
     return true;
 }
-*/
+
