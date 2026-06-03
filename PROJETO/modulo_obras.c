@@ -140,7 +140,7 @@ void listarObra(const ListaObras *lista, int indice)
     printf("Título: %s\n", o->titulo);
     printf("Tipo: %s\n", o->tipo);
     printf("Ano: %d\n", o->anoCriacao);
-    printf("Valor: R$ %d,%02d\n", o->valorCentavos / 100, o->valorCentavos % 100);
+    printf("Valor: "); imprimeValor(o->valorCentavos);
     printf("Descrição: %s\n", o->descricao);
     printf("------------------------\n");
 }
