@@ -369,19 +369,23 @@ static bool cadastrarArtista(ListaArtistas *lista)
     printf("Estilo: ");
     if (!lerString(a.estilo, TAM_TEXTO_PEQUENO))
         return false;
-
-    // Data de nascimento
-    printf("Data de nascimento:\n");
-    printf("  Dia: ");
-    if (!lerInteiro(&a.nascimento.dia))
-        return false;
-    printf("  Mês: ");
-    if (!lerInteiro(&a.nascimento.mes))
-        return false;
-    printf("  Ano: ");
-    if (!lerInteiro(&a.nascimento.ano))
-        return false;
-
+    
+    do{ 
+        // Data de nascimento
+        printf("Data de nascimento:\n");
+        printf("  Dia: ");
+        if (!lerInteiro(&a.nascimento.dia))
+            return false;
+        printf("  Mês: ");
+        if (!lerInteiro(&a.nascimento.mes))
+            return false;
+        printf("  Ano: ");
+        if (!lerInteiro(&a.nascimento.ano))
+            return false;
+        
+        if (!validarData(a.nascimento))
+            printf(MSG_ENTRADA_INVALIDA);
+    }while (!validarData(a.nascimento));
         
     a.telefones = NULL;
     a.totalTelefones = 0;
