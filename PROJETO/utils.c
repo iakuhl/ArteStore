@@ -259,7 +259,9 @@ void imprimeValor(int valor)
     printf(",%02d\n", centavos);
 }
 
-time_t converter_para_time_t(Data d) {
+
+/*
+time_t converterData(Data d) {
     struct tm t = {0};
     t.tm_mday = d.dia;
     t.tm_mon = d.mes - 1;     // C usa 0-11
@@ -267,3 +269,27 @@ time_t converter_para_time_t(Data d) {
     
     return mktime(&t);
 }
+*/
+
+/*
+bool validarData(Data d)
+{
+	struct tm t = {0};
+    // 1. Validação matemática básica (valores impossíveis)
+    if (d.ano < 1 || d.mes < 1 || d.mes > 12 || d.dia < 1 || d.dia > 31) {
+        return false;
+    }
+		
+	t = converterData(d);
+    // mktime tenta normalizar a data. Se falhar, retorna -1
+    if (mktime(&t) == -1)
+        return false;
+
+    // 3. Se o mktime alterou o dia ou o mês, a data original era inválida
+    // Exemplo: se o usuário digitou 31/04, o mktime muda para 01/05.
+    if (t.tm_mday != d.dia || (t.tm_mon + 1) != d.mes) {
+        return false;
+    }
+    return true;
+}
+*/
