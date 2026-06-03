@@ -105,20 +105,20 @@ typedef struct
  ********************/
 
 typedef struct {
+	int total;
     Artista *itens;
-    int total;
     int capacidade;
 } ListaArtistas;
 
 typedef struct {
-	Obra *itens;
 	int total;
+	Obra *itens;
 	int capacidade;
 } ListaObras;
 
 typedef struct {
-	Colaboracao *itens;
 	int total;
+	Colaboracao *itens;
 	int capacidade;
 } ListaColaboracoes;
 
