@@ -173,7 +173,6 @@ bool removeMascaraCPF(char *cpf)
 bool validarCPF(const char cpf[]) // Função para validar CPF, deverá ser aprimorada para tratar casos de CPFs com formatação (com pontos e hífen).
 {
 	int i;
-	
     if (strlen(cpf) != 11)
         return false;
     for (i = 0; i < 11; i++)
@@ -222,9 +221,40 @@ int escolherOpcao(int min, int max)
 
 void imprimeCPF(const char *cpf) // Função para imprimir um CPF formatado (XXX.XXX.XXX-XX).
 {
-    printf("%c%c%c.%c%c%c.%c%c%c-%c%c",
-           cpf[0], cpf[1], cpf[2],
-           cpf[3], cpf[4], cpf[5],
-           cpf[6], cpf[7], cpf[8],
-           cpf[9], cpf[10]);
+    printf("%c%c%c.%c%c%c.%c%c%c-%c%c", cpf[0], cpf[1], cpf[2], cpf[3], cpf[4], cpf[5], cpf[6], cpf[7], cpf[8], cpf[9], cpf[10]);
+}
+
+void imprimeValor(int valor)
+{
+    int centavos, reais, divisor;
+
+    centavos = valor % 100;
+    reais = valor / 100;
+
+    printf("R$ ");
+	// Se não precisar formatar com '.' para milhares, imprime e retorna.
+    if (reais < 1000)
+    {
+        printf("%d,%02d\n", reais, centavos);
+        return;
+    }
+	
+    divisor = 1000;
+
+    while (reais / divisor >= 1000)
+    {
+        divisor = divisor * 1000;
+    }
+
+    printf("%d", reais / divisor);
+    reais = reais % divisor;
+
+    while (divisor > 1)
+    {
+        divisor = divisor / 1000;
+        printf(".%03d", reais / divisor);
+        reais = reais % divisor;
+    }
+
+    printf(",%02d\n", centavos);
 }
