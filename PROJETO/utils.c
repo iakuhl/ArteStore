@@ -258,3 +258,12 @@ void imprimeValor(int valor)
 
     printf(",%02d\n", centavos);
 }
+
+time_t converter_para_time_t(Data d) {
+    struct tm t = {0};
+    t.tm_mday = d.dia;
+    t.tm_mon = d.mes - 1;     // C usa 0-11
+    t.tm_year = d.ano - 1900; // C usa anos desde 1900
+    
+    return mktime(&t);
+}
