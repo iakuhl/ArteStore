@@ -56,17 +56,12 @@ static bool relatorioObrasPorArtista(const ListaColaboracoes *listaColaboracoes,
         return false;
 
     if (indiceArtista == -1)
-    {
-        printf("Artista nao encontrado.\n");
         return true;
-    }
     else
     {
         artista = &listaArtistas->itens[indiceArtista];
         
-        printf("Obras do artista %s (CPF: ", artista->nome);
-        imprimeCPF(artista->cpf);
-        printf("):\n");
+        printf("Obras de %s", artista->nome);
 
         encontrouObras = false;
         for (i = 0; i < listaColaboracoes->total; i++)
@@ -75,7 +70,6 @@ static bool relatorioObrasPorArtista(const ListaColaboracoes *listaColaboracoes,
             if (strcmp(colab->chaveColab.cpf, artista->cpf) == 0)
             {
                 encontrouObras = true;
-                obra = NULL;
                 indiceObra = indiceObraPorID(listaObras, colab->chaveColab.id);
                 if (indiceObra != -1)
                 {
@@ -96,9 +90,8 @@ static bool relatorioObrasPorArtista(const ListaColaboracoes *listaColaboracoes,
 
 static bool relatorioObrasPorTipo(const ListaColaboracoes *listaColaboracoes, const ListaObras *listaObras, const ListaArtistas *listaArtistas)
 {
-    int indiceArtista, i, indiceObra;
+    int indiceArtista, i, j, indiceObra;
     char tipoInformado[TAM_TEXTO_PEQUENO];
-    const Artista *artista;
     const Colaboracao *colab;
     const Obra *obra;
     bool encontrouColab;
@@ -108,30 +101,32 @@ static bool relatorioObrasPorTipo(const ListaColaboracoes *listaColaboracoes, co
     if (!lerString(tipoInformado,TAM_TEXTO_PEQUENO))
         return false;
 
+    // Percorre Obras para encontrar obras que tenham o tipo informado pelo usuário
     for (i = 0; i < listaObras->total; i++)
     {
-        if (listaObras->itens[i].tipo == tipoInformado)
+        encontrouColab = false;
+        obra = &listaObras->itens[i];
+        if (srtcmp(obra->tipo, tipoInformado) == 0)
         {
+            // Lista a Obra
             listarObra(listaObras,i);
-            
-            if(encontrouColab)
+            printf("  Por:\n");
+            // Percorre colaborações buscando os artistas da Obra
+            for (j = 0; j < listaColaboracoes->total; j++)
             {
-                printf("Autor: %s", artista->nome);
+                colab = &listaColaboracoes->itens[j];
+                if (colab->chaveColab.id == obra->id && colab->chaveColab.cpf != NULL)
+                {
+                    indiceArtista = indiceArtistaPorCPF(listaArtistas, colab->chaveColab.cpf)
+                    if (indiceArtista != -1)
+                        printf("      %s\n", listaArtistas->itens[indiceArtista].nome);
+                        encontrouColab = true;
+                }
             }
-            else
-                printf("Autor não identificado");
+            if(!encontrouColab)
+                printf("      Artistas não identificado");
         }
     }
-    artista = &listaArtistas->itens[indiceArtista];
-    
-    printf("Obras do artista %s (CPF: ", artista->nome);
-    imprimeCPF(artista->cpf);
-    printf("):\n");
-
-    encontrouColab = false;
-
-    if (!encontrouColab)
-        printf("Nenhuma obra encontrada para este artista.\n");
     return true; 
 }
 
