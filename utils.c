@@ -69,6 +69,53 @@ static bool dadosInformados(char *entrada, int tamanho)
 	return true;
 }
 
+bool lerValor(long long *numero)
+{
+    char entrada[TAM_BUFFER_LEITURA];
+    char *fim;
+    long long valor;
+
+    while (true)
+    {
+		// Verifica a entrada de dados
+		if(!dadosInformados(entrada,sizeof(entrada)))
+			return false;
+
+        // Verifica se a entrada ultrapassa o limite do buffer
+        if(!verificarLimiteString(entrada))
+        {
+            printf(MSG_LIMITE_CARACTERES_ATINGIDO);
+            continue;
+        }
+
+        errno = 0; // Prepara errno para detectar overflow
+        valor = strtoll(entrada, &fim, 10); // Converte a string para long em base decimal
+        // Verifica overflow do long
+        if (errno == ERANGE && (valor == LLONG_MAX || valor == LLONG_MIN))
+        {
+            printf(MSG_INTEIRO_INVALIDO);
+            continue;
+        }
+
+		// Confirma se ao menos um caractere numérico foi informado.
+        if (fim == entrada)
+        {
+            printf(MSG_ENTRADA_INVALIDA);
+            continue;
+        }
+
+		// Verifica se o fim da conversão em strtol é um 'enter' ou terminador de string.
+        if (*fim != '\n' && *fim != '\0')
+        {
+            printf(MSG_ENTRADA_INVALIDA);
+            continue;
+        }
+
+        *numero = valor;
+        return true;
+    }
+}
+
 bool lerInteiro(int *numero) // Validação robusta para entrada de inteiros.
 {
     char entrada[TAM_BUFFER_LEITURA];
@@ -222,14 +269,16 @@ int escolherOpcao(int min, int max)
     }
 }
 
-void imprimeCPF(const char *cpf) // Função para imprimir um CPF formatado (XXX.XXX.XXX-XX).
+void imprimeCPF(const char cpf[]) // Função para imprimir um CPF formatado (XXX.XXX.XXX-XX).
 {
     printf("%c%c%c.%c%c%c.%c%c%c-%c%c", cpf[0], cpf[1], cpf[2], cpf[3], cpf[4], cpf[5], cpf[6], cpf[7], cpf[8], cpf[9], cpf[10]);
 }
 
-void imprimeValor(int valor)
+void imprimeValor(long long valor)
 {
-    int centavos, reais, divisor;
+    long long centavos;
+    long long reais;
+    long long divisor;
 
     centavos = valor % 100;
     reais = valor / 100;
@@ -238,7 +287,7 @@ void imprimeValor(int valor)
 	// Se não precisar formatar com '.' para milhares, imprime e retorna.
     if (reais < 1000)
     {
-        printf("%d,%02d\n", reais, centavos);
+        printf("%lld,%02lld\n", reais, centavos);
         return;
     }
 	
@@ -249,50 +298,84 @@ void imprimeValor(int valor)
         divisor = divisor * 1000;
     }
 
-    printf("%d", reais / divisor);
+    printf("%lld", reais / divisor);
     reais = reais % divisor;
 
     while (divisor > 1)
     {
         divisor = divisor / 1000;
-        printf(".%03d", reais / divisor);
+        printf(".%03lld", reais / divisor);
         reais = reais % divisor;
     }
 
-    printf(",%02d\n", centavos);
+    printf(",%02lld\n", centavos);
 }
 
-
-time_t converterData(Data d) // Usarei para realizar as comparações de data no módulo relatório.
+bool anoBissexto(int ano) // Serve pra validar datas.
 {
-    struct tm t = {0};
-    t.tm_mday = d.dia;
-    t.tm_mon = d.mes - 1;
-    t.tm_year = d.ano - 1900;
+    // Regra 1: Múltiplos de 400 são sempre bissextos
+    if (ano % 400 == 0)
+        return true;
     
-    return mktime(&t);
+    // Regra 2: Múltiplos de 100 (que não passaram na regra acima) NÃO são bissextos
+    if (ano % 100 == 0)
+        return false;
+    
+    // Regra 3: Múltiplos de 4 são bissextos
+    if (ano % 4 == 0)
+        return true;
+    
+    // Se não passou pelas regras anteriores NÃO é bissexto.
+    return false;
 }
 
+bool validarData(Data d) // Precisei criar a minha própria validação de data, pois mktime de time.h só valida até 00:00:00 de 01/01/1970, como vou cadastrar artistas e obras, posso ter valores anteriores a esse.
+{   
+    int totalDiasPorMes[] = {31,28,31,30,31,30,31,31,30,31,30,31}; // Lista com o total de dia de cada mês
+    
+    if (d.ano < 1 || d.mes < 1 || d.dia < 1)
+        return false;
+    if (d.mes > 12)
+        return false;
 
-bool validarData(Data d)
+    // Verifica se é ano bissexto para alterar o total de meses de fevereiro
+    if (anoBissexto(d.ano))
+        totalDiasPorMes[1] = 29;
+    
+    if (d.dia <= totalDiasPorMes[d.mes-1])
+        return true;
+    else
+        return false;
+}
+
+int compararDatas(Data primeira, Data segunda)
 {
-	struct tm t = {0};
+    // Verifica se são iguais.
+    if (primeira.ano == segunda.ano && primeira.mes == segunda.mes && primeira.dia == segunda.dia)
+        return 0;
+    
+    // Se não são iguais verifica o ano.
+    if (primeira.ano > segunda.ano)
+        return 1;
+    
+    if (primeira.ano == segunda.ano)
+    {
+        // Se ano igual, verifica o mês.
+        if(primeira.mes > segunda.mes)
+            return 1;
 
-    // 1. Validação matemática básica (valores impossíveis)
-    if (d.ano < 1 || d.mes < 1 || d.mes > 12 || d.dia < 1 || d.dia > 31)
-        return false;
-		
-    t.tm_mday = d.dia;
-    t.tm_mon = d.mes - 1;
-    t.tm_year = d.ano - 1900;
-	
-    if (mktime(&t) == -1) // Ajusta t (corrige datas impossíveis) e retorna time_t ou -1 em caso de erro.
-        return false;
-	// Compara se t após os ajustes é diferente das datas informadas pelo usuário, se for diferente, a data precisou ser ajustada, logo é inválida.
-    if (t.tm_mday != d.dia || (t.tm_mon + 1) != d.mes || (t.tm_year+1900) != d.ano)
-        return false;
-	
-	// Se nenhuma das validações anteriores retornaram falso, então a data está correta.
-    return true;
+        if(primeira.mes == segunda.mes)
+        {
+            // Se mês igual, verifica o dia.
+            if(primeira.dia > segunda.dia)
+                return 1;
+        }
+    }
+    // Se não são iguais e a primeira não é maior que a segunda, retorna negativo.
+    return -1;
+
+    // Retornos:
+        //  0: datas iguais.
+        //  1: primeira > segunda.
+        // -1: primeira < segunda.
 }
-

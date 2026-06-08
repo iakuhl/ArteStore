@@ -71,7 +71,7 @@ typedef struct
 	int id; // ID única para cada obra.
 	int anoCriacao;
 	
-	int valorCentavos; // Valor em centavos para evitar erro de conversão float.
+	long long valorCentavos; // Valor em centavos para evitar erro de conversão float, precisei declara como long porque obras de arte tem valores muito altos.
 
 	char titulo[TAM_TEXTO_MEDIO];
 	char tipo[TAM_TEXTO_PEQUENO];

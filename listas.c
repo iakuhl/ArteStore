@@ -68,6 +68,8 @@ int indiceArtistaPorCPF(const ListaArtistas *lista, const char *cpf)
 {
     // Busca linear pelo CPF do artista na lista, comparando o CPF de cada artista com o CPF fornecido. Retorna o índice do artista encontrado ou -1 se não encontrado.
     int i;
+    if (lista->total == 0)
+        return -1;
     for (i = 0; i < lista->total; i++)
     {
         if (strcmp(lista->itens[i].cpf, cpf) == 0)
@@ -142,6 +144,8 @@ bool adicionarObra(ListaObras *lista, Obra *obra)
 int indiceObraPorID(const ListaObras *lista, int id)
 {
     int i;
+    if (lista->total == 0)
+        return -1;
     for (i = 0; i < lista->total; i++)
     {
         if (lista->itens[i].id == id)
@@ -152,9 +156,9 @@ int indiceObraPorID(const ListaObras *lista, int id)
 
 bool removerObra(ListaObras *lista, int indice)
 {
+    int i;
     if (indice < 0 || indice >= lista->total)
         return false;
-    int i;
     for (i = indice; i < lista->total - 1; i++)
     {
         lista->itens[i] = lista->itens[i + 1];
@@ -205,6 +209,8 @@ bool adicionarColaboracao(ListaColaboracoes *lista, Colaboracao *colab)
 int indiceColaboracaoPorChave(const ListaColaboracoes *lista, const char *cpf, int idObra)
 {
     int i;
+    if(lista->total == 0)
+        return -1;
     for (i = 0; i < lista->total; i++)
     {
         if (strcmp(lista->itens[i].chaveColab.cpf, cpf) == 0 && lista->itens[i].chaveColab.id == idObra)

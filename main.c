@@ -108,17 +108,17 @@ bool salvarDados(ListaArtistas *listaArtistas, ListaObras *listaObras, ListaCola
     bool sucesso = true;
 	if(!salvarArtistas(listaArtistas))
 	{
-		printf("Erro ao salvar dados de artistas.\n");
+		printf(MSG_ERRO_SALVAR_DADOS, NOME_ARQUIVO_ARTISTAS);
         sucesso = false;
 	}
 	if(!salvarObras(listaObras))
 	{
-		printf("Erro ao salvar dados de obras.\n");
+		printf(MSG_ERRO_SALVAR_DADOS, NOME_ARQUIVO_OBRAS);
         sucesso = false;
 	}
 	if(!salvarColaboracoes(listaColaboracoes))
 	{
-		printf("Erro ao salvar dados de colaborações.\n");
+		printf(MSG_ERRO_SALVAR_DADOS, NOME_ARQUIVO_COLABORACOES);
         sucesso = false;
 	}
     return sucesso;
@@ -192,11 +192,11 @@ int main()
                             printf("Salvando dados...\n");
                             if(!salvarArtistas(&listaArtistas))
                             {
-                                printf(MSG_ERRO_SALVAR_DADOS, "artistas");
+                                printf(MSG_ERRO_SALVAR_DADOS, NOME_ARQUIVO_ARTISTAS);
                                 encerrarSemSalvar(&executando);
                             }
                             else
-                                printf(MSG_DADOS_SALVOS_SUCESSO, "artistas");
+                                printf(MSG_DADOS_SALVOS_SUCESSO, NOME_ARQUIVO_ARTISTAS);
                         }
                         break;
             
@@ -208,11 +208,11 @@ int main()
                             printf("Salvando dados...\n");
                             if(!salvarObras(&listaObras))
                             {
-                                printf(MSG_ERRO_SALVAR_DADOS, "obras");
+                                printf(MSG_ERRO_SALVAR_DADOS, NOME_ARQUIVO_OBRAS);
                                 encerrarSemSalvar(&executando);
                             }
                             else
-                                printf(MSG_DADOS_SALVOS_SUCESSO, "obras");
+                                printf(MSG_DADOS_SALVOS_SUCESSO, NOME_ARQUIVO_OBRAS);
                         }
                         break;
             
@@ -228,7 +228,7 @@ int main()
                                 encerrarSemSalvar(&executando);
                             }
                             else
-                                printf(MSG_DADOS_SALVOS_SUCESSO, "colaborações");
+                                printf(MSG_DADOS_SALVOS_SUCESSO, NOME_ARQUIVO_COLABORACOES);
                         }
                         break;
             
@@ -240,23 +240,19 @@ int main()
                             printf("Salvando dados...\n");
                             if(!salvarDados(&listaArtistas, &listaObras, &listaColaboracoes))
                             {
-                                printf(MSG_ERRO_SALVAR_DADOS, "dados gerais");
                                 encerrarSemSalvar(&executando);
                             }
                             else
-                                printf(MSG_DADOS_SALVOS_SUCESSO, "dados gerais");
+                                printf(MSG_DADOS_SALVOS_SUCESSO, "TODOS");
                         }
                         break;
             
                     case 5:
                         printf("Salvando dados...");
                         if(!salvarDados(&listaArtistas, &listaObras, &listaColaboracoes))
-                        {
-                            printf(MSG_ERRO_SALVAR_DADOS, "dados gerais");
                             printf(MSG_ENCERRANDO_SEM_SALVAR);
-                        }
                         else
-                            printf(MSG_DADOS_SALVOS_SUCESSO, "dados gerais");
+                            printf(MSG_DADOS_SALVOS_SUCESSO, "TODOS");
                         
                         executando = false;
                         break;

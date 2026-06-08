@@ -19,6 +19,9 @@
 
 #include "estruturas.h"
 
+void imprimirColaboracaoPorIndice(const ListaColaboracoes *lista, int indice);
+void listarTodasColaboracoes(const ListaColaboracoes *listaColaboracoes);
+
 bool moduloColaboracoes(ListaColaboracoes *listaColaboracoes, const ListaArtistas *listaArtistas, const ListaObras *listaObras);
 
 #endif // MODULO_COLABORACOES_H 

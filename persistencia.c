@@ -418,7 +418,7 @@ int carregarObras(ListaObras *lista)
 					fclose(arquivo);
 					return i;
 				}
-				if(fread(&o.valorCentavos, sizeof(int), 1, arquivo) != 1)
+				if(fread(&o.valorCentavos, sizeof(long long), 1, arquivo) != 1)
 				{
 					fclose(arquivo);
 					return i;
@@ -488,7 +488,7 @@ bool salvarObras(const ListaObras *lista)
             fclose(arquivo);
             return false;
         }
-        if(fwrite(&o->valorCentavos, sizeof(int), 1, arquivo) != 1)
+        if(fwrite(&o->valorCentavos, sizeof(long long), 1, arquivo) != 1)
         {
             fclose(arquivo);
             return false;
@@ -710,4 +710,24 @@ bool salvarColaboracoes(const ListaColaboracoes *lista)
     }
     fclose(arquivo);
     return true;
+}
+
+/**************
+ * RELATÓRIOS *
+ **************/
+
+FILE *abrirArquivoRelatorio(const char *nomeArquivo)
+{
+    FILE *arquivo = fopen(nomeArquivo, "w");
+
+    if (arquivo == NULL)
+        printf(MSG_ERRO_CARREGAR_ARQUIVO, nomeArquivo);
+
+    return arquivo;
+}
+
+void fecharArquivoRelatorio(FILE *arquivo)
+{
+    if (arquivo != NULL)
+        fclose(arquivo);
 }

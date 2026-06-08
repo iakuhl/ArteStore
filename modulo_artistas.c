@@ -48,20 +48,18 @@
             // Excluir Rede Social.
             // Editar/Alterar Rede Social.
 
-// As operações de exclusão e alteração de artistas solicitam confirmação do usuário antes de realizar a ação.
-
 /*********************
  * EXIBIÇÃO DE MENUS *
  *********************/
 
 static int menuArtistas()
 {
-    printf("### MENU ARTISTAS ###\n");
+    printf("\n### MENU ARTISTAS ###\n");
     printf("1 - Cadastrar Artista\n");
     printf("2 - Listar todos os artistas\n");
-    printf("3 - Imprimir informações de um artista\n");
-    printf("4 - Excluir artista\n");
-    printf("5 - Alterar dados de um artista\n");
+    printf("3 - Exibir dados de um artista\n");
+    printf("4 - Alterar dados de um artista\n");
+    printf("5 - Excluir artista\n");
 
     printf("6 - Voltar ao Menu Principal\n");
 
@@ -70,7 +68,7 @@ static int menuArtistas()
 
 static int menuAlteracaoArtista()
 {
-    printf("### MENU DE ALTERAÇÕES DE ARTISTAS ###\n");
+    printf("\n### MENU DE ALTERAÇÕES DE ARTISTAS ###\n");
     printf("Escolha uma opção para alterar:\n");
     printf("1 - Nome\n");
     printf("2 - Nacionalidade\n");
@@ -563,9 +561,10 @@ bool buscarArtistaPorCPF(const ListaArtistas *lista, int *indice)
 
 static bool excluirArtista(ListaArtistas *lista, int indice)
 {
+    char resposta[TAM_SIM_NAO];
     imprimirArtistaPorIndice(lista, indice);
     printf("Tem certeza que deseja excluir este artista? (s/n): ");
-    char resposta[TAM_SIM_NAO];
+    
     if (!lerSimNao(resposta))
         return false;
     if (resposta[0] != 's' && resposta[0] != 'S')
@@ -691,6 +690,8 @@ static bool moduloAlteracaoArtista(ListaArtistas *lista, int indice)
     Artista *a = &lista->itens[indice];
     int op;
     char novoNome[TAM_TEXTO_MEDIO], novaNacionalidade[TAM_TEXTO_PEQUENO], novoEstilo[TAM_TEXTO_PEQUENO], confirma[TAM_SIM_NAO];
+
+    imprimirArtistaPorIndice(lista, indice);
 
     do
     {
@@ -818,7 +819,7 @@ bool moduloArtistas(ListaArtistas *lista)
                     return false;
 
                 if (indice != -1)
-                    if (!excluirArtista(lista, indice))
+                    if (!moduloAlteracaoArtista(lista, indice))
                         return false;
                 break;
 
@@ -827,10 +828,10 @@ bool moduloArtistas(ListaArtistas *lista)
                     return false;
 
                 if (indice != -1)
-                    if (!moduloAlteracaoArtista(lista, indice))
+                    if (!excluirArtista(lista, indice))
                         return false;
                 break;
-            
+
             case 6:
                 executando = false;
                 break;

@@ -29,4 +29,7 @@ bool salvarObras(const ListaObras *lista);
 int carregarColaboracoes(ListaColaboracoes *lista);
 bool salvarColaboracoes(const ListaColaboracoes *lista);
 
+FILE *abrirArquivoRelatorio(const char *nomeArquivo);
+void fecharArquivoRelatorio(FILE *arquivo);
+
 #endif // PERSISTENCIA_H
