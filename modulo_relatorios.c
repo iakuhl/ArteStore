@@ -263,7 +263,8 @@ static bool relatorioColabPorPeriodo(const ListaColaboracoes *listaColaboracoes,
     arquivo = abrirArquivoRelatorio(NOME_ARQUIVO_RELATORIO_COLAB);
     if (arquivo == NULL)
         return false;
-    printf("Colaborações realizadas entre %02d/%02d/%d e %02d/%02d/%d:\n", dataInicial.dia, dataInicial.mes, dataInicial.ano, dataFinal.dia, dataFinal.mes, dataFinal.ano);
+    printf("Colaborações realizadas entre %02d/%02d/%d e %02d/%02d/%d:\n\n", dataInicial.dia, dataInicial.mes, dataInicial.ano, dataFinal.dia, dataFinal.mes, dataFinal.ano);
+    fprintf(arquivo, "Colaborações realizadas entre %02d/%02d/%d e %02d/%02d/%d:\n\n", dataInicial.dia, dataInicial.mes, dataInicial.ano, dataFinal.dia, dataFinal.mes, dataFinal.ano);
     for (i = 0; i < listaColaboracoes->total; i++)
     {
         c = &listaColaboracoes->itens[i];
@@ -275,30 +276,31 @@ static bool relatorioColabPorPeriodo(const ListaColaboracoes *listaColaboracoes,
             indiceArtista = indiceArtistaPorCPF(listaArtistas, c->chaveColab.cpf);
             indiceObra = indiceObraPorID(listaObras,c->chaveColab.id);
 
-            printf("%dª Colaboração:", i+1);
+            printf("%dª Colaboração: ", i+1);
+            fprintf(arquivo, "%dª Colaboração:", i+1);
             if (indiceArtista != -1 && indiceObra != -1)
             {
                 a = &listaArtistas->itens[indiceArtista];
                 o = &listaObras->itens[indiceObra];
 
-                printf("%s em %s\n", a->nome, o->titulo);
-                printf("Atuando como %s.\n", c->funcaoArtista);
-                printf("Correspondente à %d%% da obra.\n", c->percentualContribuicao);
+                printf("\n%s em %s (ID: %d) - ", a->nome, o->titulo, o->id);
+                printf("participa como: %s.\n", c->funcaoArtista);
+                printf("Sendo sua contribuição correspondente à %d%% da obra.\n\n", c->percentualContribuicao);
 
-                fprintf(arquivo, "%s em %s\n", a->nome, o->titulo);
-                fprintf(arquivo, "Atuando como %s.\n", c->funcaoArtista);
-                fprintf(arquivo, "Correspondente à %d%% da obra.\n", c->percentualContribuicao);
+                fprintf(arquivo, "\n%s em %s (ID: %d) - ", a->nome, o->titulo, o->id);
+                fprintf(arquivo, "participa como: %s.\n", c->funcaoArtista);
+                fprintf(arquivo, "Sendo sua contribuição correspondente à %d%% da obra.\n\n", c->percentualContribuicao);
             }
             else
             {
                 if (indiceArtista == -1 || indiceObra == -1)
                 {
-                    printf("O Artista %s ou a Obra %d da colaboração (Artista: %s)/(Obra: %d) foram excluídos do sistema!\n",
+                    printf("O Artista %s ou a Obra %d da colaboração (Artista: %s)/(Obra: %d) foram excluídos do sistema!\n\n",
                         c->chaveColab.cpf,
                         c->chaveColab.id,
                         c->chaveColab.cpf,
                         c->chaveColab.id);
-                    fprintf(arquivo, "O Artista %s ou a Obra %d da colaboração (Artista: %s)/(Obra: %d) foram excluídos do sistema!\n",
+                    fprintf(arquivo, "O Artista %s ou a Obra %d da colaboração (Artista: %s)/(Obra: %d) foram excluídos do sistema!\n\n",
                         c->chaveColab.cpf,
                         c->chaveColab.id,
                         c->chaveColab.cpf,

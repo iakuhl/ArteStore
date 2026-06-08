@@ -1,7 +1,11 @@
-Tarsila do Amaral em Abaporu
-Atuando como Autora.
-Correspondente à 99% da obra.
-Iano de Oliva Kuhlmann em Six-Seven
-Atuando como N�o � o autor.
-Correspondente à 100% da obra.
+Colaborações realizadas entre 01/01/1500 e 31/12/3000:
+
+1ª Colaboração:
+Tarsila do Amaral em Abaporu (ID: 1) - participa como Autora.
+Sendo sua contribuição correspondente à 100% da obra.
+
+2ª Colaboração:
+Iano de Oliva Kuhlmann em Six-Seven (ID: 67) - participa como N�o � o autor.
+Sendo sua contribuição correspondente à 100% da obra.
+
 
