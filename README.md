@@ -2,7 +2,7 @@
 
 **Projeto da disciplina APR2**  
 **Autoria:** Iano de Oliva Kuhlmann  
-**Colaboradores:** chat.deepseek.com  
+**Colaboradores:** ChatGPT (revisão de código) e DeepSeek Chat (Estruturação do projeto e validação de dados).
 **Professora:** Dra. Eloize Rossi Marques Seno  
 
 ---
