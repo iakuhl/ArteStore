@@ -65,5 +65,5 @@ Cada lista dinâmica (`ListaArtistas`, `ListaObras`, `ListaColaboracoes`) conté
 ## 5. Compilação e Execução
 
 ```bash
-gcc -Wall -Wextra -std=c99 -o curadoria main.c utils.c menus.c listas.c persistencia.c
-./curadoria
+gcc *.c -o ArteStore.exe
+./ArteStore.exe
