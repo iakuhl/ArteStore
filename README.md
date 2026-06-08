@@ -9,7 +9,7 @@
 
 ## 1. Descrição
 
-Sistema em linguagem C para gerenciamento de artistas, obras de arte e colaborações. Os dados são armazenados em arquivos texto (`.txt`) e mantidos em memória por meio de listas dinâmicas. O programa oferece menus interativos para cadastrar, listar, buscar e excluir registros, além de gerar relatórios.
+Sistema em linguagem C para gerenciamento de artistas, obras de arte e colaborações. Os dados são armazenados em arquivos binários (`.bin`) e os relatórios em arquivos de texto (`.txt`) e mantidos em memória por meio de listas dinâmicas. O programa oferece menus interativos para cadastrar, listar, buscar e excluir registros, além de gerar relatórios.
 
 ---
 
@@ -22,7 +22,7 @@ Sistema em linguagem C para gerenciamento de artistas, obras de arte e colabora�
 | `listas.h` / `listas.c` | Manipulação das listas dinâmicas: inicializar, adicionar, buscar, remover e liberar. |
 | `persistencia.h` / `persistencia.c` | Leitura e gravação dos arquivos de dados. |
 | `main.c` | Função principal: carrega dados, controla fluxo dos menus, salva e libera memória. |
-| `modulo_(nome)` | Módulos para Artistas, Obras, Colaborações e Relatórios |
+| `modulo_(nome).h` / `modulo_(nome).c` | Módulos para Artistas, Obras, Colaborações e Relatórios |
 
 ---
 
@@ -43,8 +43,11 @@ Cada lista dinâmica (`ListaArtistas`, `ListaObras`, `ListaColaboracoes`) conté
 ## 4. Funcionalidades Implementadas
 
 ### 4.1 Leitura Robustas (Utils)
-- `lerInteiro` e `lerString` com `fgets`, tratamento de buffer overflow, validação de conteúdo e detecção de EOF.
+- `lerValor`, `lerInteiro` e `lerString` com `fgets` e `stroll`, tratamento de buffer overflow, validação de conteúdo e detecção de EOF.
 - `validarCPF` e `removerMascaraCPF`, garantindo armazenamento de CPF como string de números.
+- `imprimeCPF` e `imprimeValor`, exibindo dados com máscaras de formatação adequadas.
+- `lerSimNao` e `escolherOpcao`, auxiliando na coleta e confirmação dos dados.
+- `validarData` e `compararDatas`, para tratar as entradas com datas no formado DD/MM/AAA.
 
 ### 4.2 Sistema de Menus
 - Menus hierárquicos (Principal, Artistas, Obras, Colaborações, Relatórios).
