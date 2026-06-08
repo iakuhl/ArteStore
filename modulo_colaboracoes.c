@@ -239,7 +239,7 @@ static bool cadastrarColaboracao(ListaColaboracoes *listaColaboracoes, const Lis
 void imprimirColaboracaoPorIndice(const ListaColaboracoes *lista, int indice)
 {
     const Colaboracao *c = &lista->itens[indice];
-    printf("--- Colaboração %d ---\n", indice+1);
+    printf("\n--- Colaboração %d ---\n", indice+1);
     printf("Obra ID: %d\n", c->chaveColab.id);
     printf("CPF Artista: "); imprimeCPF(c->chaveColab.cpf);
     printf("\nFunção: %s\n", c->funcaoArtista);
@@ -328,9 +328,10 @@ static bool moduloAlterarColab(const ListaArtistas *listaArtistas, const ListaOb
         return true;
     }
 
+
     a = &listaArtistas->itens[indiceArtista];
     o = &listaObras->itens[indiceObra];
-
+    imprimirColaboracaoPorIndice(listaColaboracoes, indice);
     while (executando)
     {
         op = menuAlteracoesColab();

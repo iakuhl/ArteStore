@@ -153,7 +153,6 @@ void imprimirObraPorIndice(const ListaObras *lista, int indice)
     printf("Ano: %d\n", o->anoCriacao);
     printf("Valor: "); imprimeValor(o->valorCentavos);
     printf("Descrição: %s\n", o->descricao);
-    printf("------------------------\n");
 }
 
 void listarTodasObras(const ListaObras *lista)
